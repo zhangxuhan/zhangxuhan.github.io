@@ -9,10 +9,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/images/unreal-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/unreal-16x16.png">
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
 <link rel="stylesheet" href="/css/main.css">
-
-
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
   <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
   <script src="/lib/pace/pace.min.js"></script>
@@ -22,23 +19,17 @@
     var CONFIG = {"hostname":"zhangxuhan.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Technical enthusiast, passionate about open source and sharing, actively learning, highly self-disciplined. In work, I focus on teamwork and excel at quickly designing technical solutions and implemen">
+  <meta name="description" content="Software Engineer | C# / C++ / C | Embedded Systems & Game Development | Tokyo">
 <meta property="og:type" content="website">
-<meta property="og:title" content="About me">
+<meta property="og:title" content="About me | Xuhan Zhang">
 <meta property="og:url" content="https://zhangxuhan.github.io/about/index.html">
-<meta property="og:site_name" content="Welcome">
-<meta property="og:description" content="Technical enthusiast, passionate about open source and sharing, actively learning, highly self-disciplined. In work, I focus on teamwork and excel at quickly designing technical solutions and implemen">
+<meta property="og:site_name" content="Xuhan Zhang">
+<meta property="og:description" content="Software Engineer specializing in embedded systems, desktop applications, and game development. Passionate about open source and clean engineering.">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2024-06-23T10:24:32.000Z">
-<meta property="article:modified_time" content="2024-06-26T08:40:14.247Z">
-<meta property="article:author" content="XuhanZhang">
 <meta name="twitter:card" content="summary">
-
 <link rel="canonical" href="https://zhangxuhan.github.io/about/">
 
-
 <script id="page-configurations">
-  // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
     isHome : false,
@@ -47,38 +38,174 @@
   };
 </script>
 
-  <title>About me | Welcome
+  <title>About me | Xuhan Zhang
 </title>
-  
 
+<style>
+  /* ── Language Toggle ── */
+  .lang-switcher {
+    text-align: center;
+    margin: 2rem 0 1.5rem;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 0;
+  }
+  .lang-btn {
+    display: inline-block;
+    padding: 0.5rem 2rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #999;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    font-family: inherit;
+  }
+  .lang-btn:hover { color: #222; }
+  .lang-btn.active { color: #222; border-bottom-color: #222; }
+  .lang-content { display: none; }
+  .lang-content.active { display: block; }
 
+  /* ── Section Cards ── */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 2rem 0;
+  }
+  .profile-card {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 1.5rem;
+    border-left: 4px solid #222;
+  }
+  .profile-card h3 {
+    margin: 0 0 0.8rem;
+    font-size: 1rem;
+    color: #222;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .profile-card p, .profile-card li {
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: #444;
+    margin: 0.3rem 0;
+  }
+  .profile-card ul { padding-left: 1.2rem; margin: 0.5rem 0 0; }
 
+  /* ── Skills Grid ── */
+  .skills-section { margin: 2rem 0; }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .skill-card {
+    background: #f5f5f5;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+  .skill-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
+  .skill-name { font-weight: 700; font-size: 0.9rem; color: #222; margin-bottom: 0.3rem; }
+  .skill-desc { font-size: 0.8rem; color: #666; line-height: 1.5; }
 
+  /* ── Projects ── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+    margin: 1.5rem 0;
+  }
+  .project-card {
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 1.2rem;
+    transition: box-shadow 0.2s;
+  }
+  .project-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .project-card h4 {
+    margin: 0 0 0.4rem;
+    font-size: 0.95rem;
+    color: #222;
+  }
+  .project-card .lang-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    background: #222;
+    color: #fff;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+  }
+  .project-card p { font-size: 0.85rem; color: #555; line-height: 1.6; margin: 0.4rem 0 0; }
+  .project-card .stars { font-size: 0.8rem; color: #f5a623; margin-top: 0.4rem; }
 
+  /* ── CTA / Footer ── */
+  .cta-row {
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 0;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .cta-btn:hover { opacity: 0.85; }
+  .cta-btn.primary { background: #222; color: #fff; }
+  .cta-btn.outline { border: 2px solid #222; color: #222; }
 
-  <noscript>
-  <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
-
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
+  /* ── Section headings ── */
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #222;
+    margin: 2rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #222;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
   }
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
-  </style>
-</noscript>
+  /* ── Stats bar ── */
+  .stats-bar {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    background: #222;
+    color: #fff;
+    padding: 1.2rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+  }
+  .stat-item { text-align: center; }
+  .stat-num { font-size: 1.4rem; font-weight: 700; }
+  .stat-label { font-size: 0.75rem; opacity: 0.8; }
 
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .profile-grid, .projects-grid, .skills-grid { grid-template-columns: 1fr; }
+    .stats-bar { flex-wrap: wrap; gap: 1rem; }
+  }
+</style>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -94,155 +221,311 @@
       <span class="toggle-line toggle-line-last"></span>
     </div>
   </div>
-
   <div class="site-meta">
-
     <a href="/" class="brand" rel="start">
       <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">Welcome</h1>
+      <h1 class="site-title">Xuhan Zhang</h1>
       <span class="logo-line-after"><i></i></span>
     </a>
   </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
-    </div>
-  </div>
+  <div class="site-nav-right"><div class="toggle popup-trigger"></div></div>
 </div>
-
-
-
-
 <nav class="site-nav">
   <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
+    <li class="menu-item menu-item-home">
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
+    </li>
+    <li class="menu-item menu-item-about">
     <a href="/about/" rel="section"><i class="fa fa-user-tie fa-fw"></i>About</a>
-
-  </li>
+    </li>
   </ul>
 </nav>
-
-
-
-
 </div>
     </header>
 
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-
+  <div class="back-to-top"><i class="fa fa-arrow-up"></i><span>0%</span></div>
 
     <main class="main">
       <div class="main-inner">
         <div class="content-wrap">
-          
-  
-  
-
           <div class="content page posts-expand">
-            
-
-    
-    
-    
-    <div class="post-block" lang="en">
-      <header class="post-header">
-
-<h1 class="post-title" itemprop="name headline">About me
-</h1>
-
-<div class="post-meta">
-  
-
-</div>
-
+            <div class="post-block" lang="en">
+              <header class="post-header">
+<h1 class="post-title" itemprop="name headline">About me</h1>
+<div class="post-meta"></div>
 </header>
 
-      
-      
-      
-      <div class="post-body">
-          <p>Technical enthusiast, passionate about open source and sharing, actively learning, highly self-disciplined. In work, I focus on teamwork and excel at quickly designing technical solutions and implementing various gameplay features. I enjoy challenging work, as well as sports and games. In my spare time, I study game frameworks, set up private game servers, and modify game scripts to share joy with friends.</p>
-<blockquote>
-<p>More technical questions and articles can be found on my csdn <a target="_blank" rel="noopener" href="https://blog.csdn.net/zxh1592000">blog</a>! </p>
-</blockquote>
+<div class="post-body">
 
-      </div>
-      
-      
-      
+  <!-- ═══════════════════════════════════════
+       Language Switcher
+  ═══════════════════════════════════════ -->
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="switchLang('en')">🇺🇸 English</button>
+    <button class="lang-btn" onclick="switchLang('jp')">🇯🇵 日本語</button>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       ENGLISH VERSION
+  ═══════════════════════════════════════ -->
+  <div class="lang-content active" id="lang-en">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-item"><div class="stat-num">6+</div><div class="stat-label">Years Coding</div></div>
+      <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">Open Projects</div></div>
+      <div class="stat-item"><div class="stat-num">C# / C++ / C</div><div class="stat-label">Core Languages</div></div>
+      <div class="stat-item"><div class="stat-num">Tokyo</div><div class="stat-label">Location</div></div>
     </div>
-    
 
-    
-    
-    
+    <!-- Intro -->
+    <p style="font-size:1rem;line-height:1.9;color:#333;margin:1.5rem 0 0.5rem;text-align:center;">
+      <strong>Software Engineer</strong> specializing in embedded systems, desktop applications, and game development.<br>
+      Passionate about open-source, clean engineering, and building things that actually work — from serial port drivers to private game servers.
+    </p>
 
+    <!-- Profile Cards -->
+    <div class="profile-grid">
+      <div class="profile-card">
+        <h3><i class="fa fa-rocket"></i> What I Do</h3>
+        <p>Full-stack desktop & embedded software development. From low-level driver development (C for Linux serial ports) to high-level application UI (C# WPF/WinForms), and even game script modification for fun.</p>
+        <p>I focus on <strong>solving real problems</strong>: getting hardware to communicate, making printers work, optimizing simulation performance — whatever the task demands.</p>
+      </div>
+      <div class="profile-card">
+        <h3><i class="fa fa-code"></i> My Approach</h3>
+        <p>Fast design → rapid prototype → iterate and polish. I care about clean architecture and maintainable code, not just "it works."</p>
+        <p>Comfortable working independently or as part of a team. I document well, communicate clearly, and enjoy tackling technically challenging problems head-on.</p>
+      </div>
+    </div>
 
+    <!-- Skills -->
+    <div class="section-title"><i class="fa fa-tools"></i> Technical Skills</div>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="skill-icon">🔷</div>
+        <div class="skill-name">C# / .NET</div>
+        <div class="skill-desc">WinForms, WPF, USB/HID communication, ESC/POS printing, .NET Framework & Core</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">⚙️</div>
+        <div class="skill-name">C / C++</div>
+        <div class="skill-desc">Linux kernel modules, serial port drivers, embedded systems, AMESIM co-simulation</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🎮</div>
+        <div class="skill-name">Game Dev</div>
+        <div class="skill-desc">Private server setup, Lua/Python script modification, game asset editing</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🔌</div>
+        <div class="skill-name">Serial Comm</div>
+        <div class="skill-desc">USB printer protocols, ESC/POS command set, serial port Linux driver dev</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🖥️</div>
+        <div class="skill-name">System Dev</div>
+        <div class="skill-desc">Windows desktop apps, multi-machine AMESIM simulation, hardware interfacing</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📡</div>
+        <div class="skill-name">Open Source</div>
+        <div class="skill-desc">Active GitHub contributor, cross-platform projects, community-oriented sharing</div>
+      </div>
+    </div>
+
+    <!-- Projects -->
+    <div class="section-title"><i class="fa fa-folder-open"></i> Featured Projects</div>
+    <div class="projects-grid">
+      <div class="project-card">
+        <span class="lang-tag">C#</span>
+        <h4>Printer-new</h4>
+        <p>Full-featured USB receipt & barcode label printer test platform supporting ESC/POS commands. Published as open-source with 4 GitHub stars.</p>
+        <div class="stars">⭐⭐⭐⭐</div>
+      </div>
+      <div class="project-card">
+        <span class="lang-tag">C</span>
+        <h4>serialport-for-Linux</h4>
+        <p>Cross-platform serial port communication library for Linux. Low-level driver development with clean API design.</p>
+        <div class="stars">Open Source</div>
+      </div>
+      <div class="project-card">
+        <span class="lang-tag">C++</span>
+        <h4>MultiMachine (AMESIM)</h4>
+        <p>Advanced multi-machine co-simulation system for AMESIM. C++ integration with AMESIM's simulation engine for complex industrial modeling.</p>
+        <div class="stars">AMESIM Integration</div>
+      </div>
+      <div class="project-card">
+        <span class="lang-tag">C++</span>
+        <h4>revamp-font</h4>
+        <p>Custom bitmap font editing tool. Modified font dot matrix sizes, styles, and positions for embedded display systems.</p>
+        <div class="stars">Embedded Systems</div>
+      </div>
+    </div>
+
+    <!-- More on GitHub -->
+    <div style="text-align:center;margin:1.5rem 0 0.5rem;">
+      <p style="font-size:0.9rem;color:#666;">More technical articles & deep-dives on my blog:</p>
+      <a href="https://blog.csdn.net/zxh1592000" target="_blank" style="color:#222;font-weight:600;font-size:0.95rem;">
+        <i class="fa fa-blog"></i> blog.csdn.net/zxh1592000
+      </a>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-row">
+      <a href="https://github.com/zhangxuhan" target="_blank" class="cta-btn primary">
+        <i class="fab fa-github"></i> View GitHub
+      </a>
+      <a href="mailto:zhangxuhan_c@163.com" class="cta-btn outline">
+        <i class="fa fa-envelope"></i> Get in Touch
+      </a>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════
+       JAPANESE VERSION
+  ═══════════════════════════════════════ -->
+  <div class="lang-content" id="lang-jp">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <div class="stat-item"><div class="stat-num">6年+</div><div class="stat-label">開発経験</div></div>
+      <div class="stat-item"><div class="stat-num">6</div><div class="stat-label">OSSプロジェクト</div></div>
+      <div class="stat-item"><div class="stat-num">C# / C++ / C</div><div class="stat-label">主要言語</div></div>
+      <div class="stat-item"><div class="stat-num">東京</div><div class="stat-label">所在地</div></div>
+    </div>
+
+    <!-- Intro -->
+    <p style="font-size:1rem;line-height:1.9;color:#333;margin:1.5rem 0 0.5rem;text-align:center;">
+      <strong>ソフトウェアエンジニア</strong> — 組込みシステム、デスクトップアプリ、ゲーム開発を専門としています。<br>
+      オープンソースへの情熱と、クリーンで持続可能なコードを書くことを大切にしています。
+    </p>
+
+    <!-- Profile Cards -->
+    <div class="profile-grid">
+      <div class="profile-card">
+        <h3><i class="fa fa-rocket"></i> 技術領域</h3>
+        <p>低レイヤードライバ（C言語・Linuxシリアルポート）から高レベルUIアプリ（C# WinForms/WPF）まで対応可能です。</p>
+        <p>USBPrinter制御、ESC/POSプロトコル、AMESIM協調シミュレーションなど、<strong>ハードウェア×ソフトウェア</strong>の横断的な開発経験が強みです。</p>
+      </div>
+      <div class="profile-card">
+        <h3><i class="fa fa-code"></i> 開発スタイル</h3>
+        <p>設計 → プロトタイプ → 改善のサイクルを素早く回し、実用的なソフトウェアをお届けします。クリーンアーキテクチャと保守性を重視しています。</p>
+        <p>チームワークを大切にしながらも、難易度の高い技術課題に一人で立ち向かうことも好きです。</p>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="section-title"><i class="fa fa-tools"></i> 技術スキル</div>
+    <div class="skills-grid">
+      <div class="skill-card">
+        <div class="skill-icon">🔷</div>
+        <div class="skill-name">C# / .NET</div>
+        <div class="skill-desc">WinForms / WPF、USB・HID通信、ESC/POS印刷対応、.NET Framework / Core</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">⚙️</div>
+        <div class="skill-name">C / C++</div>
+        <div class="skill-desc">Linuxカーネルモジュール、シリアルポートドライバ、AMESIM協調シミュレーション</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🎮</div>
+        <div class="skill-name">ゲーム開発</div>
+        <div class="skill-desc">プライベートサーバ構築、Lua/Pythonスクリプト改変、ゲームアセット編集</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🔌</div>
+        <div class="skill-name">シリアル通信</div>
+        <div class="skill-desc">USBプリンタの制御、ESC/POSコマンド体系、Linuxシリアルポートドライバ開発</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">🖥️</div>
+        <div class="skill-name">システム開発</div>
+        <div class="skill-desc">Windowsデスクトップアプリ、AMESIMマルチマシンシミュレーション、ハードウェア連携</div>
+      </div>
+      <div class="skill-card">
+        <div class="skill-icon">📡</div>
+        <div class="skill-name">OSS活動</div>
+        <div class="skill-desc">GitHubでのOSS公開・公開、クロスプラットフォーム対応、コミュニティへの貢献</div>
+      </div>
+    </div>
+
+    <!-- Projects -->
+    <div class="section-title"><i class="fa fa-folder-open"></i> 主要プロジェクト</div>
+    <div class="projects-grid">
+      <div class="project-card">
+        <span class="lang-tag">C#</span>
+        <h4>Printer-new</h4>
+        <p>USBレシート＆バーコードラベルプリンタの総合テストプラットフォーム。ESC/POSプロトコル対応。GitHubで⭐4を獲得したOSS。</p>
+        <div class="stars">⭐⭐⭐⭐</div>
+      </div>
+      <div class="project-card">
+        <span class="lang-tag">C</span>
+        <h4>serialport-for-Linux</h4>
+        <p>Linux向けクロスプラットフォームシリアルポート通信ライブラリ。低レベルドライバ開発とAPI設計。</p>
+        <div class="stars">OSS公開</div>
+      </div>
+      <div class="project-card">
+        <span class="lang-tag">C++</span>
+        <h4>MultiMachine (AMESIM)</h4>
+        <p>AMESIM向け大規模マルチマシン協調シミュレーションシステム。C++とAMESIMシミュレーションエンジンの連携により、複雑な産業モデリングを実現。</p>
+        <div class="stars">AMESIM統合</div>
+      </div>
+      <div class="project-card">
+        <span class="lang-tag">C++</span>
+        <h4>revamp-font</h4>
+        <p>カスタムビットマップフォント編集ツール。組込みディスプレイ向けのフォント点陣サイズ・样式・位置を自在にカスタマイズ。</p>
+        <div class="stars">組込みシステム</div>
+      </div>
+    </div>
+
+    <!-- More on Blog -->
+    <div style="text-align:center;margin:1.5rem 0 0.5rem;">
+      <p style="font-size:0.9rem;color:#666;">より詳細な技術記事はCSDNブログにて:</p>
+      <a href="https://blog.csdn.net/zxh1592000" target="_blank" style="color:#222;font-weight:600;font-size:0.95rem;">
+        <i class="fa fa-blog"></i> blog.csdn.net/zxh1592000
+      </a>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-row">
+      <a href="https://github.com/zhangxuhan" target="_blank" class="cta-btn primary">
+        <i class="fab fa-github"></i> GitHubを見る
+      </a>
+      <a href="mailto:zhangxuhan_c@163.com" class="cta-btn outline">
+        <i class="fa fa-envelope"></i> お問い合わせ
+      </a>
+    </div>
+  </div>
+
+</div>
+            </div>
           </div>
-          
+        </div>
 
 <script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
-    }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
-      }
-    }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
-    });
+  function switchLang(lang) {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.lang-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('lang-' + lang).classList.add('active');
+    event.target.classList.add('active');
   }
 </script>
 
-        </div>
-          
-  
   <div class="toggle sidebar-toggle">
     <span class="toggle-line toggle-line-first"></span>
     <span class="toggle-line toggle-line-middle"></span>
     <span class="toggle-line toggle-line-last"></span>
   </div>
-
   <aside class="sidebar">
     <div class="sidebar-inner">
-
       <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          Table of Contents
-        </li>
-        <li class="sidebar-nav-overview">
-          Overview
-        </li>
+        <li class="sidebar-nav-toc">Table of Contents</li>
+        <li class="sidebar-nav-overview">Overview</li>
       </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-      </div>
-      <!--/noindex-->
-
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">XuhanZhang</p>
-  <div class="site-description" itemprop="description"></div>
+  <p class="site-author-name" itemprop="name">Xuhan Zhang</p>
+  <div class="site-description" itemprop="description">Software Engineer | Tokyo</div>
 </div>
 <div class="site-state-wrap motion-element">
   <nav class="site-state">
@@ -256,97 +539,43 @@
 </div>
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
-        <a href="https://github.com/zhangxuhan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangxuhan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+        <a href="https://github.com/zhangxuhan" title="GitHub" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:zhangxuhan_c@163.com" title="E-Mail → mailto:zhangxuhan_c@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+        <a href="mailto:zhangxuhan_c@163.com" title="E-Mail" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
       </span>
       <span class="links-of-author-item">
-        <a href="https://blog.csdn.net/zxh1592000" title="Blog → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zxh1592000" rel="noopener" target="_blank"><i class="fa fa-laptop-code fa-fw"></i>Blog</a>
+        <a href="https://blog.csdn.net/zxh1592000" title="Blog" rel="noopener" target="_blank"><i class="fa fa-laptop-code fa-fw"></i>Blog</a>
       </span>
   </div>
-
-
-
       </div>
-
     </div>
   </aside>
   <div id="sidebar-dimmer"></div>
-
-
       </div>
     </main>
 
     <footer class="footer">
       <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2024</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">XuhanZhang</span>
+        <div class="copyright">
+  &copy; <span itemprop="copyrightYear">2024</span>
+  <span class="with-love"><i class="fa fa-heart"></i></span>
+  <span class="author" itemprop="copyrightHolder">Xuhan Zhang</span>
 </div>
-
-        
-
-
-
-
-
-
-
-
       </div>
     </footer>
   </div>
 
-  
-  
   <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/pisces.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
+  <script src="/js/utils.js"></script>
+  <script src="/js/motion.js"></script>
+  <script src="/js/schemes/pisces.js"></script>
+  <script src="/js/next-boot.js"></script>
   <script defer src="/lib/three/three.min.js"></script>
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  
-
-<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false,"tagMode":false});</script></body>
+  <script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script>
+  <script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false,"tagMode":false});</script>
+</body>
 </html>
