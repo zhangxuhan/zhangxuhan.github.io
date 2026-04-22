@@ -200,15 +200,229 @@
   .stat-num { font-size: 1.4rem; font-weight: 700; }
   .stat-label { font-size: 0.75rem; opacity: 0.8; }
 
+  /* ── ✦ DreamStar Decorations ── */
+  .skill-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .skill-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  .profile-card {
+    position: relative;
+  }
+  .profile-card::before {
+    display: none;
+  }
+  .project-card {
+    border-top: 3px solid #ddd;
+  }
+  .cta-btn.primary {
+    background: #222 !important;
+    color: #fff !important;
+    border: none !important;
+  }
+  .cta-btn.primary:hover {
+    background: #444 !important;
+  }
+  .cta-btn.secondary {
+    background: transparent !important;
+    border: 2px solid #ccc !important;
+    color: #555 !important;
+    border-radius: 8px !important;
+  }
+  .cta-btn.secondary:hover {
+    background: #eee !important;
+    color: #222 !important;
+  }
+  .stats-bar {
+    position: relative;
+  }
+  .stats-bar::before,
+  .stats-bar::after {
+    content: '⭐';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    opacity: 0.5;
+  }
+  .stats-bar::before { left: -4px; }
+  .stats-bar::after { right: -4px; }
+  .dreamstar-divider {
+    text-align: center;
+    margin: 2rem 0;
+    font-size: 1.2rem;
+    letter-spacing: 0.8rem;
+    color: #ccc;
+    user-select: none;
+  }
+
+  .lang-switcher {
+
+  /* ── DreamStar Hero Banner ── */
+  .ds-hero-wrap {
+    margin: 0 0 2.5rem;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+    cursor: pointer;
+  }
+  .ds-hero-wrap img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .ds-hero-wrap:hover img { transform: scale(1.02); }
+  .ds-hero-caption {
+    position: absolute;
+    bottom: 14px; right: 16px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+  }
+
+  /* ── DreamStar Screenshots Grid ── */
+  .ds-ss-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin: 0.8rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .ds-ss-grid img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+  }
+  .ds-ss-grid img:hover { transform: scale(1.05); }
+  .ds-ss-note {
+    font-size: 0.75rem;
+    color: #999;
+    text-align: center;
+    margin-top: 4px;
+  }
+
+  /* ── DreamStar Hero Banner ── */
+  .ds-hero-wrap {
+    margin: 0 0 2.5rem;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+    cursor: pointer;
+  }
+  .ds-hero-wrap img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .ds-hero-wrap:hover img { transform: scale(1.02); }
+  .ds-hero-caption {
+    position: absolute;
+    bottom: 14px; right: 16px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+  }
+
+  /* ── DreamStar Screenshots Grid ── */
+  .ds-ss-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin: 0.8rem 0;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .ds-ss-grid img {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+    border-radius: 6px;
+  }
+  .ds-ss-grid img:hover { transform: scale(1.04); }
+
+  /* ── DreamStar section divider ── */
+  .dreamstar-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 2rem 0;
+    opacity: 0.4;
+  }
+  /* ── DreamStar skill / project — clean professional style ── */
+  .skill-card:nth-child(1) { background: #f8fafc; }
+  .skill-card:nth-child(2) { background: #f8fafc; }
+  .skill-card:nth-child(3) { background: #f8fafc; }
+  .skill-card:nth-child(4) { background: #f8fafc; }
+  .skill-card:nth-child(5) { background: #f8fafc; }
+  .skill-card:nth-child(6) { background: #f8fafc; }
+
+  .project-card { background: #f8fafc; border: 1px solid #e8e8e8; }
+  .project-card:nth-child(1) { border-left: 3px solid #4A90D9; }
+  .project-card:nth-child(2) { border-left: 3px solid #50C878; }
+  .project-card:nth-child(3) { border-left: 3px solid #7B68EE; }
+  .project-card:nth-child(4) { border-left: 3px solid #FF8C00; }
+
+  /* ── DreamStar lang-tag — tech/gaming label ── */
+  .project-card .lang-tag {
+    background: #2a2a2a !important;
+    color: #7EC8E3 !important;
+    border-radius: 4px !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+    padding: 2px 8px;
+  }
+
+  /* ── DreamStar section-title ── */
+  .section-title {
+    border-bottom: 1px solid #eee !important;
+    position: relative;
+    padding-bottom: 0.6rem;
+  }
+  .section-title::after { display: none; }
+
+  /* ── DreamStar stats bar ── */
+  .stats-bar {
+    background: #2a2a2a !important;
+    border-radius: 10px !important;
+    box-shadow: none;
+  }
+  .stats-bar .stat-item { color: #ddd; }
+  .stats-bar .stat-num { color: #7EC8E3; font-size: 1.6rem; }
+  .stats-bar .stat-label { color: #aaa; font-size: 0.8rem; }
+
   /* ── Responsive ── */
   @media (max-width: 768px) {
     .profile-grid, .projects-grid, .skills-grid { grid-template-columns: 1fr; }
     .stats-bar { flex-wrap: wrap; gap: 1rem; }
+    .ds-hero-wrap { display: none; }
+    .ds-ss-grid { grid-template-columns: 1fr 1fr; }
   }
 </style>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
+
+
   <div class="container use-motion">
     <div class="headband"></div>
 
@@ -297,6 +511,8 @@
       </div>
     </div>
 
+    <div class="dreamstar-divider">★</div>
+
     <!-- Skills -->
     <div class="section-title"><i class="fa fa-tools"></i> Technical Skills</div>
     <div class="skills-grid">
@@ -317,8 +533,8 @@
       </div>
       <div class="skill-card">
         <div class="skill-icon">🖥️</div>
-        <div class="skill-name">Server & Mobile</div>
-        <div class="skill-desc">Server architecture, hot-update, mobile adaptation, DS development</div>
+        <div class="skill-name">Backend & Mobile</div>
+        <div class="skill-desc">Network sync, hot-update, mobile adaptation, backend services</div>
       </div>
       <div class="skill-card">
         <div class="skill-icon">📡</div>
@@ -331,6 +547,8 @@
         <div class="skill-desc">Chinese, English, Japanese, Cantonese</div>
       </div>
     </div>
+
+    <div class="dreamstar-divider">★</div>
 
     <!-- Projects -->
     <div class="section-title"><i class="fa fa-folder-open"></i> Key Projects</div>
@@ -350,7 +568,7 @@
       <div class="project-card">
         <span class="lang-tag">UE4 Mobile</span>
         <h4>Mobile Game (Million+ DAU)</h4>
-        <p>Full-cycle development of 2 shipped titles. Client framework design, performance optimization, hot-update, engine customization.<br><a href="https://im.qq.com/index/" target="_blank">QQ小窝</a> | <a href="https://ymzx.qq.com/" target="_blank">元梦之星</a></p>
+        <p style="font-size:0.82rem;margin-top:0.5rem;">Full-cycle development of 2 shipped titles. Client framework design, performance optimization, hot-update, engine customization.<br><a href="https://im.qq.com/index/" target="_blank">QQ小窝</a> | <a href="https://ymzx.qq.com/" target="_blank">元梦之星</a></p>
         <div class="stars">🎯 Shipped Products</div>
       </div>
       <div class="project-card">
@@ -411,6 +629,8 @@
       </div>
     </div>
 
+    <div class="dreamstar-divider">★</div>
+
     <!-- Skills -->
     <div class="section-title"><i class="fa fa-tools"></i> 技术栈</div>
     <div class="skills-grid">
@@ -431,8 +651,8 @@
       </div>
       <div class="skill-card">
         <div class="skill-icon">🖥️</div>
-        <div class="skill-name">服务器 & 移动端</div>
-        <div class="skill-desc">服务器架构, 热更新, 移动端适配, DS开发</div>
+        <div class="skill-name">网络同步 & 移动端</div>
+        <div class="skill-desc">网络同步架构, 热更新, 移动端适配, 后端服务</div>
       </div>
       <div class="skill-card">
         <div class="skill-icon">📡</div>
@@ -445,6 +665,8 @@
         <div class="skill-desc">中文, 英语, 日语, 粤语</div>
       </div>
     </div>
+
+    <div class="dreamstar-divider">★</div>
 
     <!-- Projects -->
     <div class="section-title"><i class="fa fa-folder-open"></i> 代表项目</div>
@@ -461,10 +683,11 @@
         <p>基于CARLA的AI仿真平台。扩展车辆动力学、Python/C++接口、广域场景、火力打击仿真。</p>
         <div class="stars">🤖 AI科研项目</div>
       </div>
+
       <div class="project-card">
         <span class="lang-tag">UE4 移动端</span>
-        <h4>手游项目 (千万DAU)</h4>
-        <p>两款上线游戏全周期开发。客户端框架设计、性能优化、热更新、引擎定制修改。<br><a href="https://im.qq.com/index/" target="_blank">QQ小窝</a> | <a href="https://ymzx.qq.com/" target="_blank">元梦之星</a></p>
+        <h4>手游项目（千万DAU）</h4>
+        <p style="font-size:0.82rem;margin-top:0.5rem;">负责两款产品从开发到上线全流程。客户端框架设计、性能优化、热更新、引擎定制。<br><a href="https://im.qq.com/index/" target="_blank">QQ小窝</a> | <a href="https://ymzx.qq.com/" target="_blank">元梦之星</a></p>
         <div class="stars">🎯 已上线产品</div>
       </div>
       <div class="project-card">
@@ -525,6 +748,8 @@
       </div>
     </div>
 
+    <div class="dreamstar-divider">★</div>
+
     <!-- Skills -->
     <div class="section-title"><i class="fa fa-tools"></i> 技術スキル</div>
     <div class="skills-grid">
@@ -545,8 +770,8 @@
       </div>
       <div class="skill-card">
         <div class="skill-icon">🖥️</div>
-        <div class="skill-name">サーバー & モバイル</div>
-        <div class="skill-desc">サーバーアーキテクチャ, ホットアップデート, モバイル适配, DS開発</div>
+        <div class="skill-name">ネットワーク & モバイル</div>
+        <div class="skill-desc">ネットワークアーキテクチャ, ホットアップデート, モバイル対応, DS開発</div>
       </div>
       <div class="skill-card">
         <div class="skill-icon">📡</div>
@@ -559,6 +784,8 @@
         <div class="skill-desc">中国語, 英語, 日本語, 広東語</div>
       </div>
     </div>
+
+    <div class="dreamstar-divider">★</div>
 
     <!-- Projects -->
     <div class="section-title"><i class="fa fa-folder-open"></i> 主要プロジェクト</div>
@@ -578,7 +805,7 @@
       <div class="project-card">
         <span class="lang-tag">UE4 モバイル</span>
         <h4>モバイルゲーム (千万DAU)</h4>
-        <p>2本のタイトルをローンチまで担当。クライアントフレームワーク設計、パフォーマンス最適化、ホットアップデート、エンジン定制。<br><a href="https://im.qq.com/index/" target="_blank">QQ小窝</a> | <a href="https://ymzx.qq.com/" target="_blank">元梦之星</a></p>
+        <p style="font-size:0.82rem;margin-top:0.5rem;">2本のタイトルをローンチまで担当。クライアントフレームワーク設計、パフォーマンス最適化、ホットアップデート、エンジン定制。<br><a href="https://im.qq.com/index/" target="_blank">QQ小窝</a> | <a href="https://ymzx.qq.com/" target="_blank">元梦之星</a></p>
         <div class="stars">🎯 発売製品</div>
       </div>
       <div class="project-card">
