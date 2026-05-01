@@ -11,6 +11,7 @@
   <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
 <link rel="stylesheet" href="/css/main.css">
+<link rel="stylesheet" href="/css/custom-cta.css">
 
 
 <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
@@ -195,15 +196,35 @@
           <div id="dplayer0" class="dplayer hexo-tag-dplayer-mark" style="margin-bottom: 20px;"></div><script>(function(){var player = new DPlayer({"container":document.getElementById("dplayer0"),"autoplay":true,"muted":true,"theme":"#333","loop":true,"lang":"en","hotkey":true,"preload":"auto","volume":0.9,"video":{"url":"/video/display.mp4","pic":"/video/FunPartyPicture.jpg"}});window.dplayers||(window.dplayers=[]);window.dplayers.push(player);})()</script>
 
 
-<div style="text-align:center;margin:2.5rem 0 2rem;padding:0 1rem;">
-  <p style="font-size:1.1rem;line-height:1.8;color:#333;margin:0 0 1.5rem;">
+<div style="text-align:center;margin:2.5rem 0;padding:0 1rem;">
+  <p style="font-size:1.1rem;line-height:1.8;color:#333;margin:0 0 2rem;">
     Hi, I'm <strong>Xuhan Zhang</strong> — a Senior Software Engineer based in Tokyo,<br>
     specializing in UE4 full-stack development and simulation systems.
   </p>
-  <a href="/about/" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.65rem 2rem;background:#222;color:#fff;border-radius:24px;font-size:0.95rem;font-weight:600;text-decoration:none;border:1.5px solid #444;transition:all 0.2s;">
-    <i class="fa fa-user-tie"></i> About Me &amp; Projects
+  <a href="/about/" id="cta-button" style="
+    display:inline-flex;align-items:center;justify-content:center;gap:0.6rem;
+    padding:1rem 3rem;background:#1a1a1a;color:#fff;
+    border-radius:50px;font-size:1.1rem;font-weight:700;text-decoration:none;
+    box-shadow:0 8px 30px rgba(0,0,0,0.3);
+    transition:all 0.3s ease;letter-spacing:0.5px;
+  ">
+    <i class="fa fa-user-tie"></i> View My Projects &amp; About Me
+    <i class="fa fa-arrow-right" style="font-size:0.9rem;"></i>
   </a>
 </div>
+
+<style>
+#cta-button:hover {
+  background:#2d2d2d;
+  transform:translateY(-3px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.35);
+}
+@keyframes fadeInUp {
+  from { opacity:0; transform:translateY(30px); }
+  to { opacity:1; transform:translateY(0); }
+}
+#cta-button { animation:fadeInUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
+</style>
 
 <p>Thanks for watching!</p>
 <blockquote>

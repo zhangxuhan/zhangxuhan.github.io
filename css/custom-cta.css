@@ -1,0 +1,15 @@
+/* === Custom: Enhanced about CTA === */
+.main-menu .menu-item-about a {
+  background: #222;
+  color: #fff;
+  border-radius: 20px;
+  padding: 6px 18px;
+  transition: all 0.3s ease;
+}
+.main-menu .menu-item-about a:hover {
+  background: #444;
+  transform: scale(1.05);
+}
+.main-menu .menu-item-home a {
+  opacity: 0.7;
+}
