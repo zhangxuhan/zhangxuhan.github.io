@@ -432,12 +432,51 @@
   .stats-bar .stat-num { color: #7EC8E3; font-size: 1.6rem; }
   .stats-bar .stat-label { color: #aaa; font-size: 0.8rem; }
 
+  /* ── Game Showcase (gumi-style 宽幅大图) ── */
+  .game-showcase {
+    margin: 3rem 0 2rem;
+    padding: 0;
+  }
+  .game-showcase-title {
+    display: none;
+  }
+  .game-showcase-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .game-showcase-item {
+    display: block;
+    text-decoration: none;
+    border-radius: 4px;
+    overflow: hidden;
+    transition: transform 0.35s cubic-bezier(.25,.46,.45,.94), box-shadow 0.35s ease;
+  }
+  .game-showcase-item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+  }
+  .game-showcase-item img {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s cubic-bezier(.25,.46,.45,.94);
+  }
+  .game-showcase-item:hover img {
+    transform: scale(1.03);
+  }
+  .game-showcase-item span {
+    display: none;
+  }
+
   /* ── Responsive ── */
   @media (max-width: 768px) {
     .profile-grid, .projects-grid, .skills-grid { grid-template-columns: 1fr; }
     .stats-bar { flex-wrap: wrap; gap: 1rem; }
     .ds-hero-wrap { display: none; }
     .ds-ss-grid { grid-template-columns: 1fr 1fr; }
+    .game-showcase-row { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -539,7 +578,7 @@
       <div class="project-card">
         <span class="lang-tag">UE4 Mobile</span>
         <h4>Mobile Game (Million+ DAU)</h4>
-        <p style="font-size:0.82rem;margin-top:0.5rem;">Full-cycle development of 2 shipped titles. Client framework design, performance optimization, hot-update, engine customization.<br><a href="https://im.qq.com/index/" target="_blank">QQ小窝</a> | <a href="https://ymzx.qq.com/" target="_blank">元梦之星</a></p>
+        <p style="font-size:0.82rem;margin-top:0.5rem;">Full-cycle development of 2 shipped titles. Client framework design, performance optimization, hot-update, engine customization.</p>
         <div class="stars">🎯 Shipped Products</div>
       </div>
       <div class="project-card">
@@ -561,6 +600,21 @@
         <h3><i class="fa fa-lightbulb"></i> Cross-Domain Advantage</h3>
         <p>I think about technology from a <strong>product perspective</strong>. Cross-industry experience lets me see problems others miss.</p>
         <p>Aerospace → Autonomous Driving → Gaming: a unique lens on complex systems.</p>
+      </div>
+    </div>
+
+    <!-- 独立游戏展示区 -->
+    <div class="game-showcase">
+      <h4 class="game-showcase-title">🔗 Project Links</h4>
+      <div class="game-showcase-row">
+        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item">
+          <img src="/video/qqxw.jpg" alt="QQ小窝">
+          <span>QQ小窝</span>
+        </a>
+        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item">
+          <img src="/video/ymzz.png" alt="元梦之星">
+          <span>元梦之星</span>
+        </a>
       </div>
     </div>
 
@@ -687,7 +741,7 @@
       <div class="project-card">
         <span class="lang-tag">UE4 移动端</span>
         <h4>手游项目（千万DAU）</h4>
-        <p style="font-size:0.82rem;margin-top:0.5rem;">负责两款产品从开发到上线全流程。客户端框架设计、性能优化、热更新、引擎定制。<br><a href="https://im.qq.com/index/" target="_blank">QQ小窝</a> | <a href="https://ymzx.qq.com/" target="_blank">元梦之星</a></p>
+        <p style="font-size:0.82rem;margin-top:0.5rem;">负责两款产品从开发到上线全流程。客户端框架设计、性能优化、热更新、引擎定制。</p>
         <div class="stars">🎯 已上线产品</div>
       </div>
       <div class="project-card">
@@ -709,6 +763,21 @@
         <h3><i class="fa fa-lightbulb"></i> 跨领域优势</h3>
         <p>我能从<strong>产品视角</strong>思考技术，跨行业经验让我看到别人看不到的问题。</p>
         <p>航空航天 → 自动驾驶 → 游戏：对复杂系统的独特视角。</p>
+      </div>
+    </div>
+
+    <!-- 独立游戏展示区 -->
+    <div class="game-showcase">
+      <h4 class="game-showcase-title">🔗 项目链接</h4>
+      <div class="game-showcase-row">
+        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item">
+          <img src="/video/qqxw.jpg" alt="QQ小窝">
+          <span>QQ小窝</span>
+        </a>
+        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item">
+          <img src="/video/ymzz.png" alt="元梦之星">
+          <span>元梦之星</span>
+        </a>
       </div>
     </div>
 
@@ -835,7 +904,7 @@
       <div class="project-card">
         <span class="lang-tag">UE4 モバイル</span>
         <h4>モバイルゲーム (千万DAU)</h4>
-        <p style="font-size:0.82rem;margin-top:0.5rem;">2本のタイトルをローンチまで担当。クライアントフレームワーク設計、パフォーマンス最適化、ホットアップデート、エンジン定制。<br><a href="https://im.qq.com/index/" target="_blank">QQ小窝</a> | <a href="https://ymzx.qq.com/" target="_blank">元梦之星</a></p>
+        <p style="font-size:0.82rem;margin-top:0.5rem;">2本のタイトルをローンチまで担当。クライアントフレームワーク設計、パフォーマンス最適化、ホットアップデート、エンジン定制。</p>
         <div class="stars">🎯 発売製品</div>
       </div>
       <div class="project-card">
@@ -857,6 +926,21 @@
         <h3><i class="fa fa-lightbulb"></i> クロスドメイン優位性</h3>
         <p><strong>製品視点</strong>から技術を考え、業界を超えた経験が他の人が見落とす問題を発見。</p>
         <p>航空宇宙 → 自動運転 → ゲーム：複雑なシステムへの独自の視点。</p>
+      </div>
+    </div>
+
+    <!-- 独立ゲーム展示区 -->
+    <div class="game-showcase">
+      <h4 class="game-showcase-title">🔗 プロジェクトリンク</h4>
+      <div class="game-showcase-row">
+        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item">
+          <img src="/video/qqxw.jpg" alt="QQ小窝">
+          <span>QQ小窝</span>
+        </a>
+        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item">
+          <img src="/video/ymzz.png" alt="元梦之星">
+          <span>元梦之星</span>
+        </a>
       </div>
     </div>
 
