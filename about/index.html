@@ -432,47 +432,63 @@
   .stats-bar .stat-num { color: #7EC8E3; font-size: 1.6rem; }
   .stats-bar .stat-label { color: #aaa; font-size: 0.8rem; }
 
-  /* ── Game Showcase (jojo-style 全幅海报) ── */
+  /* ── Game Showcase (精致卡片 + 动效) ── */
   .game-showcase {
-    margin: 3rem -20px 2rem; /* 突破容器宽度 */
-    padding: 0;
+    margin: 2rem 0;
   }
   .game-showcase-title {
-    display: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-color);
   }
   .game-showcase-row {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
   }
   .game-showcase-item {
     display: block;
     text-decoration: none;
     overflow: hidden;
+    border-radius: 12px;
     position: relative;
     line-height: 0;
-    transition: transform 0.4s cubic-bezier(.25,.46,.45,.94), box-shadow 0.4s ease;
+    background: #f8f9fa;
+    transition: transform 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   }
   .game-showcase-item:hover {
-    transform: scale(1.005);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    filter: brightness(1.03);
     z-index: 2;
   }
   .game-showcase-item img {
     width: 100%;
-    height: auto;
-    min-height: 280px;
-    max-height: 420px;
+    height: 140px;
     object-fit: cover;
-    object-position: center;
+    object-position: center top;
     display: block;
-    transition: transform 0.6s cubic-bezier(.25,.46,.45,.94);
+    transition: transform 0.5s cubic-bezier(.25,.46,.45,.94);
   }
   .game-showcase-item:hover img {
-    transform: scale(1.03);
+    transform: scale(1.06);
   }
   .game-showcase-item span {
-    display: none;
+    display: block;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+    background: #fff;
+    border-top: 1px solid #eee;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .game-showcase-item:hover span {
+    background: #f0f0f0;
+    color: #222;
   }
 
   /* ── Responsive ── */
@@ -481,7 +497,8 @@
     .stats-bar { flex-wrap: wrap; gap: 1rem; }
     .ds-hero-wrap { display: none; }
     .ds-ss-grid { grid-template-columns: 1fr 1fr; }
-    .game-showcase-row { flex-direction: column; }
+    .game-showcase-row { grid-template-columns: 1fr; }
+    .game-showcase-item img { height: 130px; }
   }
 </style>
 </head>
