@@ -425,7 +425,7 @@
   /* ── DreamStar stats bar ── */
   .stats-bar {
     background: #2a2a2a !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
     box-shadow: none;
   }
   .stats-bar .stat-item { color: #ddd; }
@@ -455,12 +455,12 @@
     display: block !important;
     position: relative !important;
     overflow: hidden !important;
-    border-radius: 10px !important;
+    border-radius: 12px !important;
     text-decoration: none !important;
     line-height: 0 !important;
-    background: #111 !important;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
-    border: 1px solid rgba(255,255,255,0.06) !important;
+    background: transparent !important;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.08) !important;
+    border: 1px solid rgba(0,0,0,0.06) !important;
     transition: margin 0.35s ease,
                 box-shadow 0.35s ease,
                 filter 0.3s ease,
@@ -469,13 +469,12 @@
   }
   /* PURE CSS HOVER - no JS needed */
   .game-showcase-item:hover {
-    margin-top: -8px !important;
-    margin-bottom: 8px !important;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.35), 
-                0 0 120px rgba(0,0,0,0.08),
-                0 0 40px rgba(80,120,255,0.05) !important;
-    filter: brightness(1.05) !important;
-    border-color: rgba(255,255,255,0.15) !important;
+    margin-top: -6px !important;
+    margin-bottom: 6px !important;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18),
+                0 0 80px rgba(0,0,0,0.06) !important;
+    filter: brightness(1.03) !important;
+    border-color: rgba(0,0,0,0.12) !important;
     z-index: 50 !important;
   }
   .game-showcase-item img {
@@ -485,7 +484,7 @@
     object-position: center center !important;
     display: block !important;
     vertical-align: top !important;
-    background: #111 !important;
+    background: transparent !important;
     transition: filter 0.35s ease !important;
   }
   .game-showcase-item:hover img {
@@ -496,10 +495,10 @@
     text-align: center !important;
     padding: 12px 0 14px !important;
     font-size: 0.88rem !important;
-    color: #999 !important;
+    color: #666 !important;
     line-height: 1.5 !important;
-    background: linear-gradient(180deg, #1a1a1a 0%, #111 100%) !important;
-    border-top: 1px solid rgba(255,255,255,0.05) !important;
+    background: transparent !important;
+    border-top: none !important;
     letter-spacing: 0.06em !important;
     font-weight: 400 !important;
     white-space: nowrap !important;
@@ -509,10 +508,10 @@
                 background 0.25s ease !important;
   }
   .game-showcase-item:hover span {
-    color: #eee !important;
-    letter-spacing: 0.12em !important;
-    text-shadow: 0 0 20px rgba(255,255,255,0.12) !important;
-    background: linear-gradient(180deg, #222 0%, #1a1a1a 100%) !important;
+    color: #333 !important;
+    letter-spacing: 0.10em !important;
+    text-shadow: none !important;
+    background: transparent !important;
   }
 
 
@@ -661,13 +660,13 @@
     <div class="game-showcase">
       <h4 class="game-showcase-title">🔗 Project Links</h4>
       <div class="game-showcase-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
-          <img src="/video/qqxw.jpg" alt="QQ小窝" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
-          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">QQ小窝</span>
+        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:12px;text-decoration:none;line-height:0;background:transparent;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/qqxw.jpg" alt="QQ小窝" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:transparent;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#666;line-height:1.5;background:transparent;border-top:none;letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">QQ小窝</span>
         </a>
-        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
-          <img src="/video/ymzz.png" alt="元梦之星" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
-          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">元梦之星</span>
+        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:12px;text-decoration:none;line-height:0;background:transparent;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/ymzz.png" alt="元梦之星" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:transparent;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#666;line-height:1.5;background:transparent;border-top:none;letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">元梦之星</span>
         </a>
       </div>
     </div>
@@ -824,13 +823,13 @@
     <div class="game-showcase">
       <h4 class="game-showcase-title">🔗 项目链接</h4>
       <div class="game-showcase-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
-          <img src="/video/qqxw.jpg" alt="QQ小窝" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
-          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">QQ小窝</span>
+        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:12px;text-decoration:none;line-height:0;background:transparent;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/qqxw.jpg" alt="QQ小窝" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:transparent;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#666;line-height:1.5;background:transparent;border-top:none;letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">QQ小窝</span>
         </a>
-        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
-          <img src="/video/ymzz.png" alt="元梦之星" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
-          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">元梦之星</span>
+        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:12px;text-decoration:none;line-height:0;background:transparent;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/ymzz.png" alt="元梦之星" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:transparent;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#666;line-height:1.5;background:transparent;border-top:none;letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">元梦之星</span>
         </a>
       </div>
     </div>
@@ -987,13 +986,13 @@
     <div class="game-showcase">
       <h4 class="game-showcase-title">🔗 プロジェクトリンク</h4>
       <div class="game-showcase-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
-          <img src="/video/qqxw.jpg" alt="QQ小窝" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
-          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">QQ小窝</span>
+        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:12px;text-decoration:none;line-height:0;background:transparent;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/qqxw.jpg" alt="QQ小窝" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:transparent;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#666;line-height:1.5;background:transparent;border-top:none;letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">QQ小窝</span>
         </a>
-        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
-          <img src="/video/ymzz.png" alt="元梦之星" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
-          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">元梦之星</span>
+        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:12px;text-decoration:none;line-height:0;background:transparent;box-shadow:0 1px 8px rgba(0,0,0,0.08);border:1px solid rgba(0,0,0,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/ymzz.png" alt="元梦之星" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:transparent;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#666;line-height:1.5;background:transparent;border-top:none;letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">元梦之星</span>
         </a>
       </div>
     </div>
@@ -1167,30 +1166,26 @@
 <script src="/js/visitor-tracker.js"></script>
 
 <script>
-/* v8 hover - margin/filter/box-shadow only (no transform) */
+/* v9 hover - light style, no dark bg, consistent border-radius */
 (function(){
   function initHover() {
     var items = document.querySelectorAll('.game-showcase-item');
     items.forEach(function(item) {
-      // Skip hidden items (lang-content display:none)
       if (item.offsetWidth === 0) return;
       
       item.addEventListener('mouseenter', function() {
-        this.style.marginTop = '-12px';
-        this.style.marginBottom = '12px';
-        this.style.boxShadow = '0 25px 70px rgba(0,0,0,0.45), 0 0 180px rgba(0,0,0,0.12), 0 0 50px rgba(80,120,255,0.08)';
-        this.style.filter = 'brightness(1.08) saturate(1.06)';
-        this.style.borderColor = 'rgba(255,255,255,0.2)';
-        this.style.borderRadius = '14px';
+        this.style.marginTop = '-6px';
+        this.style.marginBottom = '6px';
+        this.style.boxShadow = '0 12px 40px rgba(0,0,0,0.18), 0 0 80px rgba(0,0,0,0.06)';
+        this.style.filter = 'brightness(1.03)';
+        this.style.borderColor = 'rgba(0,0,0,0.12)';
         this.style.zIndex = '50';
         var img = this.querySelector('img');
-        if (img) img.style.filter = 'saturate(1.3) brightness(1.06) contrast(1.05)';
+        if (img) img.style.filter = 'saturate(1.15) brightness(1.03)';
         var span = this.querySelector('span');
         if (span) {
-          span.style.color = '#fff';
-          span.style.letterSpacing = '0.14em';
-          span.style.textShadow = '0 0 25px rgba(255,255,255,0.2), 0 0 50px rgba(150,180,255,0.1)';
-          span.style.background = 'linear-gradient(180deg, #222 0%, #1a1a1a 100%)';
+          span.style.color = '#333';
+          span.style.letterSpacing = '0.10em';
         }
       });
       item.addEventListener('mouseleave', function() {
@@ -1199,7 +1194,6 @@
         this.style.boxShadow = '';
         this.style.filter = '';
         this.style.borderColor = '';
-        this.style.borderRadius = '';
         this.style.zIndex = '';
         var img = this.querySelector('img');
         if (img) img.style.filter = '';
@@ -1207,8 +1201,6 @@
         if (span) {
           span.style.color = '';
           span.style.letterSpacing = '';
-          span.style.textShadow = '';
-          span.style.background = '';
         }
       });
     });
