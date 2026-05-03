@@ -442,54 +442,85 @@
     margin-bottom: 1rem;
     color: var(--text-color);
   }
+    /* ── Game Showcase (v7 - pure CSS hover, clean) ── */
+  .game-showcase { margin-top: 2rem; padding: 0 !important; }
+  .game-showcase-title { font-size: 0.95rem; opacity: 0.6; margin-bottom: 1rem; font-weight: 400; letter-spacing: 0.02em; }
   .game-showcase-row {
     display: grid !important;
     grid-template-columns: 1fr 1fr !important;
-    gap: 12px !important;
+    gap: 16px !important;
+    max-width: 100% !important;
   }
   .game-showcase-item {
-    display: block;
-    text-decoration: none;
-    overflow: hidden;
-    border-radius: 12px;
-    position: relative;
-    line-height: 0;
-    background: #f8f9fa;
-    transition: transform 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    display: block !important;
+    position: relative !important;
+    overflow: hidden !important;
+    border-radius: 10px !important;
+    text-decoration: none !important;
+    line-height: 0 !important;
+    background: #111 !important;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.06) !important;
+    transition: margin 0.35s ease,
+                box-shadow 0.35s ease,
+                filter 0.3s ease,
+                border-color 0.3s ease !important;
+    cursor: pointer !important;
   }
+  /* PURE CSS HOVER - no JS needed */
   .game-showcase-item:hover {
-    transform: translateY(-4px) scale(1.02);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
-    filter: brightness(1.03);
-    z-index: 2;
+    margin-top: -8px !important;
+    margin-bottom: 8px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.35), 
+                0 0 120px rgba(0,0,0,0.08),
+                0 0 40px rgba(80,120,255,0.05) !important;
+    filter: brightness(1.05) !important;
+    border-color: rgba(255,255,255,0.15) !important;
+    z-index: 50 !important;
   }
   .game-showcase-item img {
-    width: 100%;
-    height: 140px;
-    object-fit: cover;
-    object-position: center top;
-    display: block;
-    transition: transform 0.5s cubic-bezier(.25,.46,.45,.94);
+    width: 100% !important;
+    height: 160px !important;
+    object-fit: contain !important;
+    object-position: center center !important;
+    display: block !important;
+    vertical-align: top !important;
+    background: #111 !important;
+    transition: filter 0.35s ease !important;
   }
   .game-showcase-item:hover img {
-    transform: scale(1.06);
+    filter: saturate(1.2) brightness(1.06) contrast(1.04) !important;
   }
   .game-showcase-item span {
-    display: block;
-    text-align: center;
-    padding: 10px 0;
-    font-size: 0.9rem;
-    color: #555;
-    line-height: 1.4;
-    background: #fff;
-    border-top: 1px solid #eee;
-    transition: background 0.3s ease, color 0.3s ease;
+    display: block !important;
+    text-align: center !important;
+    padding: 12px 0 14px !important;
+    font-size: 0.88rem !important;
+    color: #999 !important;
+    line-height: 1.5 !important;
+    background: linear-gradient(180deg, #1a1a1a 0%, #111 100%) !important;
+    border-top: 1px solid rgba(255,255,255,0.05) !important;
+    letter-spacing: 0.06em !important;
+    font-weight: 400 !important;
+    white-space: nowrap !important;
+    transition: color 0.25s ease,
+                letter-spacing 0.25s ease,
+                text-shadow 0.25s ease,
+                background 0.25s ease !important;
   }
   .game-showcase-item:hover span {
-    background: #f0f0f0;
-    color: #222;
+    color: #eee !important;
+    letter-spacing: 0.12em !important;
+    text-shadow: 0 0 20px rgba(255,255,255,0.12) !important;
+    background: linear-gradient(180deg, #222 0%, #1a1a1a 100%) !important;
   }
+
+
+
+
+
+
+
 
   /* ── Responsive ── */
   @media (max-width: 768px) {
@@ -497,8 +528,9 @@
     .stats-bar { flex-wrap: wrap; gap: 1rem; }
     .ds-hero-wrap { display: none; }
     .ds-ss-grid { grid-template-columns: 1fr 1fr; }
-    .game-showcase-row { grid-template-columns: 1fr; }
-    .game-showcase-item img { height: 130px; }
+    .game-showcase-row { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .game-showcase-item img { height: 150px !important; }
+    .game-showcase-item:hover { margin-top: -6px !important; margin-bottom: 6px !important; }
   }
 </style>
 </head>
@@ -628,14 +660,14 @@
     <!-- 独立游戏展示区 -->
     <div class="game-showcase">
       <h4 class="game-showcase-title">🔗 Project Links</h4>
-      <div class="game-showcase-row">
-        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item">
-          <img src="/video/qqxw.jpg" alt="QQ小窝">
-          <span>QQ小窝</span>
+      <div class="game-showcase-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/qqxw.jpg" alt="QQ小窝" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">QQ小窝</span>
         </a>
-        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item">
-          <img src="/video/ymzz.png" alt="元梦之星">
-          <span>元梦之星</span>
+        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/ymzz.png" alt="元梦之星" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">元梦之星</span>
         </a>
       </div>
     </div>
@@ -791,14 +823,14 @@
     <!-- 独立游戏展示区 -->
     <div class="game-showcase">
       <h4 class="game-showcase-title">🔗 项目链接</h4>
-      <div class="game-showcase-row">
-        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item">
-          <img src="/video/qqxw.jpg" alt="QQ小窝">
-          <span>QQ小窝</span>
+      <div class="game-showcase-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/qqxw.jpg" alt="QQ小窝" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">QQ小窝</span>
         </a>
-        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item">
-          <img src="/video/ymzz.png" alt="元梦之星">
-          <span>元梦之星</span>
+        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/ymzz.png" alt="元梦之星" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">元梦之星</span>
         </a>
       </div>
     </div>
@@ -954,14 +986,14 @@
     <!-- 独立ゲーム展示区 -->
     <div class="game-showcase">
       <h4 class="game-showcase-title">🔗 プロジェクトリンク</h4>
-      <div class="game-showcase-row">
-        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item">
-          <img src="/video/qqxw.jpg" alt="QQ小窝">
-          <span>QQ小窝</span>
+      <div class="game-showcase-row" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <a href="https://im.qq.com/index/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/qqxw.jpg" alt="QQ小窝" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">QQ小窝</span>
         </a>
-        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item">
-          <img src="/video/ymzz.png" alt="元梦之星">
-          <span>元梦之星</span>
+        <a href="https://ymzx.qq.com/" target="_blank" class="game-showcase-item" style="display:block;position:relative;overflow:hidden;border-radius:10px;text-decoration:none;line-height:0;background:#111;box-shadow:0 2px 12px rgba(0,0,0,0.15);border:1px solid rgba(255,255,255,0.06);transition:margin 0.35s ease,box-shadow 0.35s ease,filter 0.3s ease,border-color 0.3s ease;cursor:pointer;">
+          <img src="/video/ymzz.png" alt="元梦之星" style="width:100%;height:160px;object-fit:contain;object-position:center;display:block;vertical-align:top;background:#111;transition:filter 0.35s ease;">
+          <span style="display:block;text-align:center;padding:12px 0 14px;font-size:0.88rem;color:#999;line-height:1.5;background:linear-gradient(180deg,#1a1a1a,#111);border-top:1px solid rgba(255,255,255,0.05);letter-spacing:0.06em;font-weight:400;white-space:nowrap;transition:color 0.25s ease,letter-spacing 0.25s ease,text-shadow 0.25s ease,background 0.25s ease;">元梦之星</span>
         </a>
       </div>
     </div>
@@ -1132,5 +1164,65 @@
   <script defer src="/lib/three/three.min.js"></script>
   <script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script>
   <script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false,"tagMode":false});</script>
-<script src="/js/visitor-tracker.js"></script></body>
+<script src="/js/visitor-tracker.js"></script>
+
+<script>
+/* v8 hover - margin/filter/box-shadow only (no transform) */
+(function(){
+  function initHover() {
+    var items = document.querySelectorAll('.game-showcase-item');
+    items.forEach(function(item) {
+      // Skip hidden items (lang-content display:none)
+      if (item.offsetWidth === 0) return;
+      
+      item.addEventListener('mouseenter', function() {
+        this.style.marginTop = '-12px';
+        this.style.marginBottom = '12px';
+        this.style.boxShadow = '0 25px 70px rgba(0,0,0,0.45), 0 0 180px rgba(0,0,0,0.12), 0 0 50px rgba(80,120,255,0.08)';
+        this.style.filter = 'brightness(1.08) saturate(1.06)';
+        this.style.borderColor = 'rgba(255,255,255,0.2)';
+        this.style.borderRadius = '14px';
+        this.style.zIndex = '50';
+        var img = this.querySelector('img');
+        if (img) img.style.filter = 'saturate(1.3) brightness(1.06) contrast(1.05)';
+        var span = this.querySelector('span');
+        if (span) {
+          span.style.color = '#fff';
+          span.style.letterSpacing = '0.14em';
+          span.style.textShadow = '0 0 25px rgba(255,255,255,0.2), 0 0 50px rgba(150,180,255,0.1)';
+          span.style.background = 'linear-gradient(180deg, #222 0%, #1a1a1a 100%)';
+        }
+      });
+      item.addEventListener('mouseleave', function() {
+        this.style.marginTop = '';
+        this.style.marginBottom = '';
+        this.style.boxShadow = '';
+        this.style.filter = '';
+        this.style.borderColor = '';
+        this.style.borderRadius = '';
+        this.style.zIndex = '';
+        var img = this.querySelector('img');
+        if (img) img.style.filter = '';
+        var span = this.querySelector('span');
+        if (span) {
+          span.style.color = '';
+          span.style.letterSpacing = '';
+          span.style.textShadow = '';
+          span.style.background = '';
+        }
+      });
+    });
+  }
+  // Init after page load + delay for NexT motion to settle
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(initHover, 800); });
+  } else {
+    setTimeout(initHover, 800);
+  }
+  // Also re-init on lang switch
+  window.addEventListener('hashchange', function() { setTimeout(initHover, 300); });
+})();
+</script>
+
+</body>
 </html>
