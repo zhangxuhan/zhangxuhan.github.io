@@ -432,42 +432,44 @@
   .stats-bar .stat-num { color: #7EC8E3; font-size: 1.6rem; }
   .stats-bar .stat-label { color: #aaa; font-size: 0.8rem; }
 
-  /* ── Game Showcase (gumi × jojo hybrid) ── */
+  /* ── Game Showcase (jojo-style 全幅海报) ── */
   .game-showcase {
-    margin: 3rem 0 2rem;
+    margin: 3rem -20px 2rem; /* 突破容器宽度 */
     padding: 0;
   }
   .game-showcase-title {
     display: none;
   }
   .game-showcase-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
   .game-showcase-item {
     display: block;
     text-decoration: none;
-    border-radius: 3px;
     overflow: hidden;
     position: relative;
-    line-height: 0; /* 消除图片底部间隙 */
+    line-height: 0;
     transition: transform 0.4s cubic-bezier(.25,.46,.45,.94), box-shadow 0.4s ease;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
   }
   .game-showcase-item:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 24px 48px rgba(0,0,0,0.18);
+    transform: scale(1.005);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+    z-index: 2;
   }
   .game-showcase-item img {
     width: 100%;
-    height: 300px;
+    height: auto;
+    min-height: 280px;
+    max-height: 420px;
     object-fit: cover;
+    object-position: center;
     display: block;
-    transition: transform 0.5s cubic-bezier(.25,.46,.45,.94);
+    transition: transform 0.6s cubic-bezier(.25,.46,.45,.94);
   }
   .game-showcase-item:hover img {
-    transform: scale(1.06);
+    transform: scale(1.03);
   }
   .game-showcase-item span {
     display: none;
@@ -479,7 +481,7 @@
     .stats-bar { flex-wrap: wrap; gap: 1rem; }
     .ds-hero-wrap { display: none; }
     .ds-ss-grid { grid-template-columns: 1fr 1fr; }
-    .game-showcase-row { grid-template-columns: 1fr; }
+    .game-showcase-row { flex-direction: column; }
   }
 </style>
 </head>
