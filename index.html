@@ -2,413 +2,1651 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 7.2.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="description" content="Senior Software Engineer specializing in UE4 full-stack development and simulation systems. Based in Tokyo.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Xuhan Zhang | Senior Software Engineer">
+  <meta property="og:url" content="https://zhangxuhan.github.io/">
+  <meta property="og:description" content="Senior Software Engineer specializing in UE4 full-stack development and simulation systems. Based in Tokyo.">
+  <title>Xuhan Zhang | Senior Software Engineer</title>
+  
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/unreal-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/unreal-16x16.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-<link rel="stylesheet" href="/css/custom-cta.css">
-
-
-<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
-  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css">
-  <script src="/lib/pace/pace.min.js"></script>
-
-<script id="hexo-configurations">
-    var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"zhangxuhan.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
-  </script>
-
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Welcome">
-<meta property="og:url" content="https://zhangxuhan.github.io/index.html">
-<meta property="og:site_name" content="Welcome">
-<meta property="og:locale" content="en_US">
-<meta property="article:author" content="XuhanZhang">
-<meta name="twitter:card" content="summary">
-
-<link rel="canonical" href="https://zhangxuhan.github.io/">
-
-
-<script id="page-configurations">
-  // https://hexo.io/docs/variables.html
-  CONFIG.page = {
-    sidebar: "",
-    isHome : true,
-    isPost : false,
-    lang   : 'en'
-  };
-</script>
-
-  <title>Welcome</title>
   
-
-
-
-
-
-
-  <noscript>
+  <link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/DPlayer.min.css">
+  <script src="/assets/js/DPlayer.min.js"></script>
+  
   <style>
-  .use-motion .brand,
-  .use-motion .menu-item,
-  .sidebar-inner,
-  .use-motion .post-block,
-  .use-motion .pagination,
-  .use-motion .comments,
-  .use-motion .post-header,
-  .use-motion .post-body,
-  .use-motion .collection-header { opacity: initial; }
+    :root {
+      --bg: #0a0a0a;
+      --bg-secondary: #111111;
+      --card: #1a1a1a;
+      --card-hover: #222222;
+      --border: #2a2a2a;
+      --text: #e5e5e5;
+      --text-muted: #888;
+      --accent: #7EC8E3;
+      --accent-glow: rgba(126, 200, 227, 0.3);
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      padding-top: 60px;
+    }
+    
+    /* Animated Background */
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+    
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 80%, rgba(126, 200, 227, 0.05) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(126, 200, 227, 0.03) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, rgba(50, 50, 80, 0.1) 0%, transparent 70%);
+      animation: bgRotate 30s linear infinite;
+    }
+    
+    @keyframes bgRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    /* Floating Particles */
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+    
+    .particle {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 50%;
+      opacity: 0.3;
+      animation: float 15s infinite ease-in-out;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+      50% { transform: translateY(-100px) translateX(50px); opacity: 0.6; }
+    }
+    
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .nav-brand {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    
+    .nav-brand:hover {
+      color: var(--accent);
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+      position: relative;
+    }
+    
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--accent);
+      transition: width 0.3s;
+    }
+    
+    .nav-links a:hover {
+      color: var(--accent);
+    }
+    
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+    
+    /* Container */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    
+    /* Video Section */
+    .video-section {
+      padding: 5rem 0 3rem;
+      background: linear-gradient(180deg, rgba(20, 20, 30, 0.5) 0%, transparent 100%);
+    }
+    
+    .video-section {
+      padding: 6rem 0 4rem;
+    }
+    
+    .video-section .container {
+      max-width: 1400px;
+    }
+    
+    .section-title {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2rem;
+      letter-spacing: 0.05em;
+    }
+    
+    .video-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+    
+    .video-card {
+      background: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      transition: all 0.4s ease;
+      position: relative;
+    }
+    
+    .video-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      padding: 1px;
+      background: linear-gradient(135deg, var(--accent), transparent, var(--accent));
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+    
+    .video-card:hover::before {
+      opacity: 0.5;
+    }
+    
+    .video-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px var(--accent-glow);
+    }
+    
+    .video-label a:hover {
+      color: var(--accent) !important;
+    }
+    /* DPlayer container - direct placement */
+    
 
-  .use-motion .site-title,
-  .use-motion .site-subtitle {
-    opacity: initial;
-    top: initial;
-  }
+    .video-label p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    
+    .video-label {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid var(--border);
+      position: relative;
+      z-index: 10;
+    }
+    
+    .video-label h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    
+    .video-label h3 a {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      transition: all 0.3s;
+    }
+    
+    .video-label h3 a:hover {
+      color: var(--accent) !important;
+      background: rgba(126, 200, 227, 0.1);
+    }
+    
+    /* Language Switcher */
+    .lang-switcher-fixed {
+      position: fixed;
+      top: 1rem;
+      right: 1.5rem;
+      z-index: 1100;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(126, 200, 227, 0.25);
+      border-radius: 50px;
+      padding: 0.35rem 0.5rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .lang-btn-fixed {
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.5);
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      cursor: pointer;
+      border-radius: 50px;
+      transition: all 0.25s ease;
+      font-family: inherit;
+    }
+    .lang-btn-fixed:hover { color: #fff; background: rgba(255,255,255,0.08); }
+    .lang-btn-fixed.active {
+      background: var(--accent);
+      color: #0a0a0f;
+      font-weight: 700;
+      box-shadow: 0 0 16px rgba(126, 200, 227, 0.5);
+    }
+    
+    .lang-switcher {
+      text-align: center;
+      margin: 2.5rem 0 1.5rem;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 0;
+    }
+    
+    .lang-btn {
+      display: inline-block;
+      padding: 0.5rem 2rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.3s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      font-family: inherit;
+    }
+    
+    .lang-btn:hover { color: var(--text); }
+    .lang-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .lang-content { display: none; }
+    .lang-content.active { display: block; }
 
-  .use-motion .logo-line-before i { left: initial; }
-  .use-motion .logo-line-after i { right: initial; }
+    /* Left Sidebar Navigation */
+    .sidebar-nav-wrap {
+      position: fixed;
+      left: 1.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      z-index: 998;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text-muted);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .sidebar-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .sidebar-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .sidebar-link:hover .sidebar-dot,
+    .sidebar-link.active .sidebar-dot {
+      background: var(--accent);
+      box-shadow: 0 0 10px var(--accent);
+    }
+
+    .sidebar-link:hover .sidebar-label,
+    .sidebar-link.active .sidebar-label {
+      opacity: 1;
+      transform: translateX(0);
+      color: var(--accent);
+    }
+    
+    /* Stats Bar */
+    .stats-bar {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      padding: 1.5rem;
+      border-radius: 16px;
+      margin: 1.5rem 0;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 1.8rem; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 0.85rem; color: var(--text-muted); }
+    
+    /* Section Title */
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+      margin: 2.5rem 0 1.5rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    /* Projects Grid */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+    
+    .project-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .project-card:hover::before {
+      opacity: 1;
+    }
+    
+    .project-card:hover {
+      background: var(--card-hover);
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+    
+    .project-card h4 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+      color: var(--text);
+    }
+    
+    .project-card .lang-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      background: var(--accent);
+      color: var(--bg);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+    }
+    
+    .project-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin: 0.4rem 0 0; }
+    .project-card .stars { font-size: 0.85rem; color: #f5a623; margin-top: 0.5rem; }
+    
+    /* Profile Grid */
+    .profile-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .profile-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    
+    .profile-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+    
+    .profile-card h3 {
+      margin: 0 0 0.8rem;
+      font-size: 1rem;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .profile-card p, .profile-card li {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--text-muted);
+      margin: 0.3rem 0;
+    }
+    
+    .profile-card ul { padding-left: 1.2rem; margin: 0.5rem 0 0; }
+    
+    /* Skills Grid */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    
+    .skill-card {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+      border: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+    
+    .skill-card:hover {
+      background: var(--card-hover);
+      border-color: var(--accent);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .skill-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .skill-name { font-weight: 700; font-size: 0.95rem; color: var(--text); margin-bottom: 0.3rem; }
+    .skill-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; }
+    
+    /* Tech Cloud */
+    .tech-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+      margin: 1rem 0 2rem;
+    }
+    
+    .tech-tag {
+      display: inline-block;
+      padding: 0.4rem 0.9rem;
+      background: var(--card);
+      color: var(--text-muted);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      transition: all 0.3s;
+      cursor: default;
+    }
+    
+    .tech-tag:hover {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+    
+    .tech-tag.primary {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+    
+    .tech-tag.secondary {
+      background: #2a3a4a;
+      color: var(--text);
+      border-color: #3a4a5a;
+    }
+    
+    /* Game Showcase */
+    .game-showcase { margin: 2rem 0; }
+    .game-showcase-title { font-size: 0.95rem; opacity: 0.6; margin-bottom: 1rem; font-weight: 400; letter-spacing: 0.02em; }
+    
+    .game-showcase-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    
+    .game-showcase-item {
+      display: block;
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      text-decoration: none;
+      line-height: 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      transition: all 0.4s ease;
+      cursor: pointer;
+    }
+    
+    .game-showcase-item:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 40px var(--accent-glow);
+      border-color: var(--accent);
+    }
+    
+    .game-showcase-item img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      vertical-align: top;
+      transition: all 0.4s ease;
+    }
+    
+    .game-showcase-item:hover img {
+      filter: brightness(1.1) saturate(1.2);
+      transform: scale(1.05);
+    }
+    
+    .game-showcase-item span {
+      display: block;
+      text-align: center;
+      padding: 14px 0 4px;
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.5;
+      background: var(--card);
+      border-top: none;
+      letter-spacing: 0.06em;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: all 0.3s ease;
+    }
+    
+    .game-showcase-item:hover span {
+      color: var(--accent);
+      letter-spacing: 0.10em;
+    }
+    
+    .game-showcase-item .game-desc {
+      padding: 0 14px 14px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      white-space: normal;
+    }
+    
+    /* Divider */
+    .dreamstar-divider {
+      text-align: center;
+      margin: 2.5rem 0;
+      font-size: 1.5rem;
+      letter-spacing: 1rem;
+      color: var(--accent);
+      user-select: none;
+      opacity: 0.3;
+    }
+    
+    /* CTA */
+    .cta-row {
+      display: flex;
+      gap: 1rem;
+      margin: 2rem 0;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .video-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 12px 40px var(--accent-glow);
+    }
+    
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.75rem;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+    
+    .cta-btn.primary {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+    }
+    
+    .cta-btn.primary:hover {
+      background: #5BA3C0;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--accent-glow);
+    }
+    
+    .cta-btn.outline {
+      border: 2px solid var(--accent);
+      color: var(--accent);
+      background: transparent;
+    }
+    
+    .cta-btn.outline:hover {
+      background: var(--accent);
+      color: var(--bg);
+      transform: translateY(-2px);
+    }
+    
+    /* Video Controls */
+    .video-wrapper {
+      position: relative;
+      background: #000;
+      border-radius: 12px 12px 0 0;
+    }
+    
+    .video-wrapper video {
+      width: 100%;
+      display: block;
+      border-radius: 12px 12px 0 0;
+    }
+    
+    .video-controls {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      padding: 20px 12px 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    
+    .video-wrapper:hover .video-controls {
+      opacity: 1;
+    }
+    
+    .video-controls button {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+    
+    .video-controls button:hover {
+      color: var(--accent);
+    }
+    
+    .progress-bar {
+      flex: 1;
+      height: 4px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 2px;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+    
+    .progress-bar:hover .progress-fill {
+      background: #fff;
+    }
+    
+    .time-display {
+      color: #fff;
+      font-size: 12px;
+      min-width: 80px;
+      text-align: center;
+    }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 2.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      background: var(--bg-secondary);
+    }
+    
+    /* Scroll Animation */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      nav {
+        padding: 0.75rem 1rem;
+      }
+      
+      .nav-links {
+        gap: 1rem;
+      }
+      
+      .container {
+        padding: 0 1rem;
+      }
+      
+      .video-section {
+        padding: 4rem 0 2rem;
+      }
+      
+      .video-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .profile-grid, .projects-grid, .skills-grid { grid-template-columns: 1fr; }
+      .stats-bar { flex-wrap: wrap; gap: 1rem; }
+      .game-showcase-row { grid-template-columns: 1fr; gap: 1rem; }
+      .game-showcase-item img { height: 160px; }
+    }
   </style>
-</noscript>
-
-<script src="/assets/js/DPlayer.min.js"></script></head>
-
-<body itemscope itemtype="http://schema.org/WebPage">
-  <div class="container use-motion">
-    <div class="headband"></div>
-
-    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
-      <div class="header-inner"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="Toggle navigation bar">
-      <span class="toggle-line toggle-line-first"></span>
-      <span class="toggle-line toggle-line-middle"></span>
-      <span class="toggle-line toggle-line-last"></span>
-    </div>
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="bg-animation"></div>
+  <div class="particles" id="particles"></div>
+  
+  <!-- Language Switcher - Top of Page -->
+  <div class="lang-switcher-fixed">
+    <button class="lang-btn-fixed active" data-lang="jp" onclick="switchLang('jp')">🇯🇵 日本語</button>
+    <button class="lang-btn-fixed" data-lang="en" onclick="switchLang('en')">🇺🇸 English</button>
+    <button class="lang-btn-fixed" data-lang="cn" onclick="switchLang('cn')">🇨🇳 中文</button>
   </div>
+  
+  <!-- Navigation -->
+  <nav>
+    <a href="#" class="nav-brand">Xuhan Zhang</a>
+    <div class="nav-links">
+      <a href="#video">Video</a>
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </nav>
 
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <span class="logo-line-before"><i></i></span>
-      <h1 class="site-title">Welcome</h1>
-      <span class="logo-line-after"><i></i></span>
+  <!-- Left Sidebar Navigation -->
+  <div class="sidebar-nav-wrap">
+    <a href="#video" class="sidebar-link active" data-section="video">
+      <span class="sidebar-dot"></span>
+      <span class="sidebar-label" data-lang-en="Video" data-lang-jp="動画" data-lang-cn="视频">Video</span>
+    </a>
+    <a href="#projects" class="sidebar-link" data-section="projects">
+      <span class="sidebar-dot"></span>
+      <span class="sidebar-label" data-lang-en="Projects" data-lang-jp="プロジェクト" data-lang-cn="项目">Projects</span>
+    </a>
+    <a href="#skills" class="sidebar-link" data-section="skills">
+      <span class="sidebar-dot"></span>
+      <span class="sidebar-label" data-lang-en="Skills" data-lang-jp="スキル" data-lang-cn="技能">Skills</span>
+    </a>
+    <a href="#contact" class="sidebar-link" data-section="contact">
+      <span class="sidebar-dot"></span>
+      <span class="sidebar-label" data-lang-en="Contact" data-lang-jp="連絡先" data-lang-cn="联系方式">Contact</span>
     </a>
   </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger">
-    </div>
-  </div>
-</div>
-
-
-
-
-<nav class="site-nav">
-  <ul id="menu" class="main-menu menu">
-        <li class="menu-item menu-item-home">
-
-    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
-
-  </li>
-        <li class="menu-item menu-item-about">
-
-    <a href="/about/" rel="section"><i class="fa fa-user-tie fa-fw"></i>About</a>
-
-  </li>
-  </ul>
-</nav>
-
-
-
-
-</div>
-    </header>
-
-    
-  <div class="back-to-top">
-    <i class="fa fa-arrow-up"></i>
-    <span>0%</span>
-  </div>
-
-
-    <main class="main">
-      <div class="main-inner">
-        <div class="content-wrap">
-          
-
-          <div class="content index posts-expand">
-            
+  
+  <!-- Video Section -->
+  <section class="video-section" id="video">
+    <div class="container">
+      <h2 class="section-title fade-in" data-lang-jp="注目の作品" data-lang-en="Featured Work" data-lang-cn="代表作品">Featured Work</h2>
       
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://zhangxuhan.github.io/2026/04/01/VideoDisplay/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="XuhanZhang">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Welcome">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2026/04/01/VideoDisplay/" class="post-title-link" itemprop="url">Video Display</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2026-04-01 08:00:00" itemprop="dateCreated datePublished" datetime="2026-04-01T08:00:00+08:00">2026-04-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2026-04-12 16:41:38" itemprop="dateModified" datetime="2026-04-12T16:41:38+08:00">2026-04-12</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <div id="dplayer0" class="dplayer hexo-tag-dplayer-mark" style="margin-bottom: 20px;"></div><script>(function(){var player = new DPlayer({"container":document.getElementById("dplayer0"),"autoplay":true,"muted":true,"theme":"#333","loop":true,"lang":"en","hotkey":true,"preload":"auto","volume":0.9,"video":{"url":"/video/display.mp4","pic":"/video/FunPartyPicture.jpg"}});window.dplayers||(window.dplayers=[]);window.dplayers.push(player);})()</script>
-
-
-<div style="text-align:center;margin:2.5rem 0;padding:0 1rem;">
-  <p style="font-size:1.1rem;line-height:1.8;color:#333;margin:0 0 2rem;">
-    Hi, I'm <strong>Xuhan Zhang</strong> — a Senior Software Engineer based in Tokyo,<br>
-    specializing in UE4 full-stack development and simulation systems.
-  </p>
-  <a href="/about/" id="cta-button" style="
-    display:inline-flex;align-items:center;justify-content:center;gap:0.6rem;
-    padding:1rem 3rem;background:#1a1a1a;color:#fff;
-    border-radius:50px;font-size:1.1rem;font-weight:700;text-decoration:none;
-    box-shadow:0 8px 30px rgba(0,0,0,0.3);
-    transition:all 0.3s ease;letter-spacing:0.5px;
-  ">
-    <i class="fa fa-user-tie"></i> View My Projects &amp; About Me
-    <i class="fa fa-arrow-right" style="font-size:0.9rem;"></i>
-  </a>
-</div>
-
-<style>
-#cta-button:hover {
-  background:#2d2d2d;
-  transform:translateY(-3px);
-  box-shadow:0 12px 40px rgba(0,0,0,0.35);
-}
-@keyframes fadeInUp {
-  from { opacity:0; transform:translateY(30px); }
-  to { opacity:1; transform:translateY(0); }
-}
-#cta-button { animation:fadeInUp 0.8s cubic-bezier(0.16,1,0.3,1) 0.3s both; }
-</style>
-
-<p>Thanks for watching!</p>
-<blockquote>
-<p>More technical questions and articles can be found on my csdn <a target="_blank" rel="noopener" href="https://blog.csdn.net/zxh1592000">blog</a>! </p>
-</blockquote>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
-  
-
-
-
+      <!-- ENGLISH VERSION -->
+      <div class="lang-content" id="video-en">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem;">
+          <div class="video-card fade-in">
+            <h3 style="font-size:1.1rem;font-weight:600;margin:0 0 1rem 0;">
+              <a href="https://topd.tencent.com/realize/superqqshow" target="_blank" style="color:var(--accent);text-decoration:underline;text-underline-offset:3px;">QQ Home ↗</a>
+            </h3>
+            <div style="position:relative;background:#000;border-radius:12px;overflow:hidden;">
+              <video id="video-qqxw-en" src="/video/qqxw.mp4" poster="/video/qqxw.jpg" style="width:100%;display:block;" controls></video>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:1rem 0 0 0;line-height:1.6;">Metaverse feature in QQ for room decoration & social interaction. Built immersive 3D spaces with custom furniture and interactive elements.</p>
           </div>
-          
+          <div class="video-card fade-in">
+            <h3 style="font-size:1.1rem;font-weight:600;margin:0 0 1rem 0;">
+              <a href="https://ymzx.qq.com/" target="_blank" style="color:var(--accent);text-decoration:underline;text-underline-offset:3px;">FunParty ↗</a>
+            </h3>
+            <div style="position:relative;background:#000;border-radius:12px;overflow:hidden;">
+              <video id="video-ymzz-en" src="/video/ymzz.mp4" poster="/video/ymzz.png" style="width:100%;display:block;" controls></video>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:1rem 0 0 0;line-height:1.6;">Casual social 3D party game with rich UGC content. Developed core gameplay mechanics and multiplayer systems.</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- CHINESE VERSION -->
+      <div class="lang-content" id="video-cn">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem;">
+          <div class="video-card fade-in">
+            <h3 style="font-size:1.1rem;font-weight:600;margin:0 0 1rem 0;">
+              <a href="https://topd.tencent.com/realize/superqqshow" target="_blank" style="color:var(--accent);text-decoration:underline;text-underline-offset:3px;">QQ小窝 ↗</a>
+            </h3>
+            <div style="position:relative;background:#000;border-radius:12px;overflow:hidden;">
+              <video id="video-qqxw-cn" src="/video/qqxw.mp4" poster="/video/qqxw.jpg" style="width:100%;display:block;" controls></video>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:1rem 0 0 0;line-height:1.6;">QQ元宇宙社交空间，支持房间装修与互动社交。打造沉浸式3D空间，支持自定义家具和互动元素。</p>
+          </div>
+          <div class="video-card fade-in">
+            <h3 style="font-size:1.1rem;font-weight:600;margin:0 0 1rem 0;">
+              <a href="https://ymzx.qq.com/" target="_blank" style="color:var(--accent);text-decoration:underline;text-underline-offset:3px;">元梦之星 ↗</a>
+            </h3>
+            <div style="position:relative;background:#000;border-radius:12px;overflow:hidden;">
+              <video id="video-ymzz-cn" src="/video/ymzz.mp4" poster="/video/ymzz.png" style="width:100%;display:block;" controls></video>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:1rem 0 0 0;line-height:1.6;">休闲社交3D派对游戏，拥有丰富的用户生成内容。开发核心玩法机制和多人系统。</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- JAPANESE VERSION -->
+      <div class="lang-content active" id="video-jp">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem;">
+          <div class="video-card fade-in">
+            <h3 style="font-size:1.1rem;font-weight:600;margin:0 0 1rem 0;">
+              <a href="https://topd.tencent.com/realize/superqqshow" target="_blank" style="color:var(--accent);text-decoration:underline;text-underline-offset:3px;">QQ小窩 ↗</a>
+            </h3>
+            <div style="position:relative;background:#000;border-radius:12px;overflow:hidden;">
+              <video id="video-qqxw-jp" src="/video/qqxw.mp4" poster="/video/qqxw.jpg" style="width:100%;display:block;" controls></video>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:1rem 0 0 0;line-height:1.6;">QQメタバースソーシャルスペース — ルーム装飾とインタラクティブソーシャル機能を提供。自作家具とインタラクティブ要素で没入型3D空間を構築。</p>
+          </div>
+          <div class="video-card fade-in">
+            <h3 style="font-size:1.1rem;font-weight:600;margin:0 0 1rem 0;">
+              <a href="https://ymzx.qq.com/" target="_blank" style="color:var(--accent);text-decoration:underline;text-underline-offset:3px;">元夢の星 ↗</a>
+            </h3>
+            <div style="position:relative;background:#000;border-radius:12px;overflow:hidden;">
+              <video id="video-ymzz-jp" src="/video/ymzz.mp4" poster="/video/ymzz.png" style="width:100%;display:block;" controls></video>
+            </div>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:1rem 0 0 0;line-height:1.6;">カジュアルソーシャル3Dパーティーゲーム — 豊富なUGCコンテンツを特徴。コアゲームメカニクスとマルチプレイヤーシステムを開発。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Main Content -->
+  <section class="main-content">
+    <div class="container">
+      <!-- ENGLISH VERSION -->
+      <div class="lang-content" id="lang-en">
+      <div class="stats-bar fade-in">
+          <div class="stat-item"><div class="stat-num">8+</div><div class="stat-label">Years Experience</div></div>
+          <div class="stat-item"><div class="stat-num">UE4</div><div class="stat-label">Expert</div></div>
+        </div>
+        
+        <p style="font-size:1.05rem;line-height:1.9;color:var(--text);margin:1.5rem 0 0.5rem;text-align:center;" class="fade-in">
+          <strong>Senior Software Engineer</strong> with 8 years of expertise in simulation & game development.<br>
+          Specialized in UE4 full-stack development — from animation & physics to server architecture & mobile optimization.
+        </p>
+        
+        <div class="dreamstar-divider">★</div>
+        
+        <div class="section-title" id="projects-en"><i class="fa fa-folder-open"></i> Key Projects</div>
+        <div class="projects-grid">
+          <div class="project-card fade-in">
+            <span class="lang-tag">UE4 + C++</span>
+            <h4>Aerospace Simulation System</h4>
+            <p>Full-stack development: C++ interfaces, vision systems, command interfaces, sensor simulation.</p>
+            <div class="stars">🏢 Enterprise Solution</div>
+          </div>
+          <div class="project-card fade-in">
+            <span class="lang-tag">UE4 + CARLA</span>
+            <h4>Autonomous Driving Sim</h4>
+            <p>AI simulation platform based on CARLA. Extended vehicle dynamics, Python/C++ APIs, large-scale scenarios.</p>
+            <div class="stars">🤖 AI Research</div>
+          </div>
+          <div class="project-card fade-in">
+            <span class="lang-tag">UE4 Mobile</span>
+            <h4>Mobile Game (Million+ DAU)</h4>
+            <p>Full-cycle development of 2 shipped titles. Client framework, performance optimization, hot-update.</p>
+            <div class="stars">🎯 Shipped Products</div>
+          </div>
+          <div class="project-card fade-in">
+            <span class="lang-tag">C++</span>
+            <h4>Production Pipeline</h4>
+            <p>Custom tools & automation pipelines. Multiple internal plugins for team efficiency improvement.</p>
+            <div class="stars">⚡ DevOps</div>
+          </div>
+        </div>
+        
+        <div class="profile-grid">
+          <div class="profile-card fade-in">
+            <h3><i class="fa fa-gem"></i> Core Competitiveness</h3>
+            <p>From requirement understanding to architecture design, technical selection to performance tuning — I can independently own core modules across all phases.</p>
+            <p>Especially skilled at <strong>designing multiple implementation options for a single requirement and delivering them</strong>.</p>
+          </div>
+          <div class="profile-card fade-in">
+            <h3><i class="fa fa-lightbulb"></i> Cross-Domain Advantage</h3>
+            <p>I think about technology from a <strong>product perspective</strong>. Cross-industry experience lets me see problems others miss.</p>
+            <p>Aerospace → Autonomous Driving → Gaming: a unique lens on complex systems.</p>
+          </div>
+        </div>
+        
+        <div class="dreamstar-divider">★</div>
+        
+        <div class="section-title" id="skills-en"><i class="fa fa-tools"></i> Technical Skills</div>
+        <div class="skills-grid">
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🎮</div>
+            <div class="skill-name">Unreal Engine</div>
+            <div class="skill-desc">UE4/UE5, Animation, Physics, Memory, 3C, Networking</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">⚙️</div>
+            <div class="skill-name">C++ / Blueprints</div>
+            <div class="skill-desc">Core architecture, performance optimization, cross-platform</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🔌</div>
+            <div class="skill-name">Simulation Tools</div>
+            <div class="skill-desc">AMESIM, MAK, QT5, VS — industrial simulation</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🖥️</div>
+            <div class="skill-name">Backend & Mobile</div>
+            <div class="skill-desc">Network sync, hot-update, mobile adaptation</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">📡</div>
+            <div class="skill-name">AI / Autonomous</div>
+            <div class="skill-desc">CARLA framework, sensor simulation</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🌐</div>
+            <div class="skill-name">Languages</div>
+            <div class="skill-desc">Chinese, English, Japanese, Cantonese</div>
+          </div>
+        </div>
+        
+        <div class="tech-cloud">
+          <span class="tech-tag primary">UE4</span>
+          <span class="tech-tag secondary">Blueprints</span>
+          <span class="tech-tag secondary">C++</span>
+          <span class="tech-tag secondary">Lua</span>
+          <span class="tech-tag">3C</span>
+          <span class="tech-tag">Animation</span>
+          <span class="tech-tag">Physics</span>
+          <span class="tech-tag">Memory Optimization</span>
+          <span class="tech-tag">Networking</span>
+          <span class="tech-tag">Post-processing</span>
+          <span class="tech-tag">UMG</span>
+          <span class="tech-tag">Plugins</span>
+          <span class="tech-tag">DS Server</span>
+          <span class="tech-tag">Multi-threading</span>
+          <span class="tech-tag">Hot-update</span>
+          <span class="tech-tag">Mobile</span>
+          <span class="tech-tag">QT5</span>
+          <span class="tech-tag">Git</span>
+          <span class="tech-tag">AMESim</span>
+          <span class="tech-tag">CARLA</span>
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">DDS</span>
+          <span class="tech-tag">Vibe Coding</span>
+          <span class="tech-tag">R&D</span>
+        </div>
+        
+        <div style="text-align:center;margin:1.5rem 0 0.5rem;" class="fade-in">
+          <p style="font-size:0.9rem;color:var(--text-muted);">More technical articles on my blog:</p>
+          <a href="https://blog.csdn.net/zxh1592000" target="_blank" style="color:var(--accent);font-weight:600;font-size:0.95rem;">
+            <i class="fa fa-blog"></i> blog.csdn.net/zxh1592000
+          </a>
+        </div>
+        
+        <div class="cta-row" id="contact-en">
+          <a href="https://github.com/zhangxuhan" target="_blank" class="cta-btn primary">
+            <i class="fab fa-github"></i> View GitHub
+          </a>
+          <a href="mailto:zhangxuhan_c@163.com" class="cta-btn outline">
+            <i class="fa fa-envelope"></i> Get in Touch
+          </a>
+        </div>
+      </div>
+      
+      <!-- CHINESE VERSION -->
+      <div class="lang-content" id="lang-cn">
+        <div class="stats-bar fade-in">
+          <div class="stat-item"><div class="stat-num">8+</div><div class="stat-label">年经验</div></div>
+          <div class="stat-item"><div class="stat-num">UE4</div><div class="stat-label">专家</div></div>
+        </div>
+        
+        <p style="font-size:1.05rem;line-height:1.9;color:var(--text);margin:1.5rem 0 0.5rem;text-align:center;" class="fade-in">
+          <strong>高级软件工程师</strong>，8年仿真与游戏开发经验。<br>
+          精通UE4全栈开发——从动画、物理到服务器架构与移动端优化。
+        </p>
+        
+        <div class="dreamstar-divider">★</div>
+        
+        <div class="section-title" id="projects-cn"><i class="fa fa-folder-open"></i> 代表项目</div>
+        <div class="projects-grid">
+          <div class="project-card fade-in">
+            <span class="lang-tag">UE4 + C++</span>
+            <h4>航空航天仿真系统</h4>
+            <p>全栈开发：C++接口、视景系统、指控界面、传感器仿真。</p>
+            <div class="stars">🏢 企业级方案</div>
+          </div>
+          <div class="project-card fade-in">
+            <span class="lang-tag">UE4 + CARLA</span>
+            <h4>自动驾驶仿真平台</h4>
+            <p>基于CARLA的AI仿真平台。扩展车辆动力学、Python/C++接口、广域场景。</p>
+            <div class="stars">🤖 AI科研项目</div>
+          </div>
+          <div class="project-card fade-in">
+            <span class="lang-tag">UE4 移动端</span>
+            <h4>手游项目（千万DAU）</h4>
+            <p>负责两款产品从开发到上线全流程。客户端框架设计、性能优化、热更新。</p>
+            <div class="stars">🎯 已上线产品</div>
+          </div>
+          <div class="project-card fade-in">
+            <span class="lang-tag">C++</span>
+            <h4>生产流水线工具</h4>
+            <p>定制工具与自动化流水线。开发多款内部插件供团队使用，显著提升效率。</p>
+            <div class="stars">⚡ DevOps</div>
+          </div>
+        </div>
+        
+        <div class="profile-grid">
+          <div class="profile-card fade-in">
+            <h3><i class="fa fa-gem"></i> 核心竞争力</h3>
+            <p>从需求理解到架构设计、技术选型到性能调优，每个领域都能全程独立负责核心模块。</p>
+            <p>尤其擅长<strong>为一个需求设计多个实现方案并落地</strong>。</p>
+          </div>
+          <div class="profile-card fade-in">
+            <h3><i class="fa fa-lightbulb"></i> 跨领域优势</h3>
+            <p>我能从<strong>产品视角</strong>思考技术，跨行业经验让我看到别人看不到的问题。</p>
+            <p>航空航天 → 自动驾驶 → 游戏：对复杂系统的独特视角。</p>
+          </div>
+        </div>
+        
+        <div class="dreamstar-divider">★</div>
+        
+        <div class="section-title" id="skills-cn"><i class="fa fa-tools"></i> 技术栈</div>
+        <div class="skills-grid">
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🎮</div>
+            <div class="skill-name">Unreal Engine</div>
+            <div class="skill-desc">UE4/UE5, 动画, 物理, 内存管理, 3C, 网络</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">⚙️</div>
+            <div class="skill-name">C++ / Blueprints</div>
+            <div class="skill-desc">核心架构, 性能优化, 跨平台开发</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🔌</div>
+            <div class="skill-name">仿真工具</div>
+            <div class="skill-desc">AMESIM, MAK, QT5, VS — 工业仿真集成</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🖥️</div>
+            <div class="skill-name">网络同步 & 移动端</div>
+            <div class="skill-desc">网络同步架构, 热更新, 移动端适配</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">📡</div>
+            <div class="skill-name">AI / 自动驾驶</div>
+            <div class="skill-desc">CARLA框架, 传感器仿真</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🌐</div>
+            <div class="skill-name">语言能力</div>
+            <div class="skill-desc">中文, 英语, 日语, 粤语</div>
+          </div>
+        </div>
+        
+        <div class="tech-cloud">
+          <span class="tech-tag primary">UE4</span>
+          <span class="tech-tag secondary">蓝图</span>
+          <span class="tech-tag secondary">C++</span>
+          <span class="tech-tag secondary">Lua</span>
+          <span class="tech-tag">3C</span>
+          <span class="tech-tag">动画</span>
+          <span class="tech-tag">物理</span>
+          <span class="tech-tag">内存优化</span>
+          <span class="tech-tag">网络同步</span>
+          <span class="tech-tag">后期处理</span>
+          <span class="tech-tag">UMG</span>
+          <span class="tech-tag">Plugins</span>
+          <span class="tech-tag">DS Server</span>
+          <span class="tech-tag">多线程</span>
+          <span class="tech-tag">热更新</span>
+          <span class="tech-tag">移动端</span>
+          <span class="tech-tag">QT5</span>
+          <span class="tech-tag">Git</span>
+          <span class="tech-tag">AMESim</span>
+          <span class="tech-tag">CARLA</span>
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">DDS</span>
+          <span class="tech-tag">Vibe Coding</span>
+          <span class="tech-tag">最先进技术研究</span>
+        </div>
+        
+        <div style="text-align:center;margin:1.5rem 0 0.5rem;" class="fade-in">
+          <p style="font-size:0.9rem;color:var(--text-muted);">更多技术文章请访问我的博客:</p>
+          <a href="https://blog.csdn.net/zxh1592000" target="_blank" style="color:var(--accent);font-weight:600;font-size:0.95rem;">
+            <i class="fa fa-blog"></i> blog.csdn.net/zxh1592000
+          </a>
+        </div>
+        
+        <div class="cta-row" id="contact-cn">
+          <a href="https://github.com/zhangxuhan" target="_blank" class="cta-btn primary">
+            <i class="fab fa-github"></i> 查看 GitHub
+          </a>
+          <a href="mailto:zhangxuhan_c@163.com" class="cta-btn outline">
+            <i class="fa fa-envelope"></i> 联系我
+          </a>
+        </div>
+      </div>
+      
+      <!-- JAPANESE VERSION -->
+      <div class="lang-content active" id="lang-jp">
+        <div class="stats-bar fade-in">
+          <div class="stat-item"><div class="stat-num">8年+</div><div class="stat-label">開発経験</div></div>
+          <div class="stat-item"><div class="stat-num">UE4</div><div class="stat-label">エキスパート</div></div>
+        </div>
+        
+        <p style="font-size:1.05rem;line-height:1.9;color:var(--text);margin:1.5rem 0 0.5rem;text-align:center;" class="fade-in">
+          <strong>シニアソフトウェアエンジニア</strong> — 8年のシミュレーション＆ゲーム開発経験。<br>
+          UE4フルスタック開発に特化：アニメーションから物理、サーバーアーキテクチャまで。
+        </p>
+        
+        <div class="dreamstar-divider">★</div>
+        
+        <div class="section-title" id="projects-jp"><i class="fa fa-folder-open"></i> 主要プロジェクト</div>
+        <div class="projects-grid">
+          <div class="project-card fade-in">
+            <span class="lang-tag">UE4 + C++</span>
+            <h4>航空宇宙シミュレーション</h4>
+            <p>フルスタック開発：C++インターフェース、視景システム、指揮界面、センサー仿真。</p>
+            <div class="stars">🏢 エンタープライズ</div>
+          </div>
+          <div class="project-card fade-in">
+            <span class="lang-tag">UE4 + CARLA</span>
+            <h4>自動運転シミュレーション</h4>
+            <p>CARLAベースのAIシミュレーションプラットフォーム。車両動力学的拡張、Python/C++ API。</p>
+            <div class="stars">🤖 AI研究</div>
+          </div>
+          <div class="project-card fade-in">
+            <span class="lang-tag">UE4 モバイル</span>
+            <h4>モバイルゲーム (千万DAU)</h4>
+            <p>2本のタイトルをローンチまで担当。クライアントフレームワーク設計、パフォーマンス最適化。</p>
+            <div class="stars">🎯 発売製品</div>
+          </div>
+          <div class="project-card fade-in">
+            <span class="lang-tag">C++</span>
+            <h4>生産パイプラインツール</h4>
+            <p>カスタムツールと自動化パイプライン。チーム用に複数の内部プラグインを開発。</p>
+            <div class="stars">⚡ DevOps</div>
+          </div>
+        </div>
+        
+        <div class="profile-grid">
+          <div class="profile-card fade-in">
+            <h3><i class="fa fa-gem"></i> コア競争力</h3>
+            <p>要件理解からアーキテクチャ設計、技術選定からパフォーマンスチューニングまで、全フェーズで独立してコアモジュールを担当可能。</p>
+            <p>特に<strong>1つの要件に対して複数の実装案を設計・実装</strong>することが得意。</p>
+          </div>
+          <div class="profile-card fade-in">
+            <h3><i class="fa fa-lightbulb"></i> クロスドメイン優位性</h3>
+            <p><strong>製品視点</strong>から技術を考え、業界を超えた経験が他の人が見落とす問題を発見。</p>
+            <p>航空宇宙 → 自動運転 → ゲーム：複雑なシステムへの独自の視点。</p>
+          </div>
+        </div>
+        
+        <div class="dreamstar-divider">★</div>
+        
+        <div class="section-title" id="skills-jp"><i class="fa fa-tools"></i> 技術スキル</div>
+        <div class="skills-grid">
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🎮</div>
+            <div class="skill-name">Unreal Engine</div>
+            <div class="skill-desc">UE4/UE5, アニメーション, 物理, メモリ, 3C</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">⚙️</div>
+            <div class="skill-name">C++ / Blueprints</div>
+            <div class="skill-desc">コアアーキテクチャ, パフォーマンス最適化</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🔌</div>
+            <div class="skill-name">シミュレーションツール</div>
+            <div class="skill-desc">AMESIM, MAK, QT5, VS — 産業シミュレーション</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🖥️</div>
+            <div class="skill-name">ネットワーク & モバイル</div>
+            <div class="skill-desc">ネットワークアーキテクチャ, ホットアップデート</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">📡</div>
+            <div class="skill-name">AI / 自動運転</div>
+            <div class="skill-desc">CARLAフレームワーク, センサーシミュ</div>
+          </div>
+          <div class="skill-card fade-in">
+            <div class="skill-icon">🌐</div>
+            <div class="skill-name">言語能力</div>
+            <div class="skill-desc">中国語, 英語, 日本語, 広東語</div>
+          </div>
+        </div>
+        
+        <div class="tech-cloud">
+          <span class="tech-tag primary">UE4</span>
+          <span class="tech-tag secondary">Blueprints</span>
+          <span class="tech-tag secondary">C++</span>
+          <span class="tech-tag secondary">Lua</span>
+          <span class="tech-tag">3C</span>
+          <span class="tech-tag">アニメーション</span>
+          <span class="tech-tag">物理</span>
+          <span class="tech-tag">メモリ最適化</span>
+          <span class="tech-tag">ネットワーキング</span>
+          <span class="tech-tag">ポストプロセッシング</span>
+          <span class="tech-tag">UMG</span>
+          <span class="tech-tag">Plugins</span>
+          <span class="tech-tag">DS Server</span>
+          <span class="tech-tag">マルチスレッド</span>
+          <span class="tech-tag">ホットアップデート</span>
+          <span class="tech-tag">モバイル対応</span>
+          <span class="tech-tag">QT5</span>
+          <span class="tech-tag">Git</span>
+          <span class="tech-tag">AMESim</span>
+          <span class="tech-tag">CARLA</span>
+          <span class="tech-tag">Python</span>
+          <span class="tech-tag">DDS</span>
+          <span class="tech-tag">Vibe Coding</span>
+          <span class="tech-tag">最新技術研究</span>
+        </div>
+        
+        <div style="text-align:center;margin:1.5rem 0 0.5rem;" class="fade-in">
+          <p style="font-size:0.9rem;color:var(--text-muted);">より詳細な技術記事はCSDNブログにて:</p>
+          <a href="https://blog.csdn.net/zxh1592000" target="_blank" style="color:var(--accent);font-weight:600;font-size:0.95rem;">
+            <i class="fa fa-blog"></i> blog.csdn.net/zxh1592000
+          </a>
+        </div>
+        
+        <div class="cta-row" id="contact-jp">
+          <a href="https://github.com/zhangxuhan" target="_blank" class="cta-btn primary">
+            <i class="fab fa-github"></i> GitHubを見る
+          </a>
+          <a href="mailto:zhangxuhan_c@163.com" class="cta-btn outline">
+            <i class="fa fa-envelope"></i> お問い合わせ
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Cursor Cat -->
+  <div id="cursor-cat" style="
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    pointer-events: none;
+    z-index: 99999;
+    transition: transform 0.1s ease-out;
+    opacity: 0;
+  "></div>
+  
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 Xuhan Zhang. All rights reserved.</p>
+  </footer>
+  
+  <!-- Scripts -->
+  <script>
+    // Cursor cat that follows mouse
+    (function(){
+      var cat = document.getElementById('cursor-cat');
+      cat.style.backgroundImage = 'url("/img/icon_64.png")';
+      cat.style.backgroundSize = 'contain';
+      
+      var mouseX = 0, mouseY = 0;
+      var catX = 0, catY = 0;
+      var visible = false;
+      
+      document.addEventListener('mousemove', function(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (!visible) {
+          cat.style.opacity = '1';
+          visible = true;
+        }
+      });
+      
+      document.addEventListener('mouseleave', function() {
+        cat.style.opacity = '0';
+        visible = false;
+      });
+      
+      function animate() {
+        // Smooth follow with delay
+        catX += (mouseX - catX - 20) * 0.15;
+        catY += (mouseY - catY - 20) * 0.15;
+        
+        // Calculate rotation based on movement direction
+        var dx = mouseX - catX;
+        var angle = Math.atan2(mouseY - catY, dx) * 180 / Math.PI;
+        
+        cat.style.left = catX + 'px';
+        cat.style.top = catY + 'px';
+        cat.style.transform = 'rotate(' + (angle * 0.3) + 'deg)';
+        
+        requestAnimationFrame(animate);
+      }
+      
+      animate();
+    })();
+  </script>
+  <script>
+    // Language switcher
+    function switchLang(lang) {
+      // Update both fixed and inline language switcher buttons
+      document.querySelectorAll('.lang-btn, .lang-btn-fixed').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.lang-btn, .lang-btn-fixed').forEach(b => {
+        if (b.dataset.lang === lang) {
+          b.classList.add('active');
+        }
+      });
+      
+      // Hide all language content sections
+      document.querySelectorAll('.lang-content[id^="video-"], .lang-content[id^="lang-"]').forEach(c => {
+        c.style.display = 'none';
+        c.classList.remove('active');
+      });
+      
+      // Show selected language
+      const videoEl = document.getElementById('video-' + lang);
+      const langEl = document.getElementById('lang-' + lang);
+      if (videoEl) { videoEl.style.display = 'block'; videoEl.classList.add('active'); }
+      if (langEl) { langEl.style.display = 'block'; langEl.classList.add('active'); }
+      
+      // Update section title
+      const titleEl = document.querySelector('.video-section .section-title');
+      if (titleEl && titleEl.hasAttribute('data-lang-' + lang)) {
+        titleEl.textContent = titleEl.getAttribute('data-lang-' + lang);
+      }
 
-<script>
-  window.addEventListener('tabs:register', () => {
-    let { activeClass } = CONFIG.comments;
-    if (CONFIG.comments.storage) {
-      activeClass = localStorage.getItem('comments_active') || activeClass;
+      // Update sidebar nav labels
+      document.querySelectorAll('.sidebar-label[data-lang-' + lang + ']').forEach(label => {
+        label.textContent = label.getAttribute('data-lang-' + lang);
+      });
+
+      // Update sidebar nav active state
+      updateSidebarActive();
     }
-    if (activeClass) {
-      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
-      if (activeTab) {
-        activeTab.click();
+    
+    // Smooth scroll - find target in active language section
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetKey = this.getAttribute('href').substring(1);
+        
+        // Find active language suffix
+        const langJp = document.getElementById('lang-jp');
+        const langEn = document.getElementById('lang-en');
+        const langCn = document.getElementById('lang-cn');
+        let langSuffix = 'jp';
+        if (langJp && langJp.classList.contains('active')) langSuffix = 'jp';
+        else if (langEn && langEn.classList.contains('active')) langSuffix = 'en';
+        else if (langCn && langCn.classList.contains('active')) langSuffix = 'cn';
+        
+        // Map nav targets to section IDs
+        const targetMap = {
+          'video': 'video-' + langSuffix,
+          'projects': 'projects-' + langSuffix,
+          'skills': 'skills-' + langSuffix,
+          'contact': 'contact-' + langSuffix
+        };
+        
+        const targetId = targetMap[targetKey] || targetKey;
+        const target = document.getElementById(targetId);
+        
+        if (target) {
+          const navHeight = document.querySelector('nav').offsetHeight;
+          const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+    
+    // Sidebar active state on scroll
+    function updateSidebarActive() {
+      const sidebarLinks = document.querySelectorAll('.sidebar-link');
+      let current = '';
+      
+      // Only check currently visible language content
+      const activeLang = document.querySelector('.lang-content.active');
+      if (!activeLang) return;
+      const langId = activeLang.id; // e.g. 'video-jp' or 'lang-jp'
+      const lang = langId.split('-').pop(); // e.g. 'jp'
+      
+      // Check video section (use container div, not <video> elements)
+      const videoSection = document.getElementById('video-' + lang);
+      if (videoSection) {
+        const rect = videoSection.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2) current = 'video';
+      }
+      
+      // Check projects section
+      const projectsSection = document.getElementById('projects-' + lang);
+      if (projectsSection) {
+        const rect = projectsSection.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2) current = 'projects';
+      }
+      
+      // Check skills section
+      const skillsSection = document.getElementById('skills-' + lang);
+      if (skillsSection) {
+        const rect = skillsSection.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2) current = 'skills';
+      }
+      
+      // Check contact section
+      const contactSection = document.getElementById('contact-' + lang);
+      if (contactSection) {
+        const rect = contactSection.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2) current = 'contact';
+      }
+      
+      sidebarLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.section === current) {
+          link.classList.add('active');
+        }
+      });
+    }
+    
+    window.addEventListener('scroll', updateSidebarActive);
+    updateSidebarActive();
+    
+    // Scroll animation
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('.fade-in').forEach(el => {
+      observer.observe(el);
+    });
+    
+    // Create particles
+    const particlesContainer = document.getElementById('particles');
+    for (let i = 0; i < 30; i++) {
+      const particle = document.createElement('div');
+      particle.className = 'particle';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.top = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 15 + 's';
+      particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+      particlesContainer.appendChild(particle);
+    }
+    
+    // Video player controls
+    function togglePlay(videoId, btn) {
+      const video = document.getElementById(videoId);
+      if (video.paused) {
+        video.play();
+        btn.innerHTML = '<i class="fa fa-pause"></i>';
+      } else {
+        video.pause();
+        btn.innerHTML = '<i class="fa fa-play"></i>';
       }
     }
-  });
-  if (CONFIG.comments.storage) {
-    window.addEventListener('tabs:click', event => {
-      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
-      let commentClass = event.target.classList[1];
-      localStorage.setItem('comments_active', commentClass);
+    
+    function toggleMute(videoId, btn) {
+      const video = document.getElementById(videoId);
+      video.muted = !video.muted;
+      btn.innerHTML = video.muted ? '<i class="fa fa-volume-off"></i>' : '<i class="fa fa-volume-up"></i>';
+    }
+    
+    function toggleFullscreen(videoId) {
+      const video = document.getElementById(videoId);
+      if (video.requestFullscreen) {
+        video.requestFullscreen();
+      } else if (video.webkitRequestFullscreen) {
+        video.webkitRequestFullscreen();
+      }
+    }
+    
+    function seekVideo(e, videoId) {
+      const video = document.getElementById(videoId);
+      const bar = e.currentTarget;
+      const rect = bar.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      video.currentTime = pos * video.duration;
+    }
+    
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return mins + ':' + (secs < 10 ? '0' : '') + secs;
+    }
+    
+    // Initialize video progress tracking
+    document.querySelectorAll('.video-wrapper video').forEach(video => {
+      const wrapper = video.parentElement;
+      const progressFill = wrapper.querySelector('.progress-fill');
+      const timeDisplay = wrapper.querySelector('.time-display');
+      
+      video.addEventListener('timeupdate', () => {
+        const progress = (video.currentTime / video.duration) * 100;
+        progressFill.style.width = progress + '%';
+        timeDisplay.textContent = formatTime(video.currentTime) + ' / ' + formatTime(video.duration);
+      });
+      
+      video.addEventListener('loadedmetadata', () => {
+        timeDisplay.textContent = '0:00 / ' + formatTime(video.duration);
+      });
     });
-  }
-</script>
-
-        </div>
-          
-  
-  <div class="toggle sidebar-toggle">
-    <span class="toggle-line toggle-line-first"></span>
-    <span class="toggle-line toggle-line-middle"></span>
-    <span class="toggle-line toggle-line-last"></span>
-  </div>
-
-  <aside class="sidebar">
-    <div class="sidebar-inner">
-
-      <ul class="sidebar-nav motion-element">
-        <li class="sidebar-nav-toc">
-          Table of Contents
-        </li>
-        <li class="sidebar-nav-overview">
-          Overview
-        </li>
-      </ul>
-
-      <!--noindex-->
-      <div class="post-toc-wrap sidebar-panel">
-      </div>
-      <!--/noindex-->
-
-      <div class="site-overview-wrap sidebar-panel">
-        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">XuhanZhang</p>
-  <div class="site-description" itemprop="description"></div>
-</div>
-<div class="site-state-wrap motion-element">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-          <a href="/archives">
-          <span class="site-state-item-count">1</span>
-          <span class="site-state-item-name">posts</span>
-        </a>
-      </div>
-  </nav>
-</div>
-  <div class="links-of-author motion-element">
-      <span class="links-of-author-item">
-        <a href="https://github.com/zhangxuhan" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zhangxuhan" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="mailto:zhangxuhan_c@163.com" title="E-Mail → mailto:zhangxuhan_c@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
-      </span>
-      <span class="links-of-author-item">
-        <a href="https://blog.csdn.net/zxh1592000" title="Blog → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zxh1592000" rel="noopener" target="_blank"><i class="fa fa-laptop-code fa-fw"></i>Blog</a>
-      </span>
-  </div>
-
-
-
-      </div>
-
-    </div>
-  </aside>
-  <div id="sidebar-dimmer"></div>
-
-
-      </div>
-    </main>
-
-    <footer class="footer">
-      <div class="footer-inner">
-        
-
-        
-
-<div class="copyright">
-  
-  &copy; 
-  <span itemprop="copyrightYear">2026</span>
-  <span class="with-love">
-    <i class="fa fa-heart"></i>
-  </span>
-  <span class="author" itemprop="copyrightHolder">XuhanZhang</span>
-</div>
-
-        
-
-
-
-
-
-
-
-
-      </div>
-    </footer>
-  </div>
-
-  
-  
-  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
-  <script src="/lib/anime.min.js"></script>
-  <script src="/lib/velocity/velocity.min.js"></script>
-  <script src="/lib/velocity/velocity.ui.min.js"></script>
-
-<script src="/js/utils.js"></script>
-
-<script src="/js/motion.js"></script>
-
-
-<script src="/js/schemes/pisces.js"></script>
-
-
-<script src="/js/next-boot.js"></script>
-
-
-  <script defer src="/lib/three/three.min.js"></script>
-
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-  
-
-<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"pluginRootPath":"live2dw/","pluginJsPath":"lib/","pluginModelPath":"assets/","model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":true},"log":false,"tagMode":false});</script><script src="/js/visitor-tracker.js"></script></body>
+    // Initialize default language on page load
+    switchLang('jp');
+  </script>
+</body>
 </html>
+
+
+
