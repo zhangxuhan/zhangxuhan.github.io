@@ -112,57 +112,19 @@
       background: rgba(10, 10, 10, 0.85);
       backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
-      padding: 0.75rem 2rem;
+      padding: 0 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     
-    .nav-brand {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: var(--text);
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-    
-    .nav-brand:hover {
-      color: var(--accent);
-    }
-    
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-      align-items: center;
-    }
-    
-    .nav-links a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: all 0.3s;
-      position: relative;
-    }
-    
-    .nav-links a::after {
-      content: '';
-      position: absolute;
-      bottom: -4px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: var(--accent);
-      transition: width 0.3s;
-    }
-    
-    .nav-links a:hover {
-      color: var(--accent);
-    }
-    
-    .nav-links a:hover::after {
-      width: 100%;
-    }
-    
+    .nav-avatar { width: 48px; height: 48px; object-fit: cover; vertical-align: middle; margin-right: 0.4rem; }
+    .nav-left { display: flex; align-items: center; }
+    .nav-brand { font-size: 1.15rem; font-weight: 600; color: var(--text); text-decoration: none; }
+    .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; }
+    .nav-links a:hover { color: var(--accent); }
+
     /* Container */
     .container {
       max-width: 1000px;
@@ -272,7 +234,7 @@
     /* Language Switcher */
     .lang-switcher-fixed {
       position: fixed;
-      top: 1.2rem;
+      top: 3.5rem;
       right: 1.5rem;
       z-index: 1100;
       backdrop-filter: blur(16px);
@@ -858,14 +820,20 @@
     <button class="lang-btn-fixed" data-lang="cn" onclick="switchLang('cn')">🇨🇳 中文</button>
   </div>
   
-  <!-- Navigation -->
+  <!-- Avatar + Navigation -->
   <nav>
-    <a href="#" class="nav-brand">Xuhan Zhang</a>
+    <div class="nav-left">
+      <img class="nav-avatar" src="/img/zxh_avatar_144.png" alt="avatar">
+      <a href="#" class="nav-brand"
+         data-lang-jp="チョウ キョクカン"
+         data-lang-en="Xuhan Zhang"
+         data-lang-cn="张旭瀚">Xuhan Zhang</a>
+    </div>
     <div class="nav-links">
-      <a href="#video">Video</a>
-      <a href="#projects">Projects</a>
-      <a href="#skills">Skills</a>
-      <a href="#contact">Contact</a>
+      <a href="#video" data-lang-jp="動画" data-lang-en="Video" data-lang-cn="视频">Video</a>
+      <a href="#projects" data-lang-jp="プロジェクト" data-lang-en="Projects" data-lang-cn="项目">Projects</a>
+      <a href="#skills" data-lang-jp="スキル" data-lang-en="Skills" data-lang-cn="技能">Skills</a>
+      <a href="#contact" data-lang-jp="連絡先" data-lang-en="Contact" data-lang-cn="联系方式">Contact</a>
     </div>
   </nav>
 
@@ -1471,6 +1439,15 @@
       // Update sidebar nav labels
       document.querySelectorAll('.sidebar-label[data-lang-' + lang + ']').forEach(label => {
         label.textContent = label.getAttribute('data-lang-' + lang);
+      });
+
+      // Update nav brand name
+      const navBrand = document.querySelector('.nav-brand[data-lang-' + lang + ']');
+      if (navBrand) navBrand.textContent = navBrand.getAttribute('data-lang-' + lang);
+
+      // Update nav links labels
+      document.querySelectorAll('.nav-links a[data-lang-' + lang + ']').forEach(a => {
+        a.textContent = a.getAttribute('data-lang-' + lang);
       });
 
       // Update sidebar nav active state
