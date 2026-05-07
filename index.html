@@ -349,6 +349,11 @@
       transform: translateX(0);
       color: var(--accent);
     }
+
+    /* Mobile: hide sidebar nav */
+    @media (max-width: 768px) {
+      .sidebar-nav-wrap { display: none; }
+    }
     
     /* Stats Bar */
     .stats-bar {
