@@ -1,3 +1,46 @@
+/* === External Link Enhancement for Video Section === */
+.video-card .proj-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.2s, border-color 0.2s, transform 0.2s;
+  padding-bottom: 1px;
+}
+.video-card .proj-link:hover {
+  color: #1a56db;
+  border-bottom-color: #1a56db;
+  transform: translateX(2px);
+}
+.video-card .proj-link .ext-icon {
+  font-size: 0.75rem;
+  opacity: 0.4;
+  transition: opacity 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+.video-card .proj-link:hover .ext-icon {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+.video-card .proj-link .host-tag {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: #9ca3af;
+  opacity: 0;
+  transition: opacity 0.2s;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.video-card .proj-link:hover .host-tag {
+  opacity: 1;
+}
+
 /* === Custom: Enhanced about CTA === */
 .main-menu .menu-item-about a {
   background: #222;
