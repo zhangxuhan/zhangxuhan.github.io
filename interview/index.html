@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>面试记录</title>
+<title>面试记录 — Career-Ops 评估版</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -37,212 +37,336 @@
   --status-rejected-bg: #fee2e2;
   --status-declined: #94a3b8;
   --status-declined-bg: #f1f5f9;
+  --score-a: #6366f1;
+  --score-b: #8b5cf6;
+  --score-c: #06b6d4;
+  --score-d: #10b981;
+  --score-e: #f59e0b;
+  --score-f: #ef4444;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+  background:var(--bg); color:var(--text); line-height:1.6;
+  -webkit-font-smoothing:antialiased;
 }
-.app { max-width: 1200px; margin: 0 auto; padding: 32px 24px 80px; }
+.app { max-width:1200px; margin:0 auto; padding:32px 24px 80px; }
 
 /* Header */
 .header {
-  display: flex; justify-content: space-between; align-items: flex-end;
-  margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border);
+  display:flex; justify-content:space-between; align-items:flex-end;
+  margin-bottom:32px; padding-bottom:24px; border-bottom:1px solid var(--border);
 }
 .header-left h1 {
-  font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
-  background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  font-size:28px; font-weight:800; letter-spacing:-0.5px;
+  background:linear-gradient(135deg,var(--primary) 0%,#8b5cf6 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
 }
-.header-left .subtitle { font-size: 14px; color: var(--text-secondary); margin-top: 4px; display: block; }
-.header-right { display: flex; gap: 8px; }
+.header-left .subtitle { font-size:14px; color:var(--text-secondary); margin-top:4px; display:block; }
+.header-right { display:flex; gap:8px; }
 
 /* Buttons */
 .btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 16px; font-size: 14px; font-weight: 500; font-family: inherit;
-  border: 1px solid var(--border); background: var(--surface); color: var(--text);
-  border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); white-space: nowrap;
+  display:inline-flex; align-items:center; gap:6px;
+  padding:8px 16px; font-size:14px; font-weight:500; font-family:inherit;
+  border:1px solid var(--border); background:var(--surface); color:var(--text);
+  border-radius:var(--radius-sm); cursor:pointer; transition:var(--transition); white-space:nowrap;
 }
-.btn:hover { background: var(--surface-hover); border-color: var(--border-strong); box-shadow: var(--shadow-sm); }
-.btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
-.btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); box-shadow: 0 4px 12px rgba(99,102,241,0.25); }
+.btn:hover { background:var(--surface-hover); border-color:var(--border-strong); box-shadow:var(--shadow-sm); }
+.btn-primary { background:var(--primary); color:#fff; border-color:var(--primary); }
+.btn-primary:hover { background:var(--primary-dark); border-color:var(--primary-dark); box-shadow:0 4px 12px rgba(99,102,241,0.25); }
 .btn-ai {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: #fff; border: none; font-weight: 600;
+  background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);
+  color:#fff; border:none; font-weight:600;
 }
-.btn-ai:hover { box-shadow: 0 4px 16px rgba(99,102,241,0.35); transform: translateY(-1px); }
-.btn-danger { color: var(--status-rejected); border-color: var(--status-rejected-bg); }
-.btn-danger:hover { background: var(--status-rejected-bg); border-color: var(--status-rejected); }
-.btn-icon { padding: 6px 10px; font-size: 13px; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-ai:hover { box-shadow:0 4px 16px rgba(99,102,241,0.35); transform:translateY(-1px); }
+.btn-danger { color:var(--status-rejected); border-color:var(--status-rejected-bg); }
+.btn-danger:hover { background:var(--status-rejected-bg); border-color:var(--status-rejected); }
+.btn-icon { padding:6px 10px; font-size:13px; }
+.btn:disabled { opacity:0.5; cursor:not-allowed; }
 
 /* Stats */
-.stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 28px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px 18px; transition: var(--transition); }
-.stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-.stat-value { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; display: block; line-height: 1.2; }
-.stat-label { font-size: 13px; color: var(--text-secondary); margin-top: 4px; display: block; }
-.stat-card.pending .stat-value { color: var(--status-pending); }
-.stat-card.interviewing .stat-value { color: var(--status-interviewing); }
-.stat-card.offered .stat-value { color: var(--status-offered); }
-.stat-card.rejected .stat-value { color: var(--status-rejected); }
+.stats { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px; margin-bottom:28px; }
+.stat-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px 18px; transition:var(--transition); }
+.stat-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
+.stat-value { font-size:28px; font-weight:800; letter-spacing:-0.5px; display:block; line-height:1.2; }
+.stat-label { font-size:13px; color:var(--text-secondary); margin-top:4px; display:block; }
+.stat-card.pending .stat-value { color:var(--status-pending); }
+.stat-card.interviewing .stat-value { color:var(--status-interviewing); }
+.stat-card.offered .stat-value { color:var(--status-offered); }
+.stat-card.rejected .stat-value { color:var(--status-rejected); }
+.stat-card .stat-value.score-high { color:#10b981; }
+.stat-card .stat-value.score-mid { color:#6366f1; }
+.stat-card .stat-value.score-low { color:#f59e0b; }
 
 /* Toolbar */
-.toolbar { display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap; align-items: center; }
-.search-box { flex: 1; min-width: 200px; position: relative; }
+.toolbar { display:flex; gap:10px; margin-bottom:24px; flex-wrap:wrap; align-items:center; }
+.search-box { flex:1; min-width:200px; position:relative; }
 .search-box input {
-  width: 100%; padding: 9px 14px 9px 38px; font-size: 14px; font-family: inherit;
-  border: 1px solid var(--border); border-radius: var(--radius-sm);
-  background: var(--surface); color: var(--text); transition: var(--transition);
+  width:100%; padding:9px 14px 9px 38px; font-size:14px; font-family:inherit;
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  background:var(--surface); color:var(--text); transition:var(--transition);
 }
-.search-box input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
+.search-box input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
 .search-box::before {
-  content: ''; position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
-  width: 16px; height: 16px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") center/contain no-repeat;
-  pointer-events: none;
+  content:''; position:absolute; left:13px; top:50%; transform:translateY(-50%);
+  width:16px; height:16px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E") center/contain no-repeat;
+  pointer-events:none;
 }
-.select { padding: 9px 14px; font-size: 14px; font-family: inherit; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); cursor: pointer; transition: var(--transition); }
-.select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.1); }
-.toolbar-spacer { flex: 1; }
+.select { padding:9px 14px; font-size:14px; font-family:inherit; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface); color:var(--text); cursor:pointer; transition:var(--transition); }
+.select:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+.toolbar-spacer { flex:1; }
 
-/* Records */
-.records { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+/* Records Grid */
+.records { display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:16px; }
 .record-card {
-  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 20px; transition: var(--transition); position: relative;
-  display: flex; flex-direction: column; gap: 10px;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:20px; transition:var(--transition); position:relative;
+  display:flex; flex-direction:column; gap:10px;
 }
-.record-card:hover { box-shadow: var(--shadow-lg); border-color: var(--border-strong); transform: translateY(-2px); }
-.record-card::before { content: ''; position: absolute; left: 0; top: 16px; bottom: 16px; width: 3px; border-radius: 0 3px 3px 0; }
-.record-card[data-status="pending"]::before { background: var(--status-pending); }
-.record-card[data-status="interviewing"]::before { background: var(--status-interviewing); }
-.record-card[data-status="offered"]::before { background: var(--status-offered); }
-.record-card[data-status="rejected"]::before { background: var(--status-rejected); }
-.record-card[data-status="declined"]::before { background: var(--status-declined); }
-.card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-.card-company { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; line-height: 1.3; }
-.card-company a { color: inherit; text-decoration: none; }
-.card-company a:hover { color: var(--primary); }
-.card-position { font-size: 14px; color: var(--text-secondary); font-weight: 500; }
-.badge { display: inline-flex; align-items: center; padding: 3px 10px; font-size: 12px; font-weight: 600; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
-.badge.pending { background: var(--status-pending-bg); color: #92400e; }
-.badge.interviewing { background: var(--status-interviewing-bg); color: #1e40af; }
-.badge.offered { background: var(--status-offered-bg); color: #065f46; }
-.badge.rejected { background: var(--status-rejected-bg); color: #991b1b; }
-.badge.declined { background: var(--status-declined-bg); color: #475569; }
-.card-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--text-secondary); }
-.card-meta-item { display: inline-flex; align-items: center; gap: 4px; }
-.card-intro { font-size: 13px; color: var(--text-secondary); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.card-notes { font-size: 13px; color: var(--text-tertiary); line-height: 1.5; padding: 8px 10px; background: var(--bg); border-radius: var(--radius-sm); display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-.card-actions { display: flex; gap: 6px; margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--border); }
-.card-actions .btn { padding: 5px 12px; font-size: 13px; }
+.record-card:hover { box-shadow:var(--shadow-lg); border-color:var(--border-strong); transform:translateY(-2px); }
+.record-card::before { content:''; position:absolute; left:0; top:16px; bottom:16px; width:3px; border-radius:0 3px 3px 0; }
+.record-card[data-status="pending"]::before { background:var(--status-pending); }
+.record-card[data-status="interviewing"]::before { background:var(--status-interviewing); }
+.record-card[data-status="offered"]::before { background:var(--status-offered); }
+.record-card[data-status="rejected"]::before { background:var(--status-rejected); }
+.record-card[data-status="declined"]::before { background:var(--status-declined); }
+
+.card-header { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
+.card-company { font-size:17px; font-weight:700; letter-spacing:-0.3px; line-height:1.3; }
+.card-company a { color:inherit; text-decoration:none; }
+.card-company a:hover { color:var(--primary); }
+.card-position { font-size:14px; color:var(--text-secondary); font-weight:500; }
+.badge { display:inline-flex; align-items:center; padding:3px 10px; font-size:12px; font-weight:600; border-radius:20px; white-space:nowrap; flex-shrink:0; }
+.badge.pending { background:var(--status-pending-bg); color:#92400e; }
+.badge.interviewing { background:var(--status-interviewing-bg); color:#1e40af; }
+.badge.offered { background:var(--status-offered-bg); color:#065f46; }
+.badge.rejected { background:var(--status-rejected-bg); color:#991b1b; }
+.badge.declined { background:var(--status-declined-bg); color:#475569; }
+
+/* Score badge */
+.score-badge {
+  display:inline-flex; align-items:center; justify-content:center;
+  width:36px; height:36px; border-radius:50%; font-size:14px; font-weight:800;
+  flex-shrink:0;
+}
+.score-badge.high { background:#d1fae5; color:#065f46; }
+.score-badge.mid { background:#e0e7ff; color:#3730a3; }
+.score-badge.low { background:#fef3c7; color:#92400e; }
+.score-badge.bad { background:#fee2e2; color:#991b1b; }
+
+.card-meta { display:flex; flex-wrap:wrap; gap:6px 16px; font-size:13px; color:var(--text-secondary); }
+.card-meta-item { display:inline-flex; align-items:center; gap:4px; }
+.card-intro { font-size:13px; color:var(--text-secondary); line-height:1.5; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.card-notes { font-size:13px; color:var(--text-tertiary); line-height:1.5; padding:8px 10px; background:var(--bg); border-radius:var(--radius-sm); display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+
+/* Score mini bar in card */
+.card-score-bar { display:flex; gap:4px; align-items:center; margin-top:2px; }
+.card-score-bar .dim-dot {
+  width:8px; height:8px; border-radius:50%; display:inline-block;
+  transition:var(--transition);
+}
+.card-score-bar .dim-dot.dim-0 { background:#e2e8f0; }
+.card-score-bar .dim-dot.dim-1 { background:#fecaca; }
+.card-score-bar .dim-dot.dim-2 { background:#fde68a; }
+.card-score-bar .dim-dot.dim-3 { background:#bfdbfe; }
+.card-score-bar .dim-dot.dim-4 { background:#a7f3d0; }
+.card-score-bar .dim-dot.dim-5 { background:#6ee7b7; }
+
+.card-actions { display:flex; gap:6px; margin-top:4px; padding-top:10px; border-top:1px solid var(--border); }
+.card-actions .btn { padding:5px 12px; font-size:13px; }
 
 /* Empty */
-.empty-state { grid-column: 1 / -1; text-align: center; padding: 80px 24px; color: var(--text-tertiary); }
-.empty-state h3 { font-size: 18px; font-weight: 600; color: var(--text-secondary); margin-bottom: 8px; }
-.empty-state p { font-size: 14px; margin-bottom: 20px; }
+.empty-state { grid-column:1/-1; text-align:center; padding:80px 24px; color:var(--text-tertiary); }
+.empty-state h3 { font-size:18px; font-weight:600; color:var(--text-secondary); margin-bottom:8px; }
+.empty-state p { font-size:14px; margin-bottom:20px; }
 
 /* Modal */
 .modal-overlay {
-  position: fixed; inset: 0; background: rgba(15,23,42,0.4); backdrop-filter: blur(4px);
-  display: flex; align-items: center; justify-content: center; z-index: 100;
-  opacity: 0; visibility: hidden; transition: var(--transition);
+  position:fixed; inset:0; background:rgba(15,23,42,0.4); backdrop-filter:blur(4px);
+  display:flex; align-items:center; justify-content:center; z-index:100;
+  opacity:0; visibility:hidden; transition:var(--transition);
 }
-.modal-overlay.active { opacity: 1; visibility: visible; }
+.modal-overlay.active { opacity:1; visibility:visible; }
 .modal {
-  background: var(--surface); border-radius: 16px;
-  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
-  width: 90%; max-width: 560px; max-height: 90vh; overflow-y: auto;
-  transform: scale(0.95) translateY(10px); transition: var(--transition);
+  background:var(--surface); border-radius:16px;
+  box-shadow:0 25px 50px -12px rgba(0,0,0,0.25);
+  width:90%; max-width:580px; max-height:90vh; overflow-y:auto;
+  transform:scale(0.95) translateY(10px); transition:var(--transition);
 }
-.modal-overlay.active .modal { transform: scale(1) translateY(0); }
+.modal-overlay.active .modal { transform:scale(1) translateY(0); }
 .modal-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 20px 24px; border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; background: var(--surface); z-index: 1; border-radius: 16px 16px 0 0;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:20px 24px; border-bottom:1px solid var(--border);
+  position:sticky; top:0; background:var(--surface); z-index:1; border-radius:16px 16px 0 0;
 }
-.modal-header h2 { font-size: 18px; font-weight: 700; }
-.modal-close { background: none; border: none; font-size: 22px; color: var(--text-tertiary); cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: var(--transition); line-height: 1; }
-.modal-close:hover { background: var(--bg); color: var(--text); }
-.modal-body { padding: 24px; }
+.modal-header h2 { font-size:18px; font-weight:700; }
+.modal-close { background:none; border:none; font-size:22px; color:var(--text-tertiary); cursor:pointer; padding:4px 8px; border-radius:6px; transition:var(--transition); line-height:1; }
+.modal-close:hover { background:var(--bg); color:var(--text); }
+.modal-body { padding:24px; }
+.modal-footer { display:flex; justify-content:flex-end; gap:10px; padding:16px 24px; border-top:1px solid var(--border); position:sticky; bottom:0; background:var(--surface); border-radius:0 0 16px 16px; }
 
 /* Form */
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.form-group { display: flex; flex-direction: column; gap: 6px; }
-.form-group.full { grid-column: 1 / -1; }
-.form-group label { font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group.full { grid-column:1/-1; }
+.form-group label { font-size:13px; font-weight:600; color:var(--text-secondary); }
 .form-group input, .form-group select, .form-group textarea {
-  padding: 9px 12px; font-size: 14px; font-family: inherit;
-  border: 1px solid var(--border); border-radius: var(--radius-sm);
-  background: var(--surface); color: var(--text); transition: var(--transition); width: 100%;
+  padding:9px 12px; font-size:14px; font-family:inherit;
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  background:var(--surface); color:var(--text); transition:var(--transition); width:100%;
 }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-  outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+  outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(99,102,241,0.1);
 }
-.form-group textarea { resize: vertical; min-height: 70px; }
-.modal-footer { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 24px; border-top: 1px solid var(--border); position: sticky; bottom: 0; background: var(--surface); border-radius: 0 0 16px 16px; }
+.form-group textarea { resize:vertical; min-height:70px; }
 
-/* AI Modal */
-.modal.modal-wide { max-width: 720px; }
-.ai-section { margin-bottom: 24px; }
-.ai-section h3 { font-size: 15px; font-weight: 700; margin-bottom: 12px; color: var(--text); display: flex; align-items: center; gap: 8px; }
-.ai-section h3::before { content: ''; width: 4px; height: 16px; background: var(--primary); border-radius: 2px; }
-.local-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.local-stat { background: var(--bg); border-radius: var(--radius-sm); padding: 12px 14px; text-align: center; }
-.local-stat-value { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
-.local-stat-label { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
-.ai-controls { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
-.ai-result { background: var(--bg); border-radius: var(--radius-sm); padding: 20px; font-size: 14px; line-height: 1.7; min-height: 120px; max-height: 400px; overflow-y: auto; }
-.ai-result:empty::before { content: '点击上方按钮开始 AI 分析'; color: var(--text-tertiary); display: flex; align-items: center; justify-content: center; height: 120px; }
-.ai-result h1, .ai-result h2, .ai-result h3 { margin: 16px 0 8px; font-weight: 700; }
-.ai-result h1 { font-size: 18px; }
-.ai-result h2 { font-size: 16px; }
-.ai-result h3 { font-size: 15px; }
-.ai-result ul, .ai-result ol { padding-left: 20px; margin: 8px 0; }
-.ai-result li { margin: 4px 0; }
-.ai-result p { margin: 8px 0; }
-.ai-result strong { font-weight: 700; }
-.ai-result code { background: var(--surface); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
-.ai-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; gap: 12px; color: var(--text-secondary); }
-.spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.ai-error { background: var(--status-rejected-bg); color: #991b1b; padding: 12px 16px; border-radius: var(--radius-sm); font-size: 14px; }
-.ai-hint { font-size: 13px; color: var(--text-tertiary); margin-top: 8px; line-height: 1.5; }
+/* Tabs in modal */
+.tab-bar { display:flex; gap:0; border-bottom:2px solid var(--border); margin-bottom:20px; }
+.tab-btn {
+  padding:10px 18px; font-size:14px; font-weight:600; font-family:inherit;
+  background:none; border:none; color:var(--text-tertiary); cursor:pointer;
+  border-bottom:2px solid transparent; margin-bottom:-2px; transition:var(--transition);
+}
+.tab-btn.active { color:var(--primary); border-bottom-color:var(--primary); }
+.tab-btn:hover { color:var(--text); }
+.tab-panel { display:none; }
+.tab-panel.active { display:block; }
+
+/* Evaluation styles */
+.eval-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.eval-dim { display:flex; flex-direction:column; gap:6px; }
+.eval-dim label { font-size:13px; font-weight:600; color:var(--text-secondary); display:flex; align-items:center; gap:6px; }
+.eval-dim label .dim-color { width:10px; height:10px; border-radius:50%; display:inline-block; }
+.eval-dim .score-input {
+  display:flex; gap:6px;
+}
+.eval-dim .score-input button {
+  width:36px; height:36px; border-radius:8px; border:2px solid var(--border);
+  background:var(--surface); font-size:15px; font-weight:700; cursor:pointer;
+  transition:var(--transition); font-family:inherit; color:var(--text-tertiary);
+}
+.eval-dim .score-input button.active { border-color:var(--primary); background:var(--primary-light); color:var(--primary-dark); }
+.eval-dim .score-input button:hover:not(.active) { border-color:var(--border-strong); background:var(--surface-hover); }
+.eval-global { grid-column:1/-1; background:var(--bg); border-radius:var(--radius); padding:16px 20px; margin-top:8px; }
+.eval-global .global-score {
+  font-size:48px; font-weight:800; letter-spacing:-1px; line-height:1;
+}
+.eval-global .global-label { font-size:13px; color:var(--text-secondary); margin-top:4px; }
+.eval-global .recommendation {
+  margin-top:10px; padding:8px 14px; border-radius:var(--radius-sm); font-size:14px; font-weight:600;
+}
+.rec-high { background:#d1fae5; color:#065f46; }
+.rec-mid { background:#e0e7ff; color:#3730a3; }
+.rec-low { background:#fef3c7; color:#92400e; }
+.rec-bad { background:#fee2e2; color:#991b1b; }
+
+.eval-archetype { grid-column:1/-1; margin-top:4px; }
+.eval-archetype select {
+  width:100%; padding:9px 12px; font-size:14px; font-family:inherit;
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  background:var(--surface); color:var(--text);
+}
+
+/* AI Eval Modal */
+.modal.modal-wide { max-width:760px; }
+.ai-section { margin-bottom:24px; }
+.ai-section h3 { font-size:15px; font-weight:700; margin-bottom:12px; color:var(--text); display:flex; align-items:center; gap:8px; }
+.ai-section h3::before { content:''; width:4px; height:16px; background:var(--primary); border-radius:2px; }
+.local-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.local-stat { background:var(--bg); border-radius:var(--radius-sm); padding:12px 14px; text-align:center; }
+.local-stat-value { font-size:22px; font-weight:800; letter-spacing:-0.5px; }
+.local-stat-label { font-size:12px; color:var(--text-secondary); margin-top:2px; }
+.ai-controls { display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; }
+.ai-result {
+  background:var(--bg); border-radius:var(--radius-sm); padding:20px;
+  font-size:14px; line-height:1.7; min-height:120px; max-height:500px; overflow-y:auto;
+}
+.ai-result:empty::before { content:'在左侧粘贴职位描述，然后点击"运行评估"'; color:var(--text-tertiary); display:flex; align-items:center; justify-content:center; height:120px; }
+.ai-result h1, .ai-result h2, .ai-result h3 { margin:16px 0 8px; font-weight:700; }
+.ai-result h1 { font-size:18px; }
+.ai-result h2 { font-size:16px; }
+.ai-result h3 { font-size:15px; }
+.ai-result ul, .ai-result ol { padding-left:20px; margin:8px 0; }
+.ai-result li { margin:4px 0; }
+.ai-result p { margin:8px 0; }
+.ai-result strong { font-weight:700; }
+.ai-result code { background:var(--surface); padding:2px 6px; border-radius:4px; font-size:13px; }
+.ai-result table { border-collapse:collapse; width:100%; margin:12px 0; }
+.ai-result th, .ai-result td { border:1px solid var(--border); padding:8px 12px; font-size:13px; text-align:left; }
+.ai-result th { background:var(--surface-hover); font-weight:600; }
+.ai-loading { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px; gap:12px; color:var(--text-secondary); }
+.spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.ai-error { background:var(--status-rejected-bg); color:#991b1b; padding:12px 16px; border-radius:var(--radius-sm); font-size:14px; }
+.ai-hint { font-size:13px; color:var(--text-tertiary); margin-top:8px; line-height:1.5; }
+
+/* JD input area */
+.jd-input-area {
+  width:100%; min-height:160px; padding:12px; font-size:14px; font-family:inherit;
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  background:var(--surface); color:var(--text); resize:vertical;
+  transition:var(--transition);
+}
+.jd-input-area:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+
+/* Report modal */
+.report-content { font-size:14px; line-height:1.7; }
+.report-content h2 { font-size:18px; font-weight:700; margin:20px 0 10px; padding-bottom:8px; border-bottom:2px solid var(--border); }
+.report-content h3 { font-size:15px; font-weight:700; margin:14px 0 8px; }
+.report-content table { border-collapse:collapse; width:100%; margin:12px 0; }
+.report-content th, .report-content td { border:1px solid var(--border); padding:8px 12px; font-size:13px; text-align:left; }
+.report-content th { background:var(--surface-hover); font-weight:600; }
+.report-content ul, .report-content ol { padding-left:20px; margin:8px 0; }
+.report-content li { margin:4px 0; }
+.report-score-header {
+  display:flex; align-items:center; gap:16px; padding:16px 20px; background:var(--bg);
+  border-radius:var(--radius); margin-bottom:20px;
+}
+.report-score-header .big-score {
+  font-size:56px; font-weight:800; letter-spacing:-2px; line-height:1;
+}
+.report-score-header .score-meta { font-size:14px; color:var(--text-secondary); }
+.report-score-header .score-meta strong { color:var(--text); }
 
 /* Confirm */
-.confirm-dialog { max-width: 400px; text-align: center; }
-.confirm-dialog .modal-body { padding: 32px 24px 24px; }
-.confirm-dialog p { font-size: 15px; color: var(--text-secondary); margin-bottom: 8px; }
-.confirm-dialog .company-name { font-weight: 700; color: var(--text); }
-.confirm-dialog .modal-footer { justify-content: center; }
+.confirm-dialog { max-width:400px; text-align:center; }
+.confirm-dialog .modal-body { padding:32px 24px 24px; }
+.confirm-dialog p { font-size:15px; color:var(--text-secondary); margin-bottom:8px; }
+.confirm-dialog .company-name { font-weight:700; color:var(--text); }
+.confirm-dialog .modal-footer { justify-content:center; }
 
 /* Toast */
 .toast {
-  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
-  background: var(--text); color: #fff; padding: 10px 20px; border-radius: var(--radius-sm);
-  font-size: 14px; box-shadow: var(--shadow-lg); z-index: 200; opacity: 0;
-  transition: var(--transition); pointer-events: none;
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px);
+  background:var(--text); color:#fff; padding:10px 20px; border-radius:var(--radius-sm);
+  font-size:14px; box-shadow:var(--shadow-lg); z-index:200; opacity:0;
+  transition:var(--transition); pointer-events:none;
 }
-.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border-strong); border-radius:3px; }
+::-webkit-scrollbar-thumb:hover { background:var(--text-tertiary); }
 
-@media (max-width: 768px) {
-  .stats { grid-template-columns: repeat(2, 1fr); }
-  .form-grid { grid-template-columns: 1fr; }
-  .records { grid-template-columns: 1fr; }
-  .local-stats { grid-template-columns: 1fr; }
-  .header { flex-direction: column; gap: 16px; align-items: stretch; }
+/* CV config modal */
+.cv-textarea {
+  width:100%; min-height:200px; padding:12px; font-size:14px; font-family:inherit;
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  background:var(--surface); color:var(--text); resize:vertical;
+}
+
+@media (max-width:768px) {
+  .stats { grid-template-columns:repeat(2,1fr); }
+  .form-grid { grid-template-columns:1fr; }
+  .records { grid-template-columns:1fr; }
+  .eval-grid { grid-template-columns:1fr; }
+  .local-stats { grid-template-columns:1fr; }
+  .header { flex-direction:column; gap:16px; align-items:stretch; }
+  .tab-bar { overflow-x:auto; }
 }
 </style>
 </head>
@@ -251,9 +375,10 @@ body {
   <header class="header">
     <div class="header-left">
       <h1>面试记录</h1>
-      <span class="subtitle">求职追踪面板</span>
+      <span class="subtitle">Career-Ops 结构化评估版</span>
     </div>
     <div class="header-right">
+      <button class="btn btn-icon" onclick="openCVConfig()">我的CV</button>
       <button class="btn btn-icon" onclick="exportData()">导出</button>
       <button class="btn btn-icon" onclick="document.getElementById('importFile').click()">导入</button>
       <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
@@ -261,13 +386,7 @@ body {
     </div>
   </header>
 
-  <section class="stats">
-    <div class="stat-card"><span class="stat-value" id="statTotal">0</span><span class="stat-label">总投递</span></div>
-    <div class="stat-card pending"><span class="stat-value" id="statPending">0</span><span class="stat-label">待回复</span></div>
-    <div class="stat-card interviewing"><span class="stat-value" id="statInterviewing">0</span><span class="stat-label">面试中</span></div>
-    <div class="stat-card offered"><span class="stat-value" id="statOffered">0</span><span class="stat-label">已通过</span></div>
-    <div class="stat-card rejected"><span class="stat-value" id="statRejected">0</span><span class="stat-label">未通过</span></div>
-  </section>
+  <section class="stats" id="statsBar"></section>
 
   <section class="toolbar">
     <div class="search-box">
@@ -281,14 +400,24 @@ body {
       <option value="rejected">未通过</option>
       <option value="declined">已放弃</option>
     </select>
+    <select class="select" id="filterScore" onchange="renderRecords()">
+      <option value="">全部评分</option>
+      <option value="high">4.5+ 强烈推荐</option>
+      <option value="good">4.0-4.4 值得申请</option>
+      <option value="decent">3.5-3.9 谨慎考虑</option>
+      <option value="low">&lt;3.5 不推荐</option>
+      <option value="unevaluated">未评估</option>
+    </select>
     <select class="select" id="sortBy" onchange="renderRecords()">
+      <option value="updatedAt-desc">最近更新</option>
+      <option value="score-desc">评分 (高-低)</option>
+      <option value="score-asc">评分 (低-高)</option>
       <option value="applyDate-desc">投递日期 (新-旧)</option>
       <option value="applyDate-asc">投递日期 (旧-新)</option>
-      <option value="updatedAt-desc">最近更新</option>
       <option value="companyName-asc">公司名称</option>
     </select>
     <div class="toolbar-spacer"></div>
-    <button class="btn btn-ai" onclick="openAIAnalysis()">AI 分析</button>
+    <button class="btn btn-ai" onclick="openBatchEval()">批量评估</button>
     <button class="btn btn-primary" onclick="openRecordModal()">+ 添加记录</button>
   </section>
 
@@ -297,32 +426,56 @@ body {
 
 <!-- Record Modal -->
 <div class="modal-overlay" id="recordModalOverlay">
-  <div class="modal">
+  <div class="modal modal-wide">
     <div class="modal-header">
       <h2 id="recordModalTitle">添加记录</h2>
       <button class="modal-close" onclick="closeModal('recordModalOverlay')">&times;</button>
     </div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab('tabBasic',this)">基本信息</button>
+      <button class="tab-btn" onclick="switchTab('tabEval',this)">Career-Ops 评估</button>
+    </div>
     <div class="modal-body">
-      <div class="form-grid">
-        <div class="form-group"><label>公司名称 *</label><input type="text" id="fCompany" placeholder="例: Wizcorp"></div>
-        <div class="form-group"><label>职位名称 *</label><input type="text" id="fPosition" placeholder="例: UE Programmer"></div>
-        <div class="form-group"><label>公司网址</label><input type="url" id="fWebsite" placeholder="https://..."></div>
-        <div class="form-group"><label>工作地点</label><input type="text" id="fLocation" placeholder="例: 东京"></div>
-        <div class="form-group"><label>薪资范围</label><input type="text" id="fSalary" placeholder="例: 500-800万日元"></div>
-        <div class="form-group">
-          <label>状态</label>
-          <select id="fStatus">
-            <option value="pending">待回复</option>
-            <option value="interviewing">面试中</option>
-            <option value="offered">已通过</option>
-            <option value="rejected">未通过</option>
-            <option value="declined">已放弃</option>
-          </select>
+      <!-- Tab: Basic -->
+      <div class="tab-panel active" id="tabBasic">
+        <div class="form-grid">
+          <div class="form-group"><label>公司名称 *</label><input type="text" id="fCompany" placeholder="例: Wizcorp"></div>
+          <div class="form-group"><label>职位名称 *</label><input type="text" id="fPosition" placeholder="例: UE Programmer"></div>
+          <div class="form-group"><label>公司网址</label><input type="url" id="fWebsite" placeholder="https://..."></div>
+          <div class="form-group"><label>工作地点</label><input type="text" id="fLocation" placeholder="例: 东京"></div>
+          <div class="form-group"><label>薪资范围</label><input type="text" id="fSalary" placeholder="例: 500-800万日元"></div>
+          <div class="form-group">
+            <label>状态</label>
+            <select id="fStatus">
+              <option value="pending">待回复</option>
+              <option value="interviewing">面试中</option>
+              <option value="offered">已通过</option>
+              <option value="rejected">未通过</option>
+              <option value="declined">已放弃</option>
+            </select>
+          </div>
+          <div class="form-group"><label>投递日期</label><input type="date" id="fApplyDate"></div>
+          <div class="form-group"><label>面试日期</label><input type="date" id="fInterviewDate"></div>
+          <div class="form-group full"><label>公司简介</label><textarea id="fIntro" placeholder="公司业务、规模、行业等..."></textarea></div>
+          <div class="form-group full"><label>备注 / 面试记录</label><textarea id="fNotes" placeholder="面试问题、技术栈要求、HR联系方式、薪资谈判等..."></textarea></div>
         </div>
-        <div class="form-group"><label>投递日期</label><input type="date" id="fApplyDate"></div>
-        <div class="form-group"><label>面试日期</label><input type="date" id="fInterviewDate"></div>
-        <div class="form-group full"><label>公司简介</label><textarea id="fIntro" placeholder="公司业务、规模、行业等..."></textarea></div>
-        <div class="form-group full"><label>备注 / 面试记录</label><textarea id="fNotes" placeholder="面试问题、技术栈要求、HR联系方式、薪资谈判等..."></textarea></div>
+      </div>
+      <!-- Tab: Evaluation -->
+      <div class="tab-panel" id="tabEval">
+        <div class="ai-section">
+          <h3>AI 自动评估</h3>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">粘贴职位描述（JD），AI 将按 Career-Ops 方法论进行 7 块结构化评估（A-G）。</p>
+          <textarea class="jd-input-area" id="evalJDInput" placeholder="在此粘贴职位描述（Job Description）..."></textarea>
+          <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;">
+            <button class="btn btn-ai" id="btnRunEval" onclick="runSingleEval()">运行评估</button>
+            <button class="btn" onclick="clearEvalResult()">清除结果</button>
+          </div>
+          <div class="ai-result" id="evalResult" style="margin-top:16px;"></div>
+        </div>
+        <div class="ai-section" id="manualEvalSection" style="display:none;">
+          <h3>手动评分（可手动调整 AI 结果）</h3>
+          <div class="eval-grid" id="evalGrid"></div>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -332,12 +485,26 @@ body {
   </div>
 </div>
 
-<!-- AI Modal -->
-<div class="modal-overlay" id="aiModalOverlay">
+<!-- Report Modal -->
+<div class="modal-overlay" id="reportModalOverlay">
   <div class="modal modal-wide">
     <div class="modal-header">
-      <h2>AI 求职分析</h2>
-      <button class="modal-close" onclick="closeModal('aiModalOverlay')">&times;</button>
+      <h2 id="reportModalTitle">评估报告</h2>
+      <button class="modal-close" onclick="closeModal('reportModalOverlay')">&times;</button>
+    </div>
+    <div class="modal-body report-content" id="reportContent"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('reportModalOverlay')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- Batch Eval Modal -->
+<div class="modal-overlay" id="batchEvalOverlay">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h2>批量评估</h2>
+      <button class="modal-close" onclick="closeModal('batchEvalOverlay')">&times;</button>
     </div>
     <div class="modal-body">
       <div class="ai-section">
@@ -345,13 +512,16 @@ body {
         <div class="local-stats" id="localStats"></div>
       </div>
       <div class="ai-section">
-        <h3>AI 深度分析</h3>
+        <h3>批量 AI 评估</h3>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+          对尚未评估或有 JD 的记录运行 Career-Ops 结构化评估。需要配置 API 设置。
+        </p>
         <div class="ai-controls">
-          <button class="btn btn-ai" id="btnRunAI" onclick="runAIAnalysis()">运行 AI 分析</button>
-          <button class="btn" onclick="copyDataForAI()">复制分析数据</button>
+          <button class="btn btn-ai" id="btnRunBatch" onclick="runBatchEval()">运行批量评估</button>
+          <button class="btn" onclick="copyDataForAI()">复制数据给 AI</button>
         </div>
-        <div class="ai-result" id="aiResult"></div>
-        <p class="ai-hint" id="aiHint">需要在设置中配置 API 地址和密钥才能使用 AI 分析。支持 OpenAI 兼容接口（OpenAI / DeepSeek / Moonshot / 通义千问等）。</p>
+        <div class="ai-result" id="batchResult"></div>
+        <p class="ai-hint" id="batchHint">需要在设置中配置 API 地址和密钥。支持 OpenAI 兼容接口。</p>
       </div>
     </div>
   </div>
@@ -379,14 +549,38 @@ body {
             <option value="qwen">通义千问</option>
           </select>
         </div>
-        <div class="form-group full"><label>系统提示词 (可选)</label><textarea id="sSystemPrompt" placeholder="自定义 AI 分析的角色和指令..."></textarea></div>
       </div>
-      <p class="ai-hint" style="margin-top:16px">所有数据仅存储在浏览器 LocalStorage 中，不会上传到任何服务器（AI 分析请求除外，仅发送给上方配置的 API）。</p>
+      <p class="ai-hint" style="margin-top:16px;">所有数据仅存储在浏览器 LocalStorage 中。AI 评估时 JD 和 CV 内容会发送给上方配置的 API。</p>
     </div>
     <div class="modal-footer">
       <button class="btn btn-danger" onclick="clearAllData()">清空所有记录</button>
       <button class="btn" onclick="closeModal('settingsModalOverlay')">取消</button>
       <button class="btn btn-primary" onclick="saveSettings()">保存设置</button>
+    </div>
+  </div>
+</div>
+
+<!-- CV Config Modal -->
+<div class="modal-overlay" id="cvModalOverlay">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h2>我的 CV（用于 AI 评估）</h2>
+      <button class="modal-close" onclick="closeModal('cvModalOverlay')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+        AI 评估需要将你的 CV 作为比对基准。请粘贴你的 CV 全文（Markdown 或纯文本均可）。<br>
+        此内容仅存储在本地浏览器，不会上传。
+      </p>
+      <textarea class="cv-textarea" id="cvContent" placeholder="粘贴你的 CV 全文..."></textarea>
+      <div style="margin-top:16px;">
+        <label style="font-size:13px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:6px;">目标方向（Archetype 偏好）</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="archetypePrefs"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('cvModalOverlay')">取消</button>
+      <button class="btn btn-primary" onclick="saveCVConfig()">保存</button>
     </div>
   </div>
 </div>
@@ -405,57 +599,109 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
-const STORAGE_KEY = 'interview_records';
-const SETTINGS_KEY = 'ai_settings';
+// ========== CONSTANTS ==========
+const STORAGE_KEY = 'interview_records_v2';
+const SETTINGS_KEY = 'ai_settings_v2';
+const CV_KEY = 'career_ops_cv';
 
 const STATUS_MAP = {
-  pending:     { label: '待回复',  class: 'pending' },
-  interviewing: { label: '面试中',  class: 'interviewing' },
-  offered:     { label: '已通过',  class: 'offered' },
-  rejected:    { label: '未通过',  class: 'rejected' },
-  declined:    { label: '已放弃',  class: 'declined' }
+  pending:     { label:'待回复', class:'pending' },
+  interviewing: { label:'面试中', class:'interviewing' },
+  offered:     { label:'已通过', class:'offered' },
+  rejected:    { label:'未通过', class:'rejected' },
+  declined:    { label:'已放弃', class:'declined' }
 };
 
-const PRESETS = {
-  openai:   { apiUrl: 'https://api.openai.com/v1/chat/completions', model: 'gpt-4o-mini' },
-  deepseek: { apiUrl: 'https://api.deepseek.com/v1/chat/completions', model: 'deepseek-chat' },
-  moonshot: { apiUrl: 'https://api.moonshot.cn/v1/chat/completions', model: 'moonshot-v1-8k' },
-  qwen:     { apiUrl: 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', model: 'qwen-plus' }
-};
+const ARCHETYPES = [
+  { id:'llmops', label:'AI Platform / LLMOps', keywords:'observability,evals,pipelines,monitoring,reliability' },
+  { id:'agentic', label:'Agentic / Automation', keywords:'agent,orchestration,workflow,multi-agent,HITL' },
+  { id:'pm', label:'Technical AI PM', keywords:'PRD,roadmap,discovery,stakeholder,product' },
+  { id:'sa', label:'AI Solutions Architect', keywords:'architecture,enterprise,integration,design,systems' },
+  { id:'fde', label:'AI Forward Deployed', keywords:'client-facing,deploy,prototype,field,fast delivery' },
+  { id:'transformation', label:'AI Transformation', keywords:'change management,adoption,enablement,transformation' },
+];
 
-const DEFAULT_SYSTEM_PROMPT = `你是一位资深求职顾问和职业规划师。请分析以下求职投递记录数据，提供专业、有建设性的建议。
+const EVAL_DIMS = [
+  { key:'match',       label:'A: Match CV',       color:'#6366f1', desc:'技能、经验、证明点与 JD 的匹配度' },
+  { key:'alignment',   label:'B: 方向匹配',        color:'#8b5cf6', desc:'与公司目标方向的契合度' },
+  { key:'comp',        label:'C: 薪资竞争力',      color:'#06b6d4', desc:'薪资 vs 市场水平（5=顶尖，1=远低于）' },
+  { key:'culture',     label:'D: 文化信号',        color:'#10b981', desc:'公司文化、成长性、稳定性、远程政策' },
+  { key:'redFlags',   label:'E: 红旗警告',        color:'#f59e0b', desc:'阻碍因素（分数越低风险越高）' },
+  { key:'global',      label:'F: 综合评分',        color:'#ef4444', desc:'加权平均，1-5分' },
+];
 
-请按以下结构输出（使用 Markdown 格式）：
+const CAREER_OPS_SYSTEM_PROMPT = `You are a rigorous job offer evaluator following the Career-Ops evaluation methodology.
 
-1. **整体评估**
-   - 投递数量、各状态分布、回复率、通过率等关键指标
-   - 求职整体进展评价
+You will receive:
+1. A Job Description (JD)
+2. The candidate's CV
 
-2. **投递策略分析**
-   - 投递方向是否合理
-   - 公司类型/行业分布是否健康
-   - 是否有遗漏的机会领域
+Evaluate the offer using the Career-Ops 7-block framework. Output MUST be in Chinese (Simplified).
 
-3. **时间管理**
-   - 投递节奏分析
-   - 需要跟进的记录提醒
-   - 面试时间安排建议
+## Evaluation Framework
 
-4. **面试准备建议**
-   - 针对当前面试中的职位，给出具体准备方向
-   - 可能的面试问题预测
-   - 技术栈和项目经验准备建议
+### Block A — Role Summary
+Output a table with: Archetype detected, Domain, Function, Seniority, Remote policy, Team size, TL;DR (1 sentence).
 
-5. **改进建议**
-   - 如何提高回复率
-   - 简历/投递策略优化方向
-   - 其他切实可行的建议
+Archetype detection (classify into one or hybrid of two):
+- AI Platform/LLMOps: "observability", "evals", "pipelines", "monitoring"
+- Agentic/Automation: "agent", "orchestration", "workflow", "multi-agent"
+- Technical AI PM: "PRD", "roadmap", "discovery", "stakeholder"
+- AI Solutions Architect: "architecture", "enterprise", "integration"
+- AI Forward Deployed: "client-facing", "deploy", "prototype", "field"
+- AI Transformation: "change management", "adoption", "enablement"
 
-请用中文回答，分析要具体、有针对性，避免空泛的建议。`;
+### Block B — CV Match
+Create a table mapping each JD requirement to specific lines from the CV. Show gaps and mitigation strategy.
 
+### Block C — Level & Strategy
+Detect level in JD vs candidate's natural level. Provide "sell senior without lying" plan and "if downleveled" plan.
+
+### Block D — Comp & Market
+Use general market knowledge to comment on comp range. Note if salary info is missing.
+
+### Block E — Personalization Plan
+Top 5 CV changes and top 5 LinkedIn changes to maximize match for this specific role.
+
+### Block F — Interview Prep
+6-10 STAR+Reflection stories mapped to JD requirements. Include 2-3 likely red-flag questions and how to answer.
+
+### Block G — Posting Legitimacy
+Assess if this is a real, active opening. Output: "High Confidence" / "Proceed with Caution" / "Suspicious" with signal analysis.
+
+## Output Format
+
+After the 7 blocks, output a JSON block (inside \`\`\`json code block) with:
+\`\`\`json
+{
+  "archetype": "detected archetype",
+  "scores": {
+    "match": <1-5 integer>,
+    "alignment": <1-5 integer>,
+    "comp": <1-5 integer>,
+    "culture": <1-5 integer>,
+    "redFlags": <1-5 integer, 5=no red flags, 1=many>,
+    "global": <1-5 float, weighted average>
+  },
+  "recommendation": "立即申请|值得申请|谨慎考虑|不建议申请",
+  "legitimacy": "High Confidence|Proceed with Caution|Suspicious"
+}
+\`\`\`
+
+## Scoring Interpretation
+- 4.5+ → 强烈推荐，立即申请
+- 4.0-4.4 → 匹配良好，值得申请
+- 3.5-3.9 → 一般，谨慎考虑
+- <3.5 → 不推荐申请
+
+Output the full 7-block evaluation in Chinese Markdown, followed by the JSON block.`;
+
+// ========== STATE ==========
 let records = [];
 let editingId = null;
+let currentEvalData = null;
 
+// ========== DATA PERSISTENCE ==========
 function loadData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -472,31 +718,63 @@ function loadSettings() {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (raw) return JSON.parse(raw);
   } catch(e) {}
-  return { apiUrl: '', apiKey: '', model: '', systemPrompt: '' };
+  return { apiUrl:'', apiKey:'', model:'' };
 }
 
-function saveSettingsToStorage(settings) {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+function saveSettingsToStorage(s) {
+  localStorage.setItem(SETTINGS_KEY, JSON.stringify(s));
 }
 
+function loadCV() {
+  try {
+    const raw = localStorage.getItem(CV_KEY);
+    return raw ? JSON.parse(raw) : { cvText:'', archetypes:[] };
+  } catch(e) { return { cvText:'', archetypes:[] }; }
+}
+
+function saveCV(data) {
+  localStorage.setItem(CV_KEY, JSON.stringify(data));
+}
+
+// ========== RENDER ==========
 function renderAll() { renderStats(); renderRecords(); }
 
 function renderStats() {
-  const stats = { total: 0, pending: 0, interviewing: 0, offered: 0, rejected: 0, declined: 0 };
-  records.forEach(r => { if (stats[r.status] !== undefined) stats[r.status]++; });
-  document.getElementById('statTotal').textContent = stats.total;
-  document.getElementById('statPending').textContent = stats.pending;
-  document.getElementById('statInterviewing').textContent = stats.interviewing;
-  document.getElementById('statOffered').textContent = stats.offered;
-  document.getElementById('statRejected').textContent = stats.rejected;
+  const container = document.getElementById('statsBar');
+  const total = records.length;
+  const pending = records.filter(r=>r.status==='pending').length;
+  const interviewing = records.filter(r=>r.status==='interviewing').length;
+  const offered = records.filter(r=>r.status==='offered').length;
+  const rejected = records.filter(r=>r.status==='rejected').length;
+  const evaluated = records.filter(r=>r.evaluation && r.evaluation.scores && r.evaluation.scores.global).length;
+  const avgScore = evaluated > 0
+    ? (records.filter(r=>r.evaluation&&r.evaluation.scores&&r.evaluation.scores.global).reduce((a,r)=>a + r.evaluation.scores.global, 0) / evaluated).toFixed(1)
+    : '-';
+  container.innerHTML =
+    '<div class="stat-card"><span class="stat-value">' + total + '</span><span class="stat-label">总投递</span></div>' +
+    '<div class="stat-card pending"><span class="stat-value">' + pending + '</span><span class="stat-label">待回复</span></div>' +
+    '<div class="stat-card interviewing"><span class="stat-value">' + interviewing + '</span><span class="stat-label">面试中</span></div>' +
+    '<div class="stat-card offered"><span class="stat-value">' + offered + '</span><span class="stat-label">已通过</span></div>' +
+    '<div class="stat-card rejected"><span class="stat-value">' + rejected + '</span><span class="stat-label">未通过</span></div>' +
+    '<div class="stat-card"><span class="stat-value score-mid">' + avgScore + '</span><span class="stat-label">平均评分</span></div>' +
+    '<div class="stat-card"><span class="stat-value score-high">' + evaluated + '</span><span class="stat-label">已评估</span></div>';
 }
 
 function getFilteredRecords() {
   const search = document.getElementById('searchInput').value.toLowerCase().trim();
   const status = document.getElementById('filterStatus').value;
+  const scoreFilter = document.getElementById('filterScore').value;
   const sortBy = document.getElementById('sortBy').value;
   let filtered = records.filter(r => {
     if (status && r.status !== status) return false;
+    if (scoreFilter) {
+      const g = r.evaluation && r.evaluation.scores ? r.evaluation.scores.global : 0;
+      if (scoreFilter === 'high' && g < 4.5) return false;
+      if (scoreFilter === 'good' && (g < 4.0 || g >= 4.5)) return false;
+      if (scoreFilter === 'decent' && (g < 3.5 || g >= 4.0)) return false;
+      if (scoreFilter === 'low' && g >= 3.5) return false;
+      if (scoreFilter === 'unevaluated' && g > 0) return false;
+    }
     if (search) {
       const haystack = [r.companyName, r.position, r.notes, r.companyIntro, r.location, r.salary].join(' ').toLowerCase();
       if (!haystack.includes(search)) return false;
@@ -505,49 +783,104 @@ function getFilteredRecords() {
   });
   const [key, dir] = sortBy.split('-');
   filtered.sort((a, b) => {
-    let va = a[key] || '';
-    let vb = b[key] || '';
+    if (key === 'score') {
+      const sa = (a.evaluation && a.evaluation.scores ? a.evaluation.scores.global : 0) || 0;
+      const sb = (b.evaluation && b.evaluation.scores ? b.evaluation.scores.global : 0) || 0;
+      return dir === 'desc' ? sb - sa : sa - sb;
+    }
     if (key === 'companyName') {
-      va = va.toLowerCase(); vb = vb.toLowerCase();
+      const va = (a.companyName||'').toLowerCase();
+      const vb = (b.companyName||'').toLowerCase();
       return dir === 'asc' ? va.localeCompare(vb) : vb.localeCompare(va);
     }
+    let va = a[key] || 0;
+    let vb = b[key] || 0;
     if (key === 'updatedAt') { va = a.updatedAt || 0; vb = b.updatedAt || 0; }
     return dir === 'asc' ? (va < vb ? -1 : 1) : (va > vb ? -1 : 1);
   });
   return filtered;
 }
 
+function getScoreClass(score) {
+  if (score >= 4.5) return 'high';
+  if (score >= 4.0) return 'mid';
+  if (score >= 3.5) return 'low';
+  return 'bad';
+}
+function getScoreColor(score) {
+  if (score >= 4.5) return '#10b981';
+  if (score >= 4.0) return '#6366f1';
+  if (score >= 3.5) return '#f59e0b';
+  return '#ef4444';
+}
+
 function renderRecords() {
   const list = document.getElementById('recordsList');
   const filtered = getFilteredRecords();
   if (filtered.length === 0) {
-    list.innerHTML = '<div class="empty-state"><h3>' + (records.length === 0 ? '还没有投递记录' : '没有匹配的记录') + '</h3><p>' + (records.length === 0 ? '点击"添加记录"开始追踪你的求职进度' : '试试调整搜索或筛选条件') + '</p>' + (records.length === 0 ? '<button class="btn btn-primary" onclick="openRecordModal()">+ 添加第一条记录</button>' : '') + '</div>';
+    list.innerHTML = '<div class="empty-state"><h3>' + (records.length===0?'还没有投递记录':'没有匹配的记录') + '</h3><p>' + (records.length===0?'点击"添加记录"开始追踪你的求职进度':'试试调整搜索或筛选条件') + '</p>' + (records.length===0?'<button class="btn btn-primary" onclick="openRecordModal()">+ 添加第一条记录</button>':'') + '</div>';
     return;
   }
   list.innerHTML = filtered.map(r => {
     const st = STATUS_MAP[r.status] || STATUS_MAP.pending;
     const website = r.companyWebsite ? '<a href="' + escapeHtml(r.companyWebsite) + '" target="_blank" rel="noopener">' + escapeHtml(r.companyName) + '</a>' : escapeHtml(r.companyName);
+    const evalData = r.evaluation && r.evaluation.scores;
+    const globalScore = evalData && evalData.global ? evalData.global : 0;
     let meta = [];
     if (r.applyDate) meta.push('<span class="card-meta-item">投递: ' + escapeHtml(r.applyDate) + '</span>');
     if (r.interviewDate) meta.push('<span class="card-meta-item">面试: ' + escapeHtml(r.interviewDate) + '</span>');
     if (r.location) meta.push('<span class="card-meta-item">' + escapeHtml(r.location) + '</span>');
     if (r.salary) meta.push('<span class="card-meta-item">' + escapeHtml(r.salary) + '</span>');
-    return '<div class="record-card" data-status="' + r.status + '">' +
-      '<div class="card-header"><div><div class="card-company">' + website + '</div><div class="card-position">' + escapeHtml(r.position || '') + '</div></div>' +
+    // Score badge
+    let scoreHtml = '';
+    if (globalScore > 0) {
+      const sc = getScoreClass(globalScore);
+      scoreHtml = '<div class="score-badge ' + sc + '" title="综合评分: ' + globalScore + '/5">' + globalScore + '</div>';
+    }
+    // Mini dim dots
+    let dotsHtml = '';
+    if (evalData) {
+      dotsHtml = '<div class="card-score-bar">';
+      EVAL_DIMS.forEach(d => {
+        if (d.key === 'global') return;
+        const v = evalData[d.key] || 0;
+        const c = v > 0 ? (v>=4?'#a7f3d0':(v>=3?'#bfdbfe':'#fde68a')) : '#e2e8f0';
+        dotsHtml += '<span class="dim-dot dim-' + v + '" style="background:' + c + '" title="' + d.label + ': ' + v + '"></span>';
+      });
+      dotsHtml += '</div>';
+    }
+    return '<div class="record-card" data-status="' + r.status + '" onclick="viewRecord(' + r.id + ')">' +
+      '<div class="card-header"><div><div style="display:flex;align-items:center;gap:8px;"><div class="card-company">' + website + '</div>' + scoreHtml + '</div><div class="card-position">' + escapeHtml(r.position||'') + '</div></div>' +
       '<span class="badge ' + st.class + '">' + st.label + '</span></div>' +
       (meta.length ? '<div class="card-meta">' + meta.join('') + '</div>' : '') +
+      (evalData ? dotsHtml : '') +
       (r.companyIntro ? '<div class="card-intro">' + escapeHtml(r.companyIntro) + '</div>' : '') +
-      (r.notes ? '<div class="card-notes">' + escapeHtml(r.notes) + '</div>' : '') +
-      '<div class="card-actions"><button class="btn btn-icon" onclick="openRecordModal(' + r.id + ')">编辑</button><button class="btn btn-icon btn-danger" onclick="confirmDelete(' + r.id + ')">删除</button></div></div>';
+      '<div class="card-actions" onclick="event.stopPropagation()"><button class="btn btn-icon" onclick="openRecordModal(' + r.id + ')">编辑</button><button class="btn btn-icon btn-danger" onclick="confirmDelete(' + r.id + ')">删除</button></div></div>';
   }).join('');
 }
 
+// ========== MODALS ==========
 function openModal(id) { document.getElementById(id).classList.add('active'); }
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+function switchTab(tabId, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
 
 function openRecordModal(id) {
   editingId = id || null;
   document.getElementById('recordModalTitle').textContent = id ? '编辑记录' : '添加记录';
+  // Reset tabs
+  switchTab('tabBasic', document.querySelector('.tab-btn'));
+  // Clear eval state
+  currentEvalData = null;
+  document.getElementById('evalJDInput').value = '';
+  document.getElementById('evalResult').innerHTML = '';
+  document.getElementById('manualEvalSection').style.display = 'none';
+
   if (id) {
     const r = records.find(x => x.id === id);
     if (!r) return;
@@ -561,6 +894,13 @@ function openRecordModal(id) {
     document.getElementById('fInterviewDate').value = r.interviewDate || '';
     document.getElementById('fIntro').value = r.companyIntro || '';
     document.getElementById('fNotes').value = r.notes || '';
+    // Load existing eval if any
+    if (r.evaluation && r.evaluation.report) {
+      document.getElementById('evalResult').innerHTML = typeof marked !== 'undefined' ? marked.parse(r.evaluation.report) : escapeHtml(r.evaluation.report);
+      currentEvalData = r.evaluation;
+      document.getElementById('manualEvalSection').style.display = 'block';
+      renderEvalGrid(r.evaluation);
+    }
   } else {
     document.getElementById('fCompany').value = '';
     document.getElementById('fPosition').value = '';
@@ -568,7 +908,7 @@ function openRecordModal(id) {
     document.getElementById('fLocation').value = '';
     document.getElementById('fSalary').value = '';
     document.getElementById('fStatus').value = 'pending';
-    document.getElementById('fApplyDate').value = new Date().toISOString().slice(0, 10);
+    document.getElementById('fApplyDate').value = new Date().toISOString().slice(0,10);
     document.getElementById('fInterviewDate').value = '';
     document.getElementById('fIntro').value = '';
     document.getElementById('fNotes').value = '';
@@ -577,6 +917,47 @@ function openRecordModal(id) {
   setTimeout(function() { document.getElementById('fCompany').focus(); }, 100);
 }
 
+function viewRecord(id) {
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  if (r.evaluation && r.evaluation.report) {
+    openReportModal(r);
+  } else {
+    openRecordModal(id);
+  }
+}
+
+function openReportModal(r) {
+  const evalData = r.evaluation;
+  document.getElementById('reportModalTitle').textContent = escapeHtml(r.companyName) + ' — 评估报告';
+  let html = '';
+  if (evalData && evalData.scores && evalData.scores.global) {
+    const g = evalData.scores.global;
+    const sc = getScoreClass(g);
+    html += '<div class="report-score-header" style="border-left:4px solid ' + getScoreColor(g) + '">';
+    html += '<div class="big-score" style="color:' + getScoreColor(g) + '">' + g + '</div>';
+    html += '<div class="score-meta"><div style="font-size:16px;font-weight:700;color:var(--text);">' + (evalData.recommendation||'') + '</div>';
+    html += '<div>综合评分 /5 &nbsp;·&nbsp; ' + (evalData.archetype||'') + ' &nbsp;·&nbsp; ' + (evalData.legitimacy||'') + '</div></div></div>';
+    // Dimension table
+    html += '<table><tr><th>维度</th><th>评分</th><th>说明</th></tr>';
+    EVAL_DIMS.forEach(d => {
+      if (d.key === 'global') return;
+      const v = evalData.scores[d.key] || '-';
+      html += '<tr><td><strong>' + d.label + '</strong></td><td style="font-weight:700;color:' + getScoreColor(v) + '">' + v + '</td><td>' + d.desc + '</td></tr>';
+    });
+    html += '<tr><td><strong>综合评分</strong></td><td style="font-weight:800;font-size:18px;color:' + getScoreColor(g) + '">' + g + '</td><td>加权平均</td></tr>';
+    html += '</table>';
+  }
+  if (evalData && evalData.report) {
+    html += '<div style="margin-top:20px;">' + (typeof marked !== 'undefined' ? marked.parse(evalData.report) : '<pre>' + escapeHtml(evalData.report) + '</pre>') + '</div>';
+  } else {
+    html += '<p style="color:var(--text-tertiary);">暂无评估报告。请在编辑记录中运行 AI 评估。</p>';
+  }
+  document.getElementById('reportContent').innerHTML = html;
+  openModal('reportModalOverlay');
+}
+
+// ========== SAVE ==========
 function saveRecord() {
   const companyName = document.getElementById('fCompany').value.trim();
   const position = document.getElementById('fPosition').value.trim();
@@ -592,7 +973,8 @@ function saveRecord() {
     interviewDate: document.getElementById('fInterviewDate').value,
     companyIntro: document.getElementById('fIntro').value.trim(),
     notes: document.getElementById('fNotes').value.trim(),
-    updatedAt: Date.now()
+    updatedAt: Date.now(),
+    evaluation: currentEvalData
   };
   if (editingId) {
     const idx = records.findIndex(r => r.id === editingId);
@@ -609,6 +991,7 @@ function saveRecord() {
   closeModal('recordModalOverlay');
 }
 
+// ========== DELETE ==========
 function confirmDelete(id) {
   const r = records.find(x => x.id === id);
   if (!r) return;
@@ -620,125 +1003,306 @@ function confirmDelete(id) {
   openModal('confirmModalOverlay');
 }
 
-function openAIAnalysis() {
-  renderLocalStats();
-  document.getElementById('aiResult').innerHTML = '';
-  openModal('aiModalOverlay');
+// ========== EVALUATION ==========
+async function runSingleEval() {
   const settings = loadSettings();
   if (!settings.apiUrl || !settings.apiKey) {
-    document.getElementById('aiHint').textContent = '需要在设置中配置 API 地址和密钥才能使用 AI 分析。支持 OpenAI 兼容接口（OpenAI / DeepSeek / Moonshot / 通义千问等）。';
+    document.getElementById('evalResult').innerHTML = '<div class="ai-error">尚未配置 API。请点击顶部"设置"按钮配置。</div>';
+    return;
+  }
+  const jd = document.getElementById('evalJDInput').value.trim();
+  if (!jd) { showToast('请先粘贴职位描述（JD）'); return; }
+  const cvData = loadCV();
+  const cvText = cvData.cvText || '（未配置 CV，仅根据 JD 分析）';
+
+  const btn = document.getElementById('btnRunEval');
+  btn.disabled = true;
+  document.getElementById('evalResult').innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>AI 正在评估（Career-Ops 7 块分析）...</span></div>';
+  try {
+    const response = await fetch(settings.apiUrl, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
+      body: JSON.stringify({
+        model: settings.model || 'gpt-4o-mini',
+        messages:[
+          { role:'system', content: CAREER_OPS_SYSTEM_PROMPT },
+          { role:'user', content: '## 候选人 CV:\n' + cvText + '\n\n## 职位描述 (JD):\n' + jd }
+        ],
+        temperature:0.5,
+        max_tokens:8192
+      })
+    });
+    if (!response.ok) { const err = await response.text(); throw new Error('API ' + response.status + ': ' + err.slice(0,200)); }
+    const data = await response.json();
+    const content = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content) || '';
+    // Parse JSON from response
+    let evalObj = null;
+    const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+    if (jsonMatch) {
+      try { evalObj = JSON.parse(jsonMatch[1]); } catch(e) {}
+    }
+    // Render result
+    const reportHtml = typeof marked !== 'undefined' ? marked.parse(content) : '<pre>' + escapeHtml(content) + '</pre>';
+    document.getElementById('evalResult').innerHTML = reportHtml;
+    if (evalObj) {
+      currentEvalData = {
+        archetype: evalObj.archetype || '',
+        scores: evalObj.scores || {},
+        recommendation: evalObj.recommendation || '',
+        legitimacy: evalObj.legitimacy || '',
+        report: content
+      };
+      document.getElementById('manualEvalSection').style.display = 'block';
+      renderEvalGrid(currentEvalData);
+    }
+  } catch(err) {
+    document.getElementById('evalResult').innerHTML = '<div class="ai-error">评估失败: ' + escapeHtml(err.message) + '</div>';
+  } finally { btn.disabled = false; }
+}
+
+function renderEvalGrid(evalData) {
+  const grid = document.getElementById('evalGrid');
+  const scores = evalData.scores || {};
+  let html = '';
+  EVAL_DIMS.forEach(d => {
+    if (d.key === 'global') return;
+    const v = scores[d.key] || 0;
+    html += '<div class="eval-dim"><label><span class="dim-color" style="background:' + d.color + '"></span>' + d.label + '</label><div class="score-input">';
+    for (let i=1;i<=5;i++) {
+      html += '<button class="' + (i===v?'active':'') + '" onclick="setDimScore(\'' + d.key + '\',' + i + ',this)" style="border-color:' + (i===v?d.color:'var(--border)') + '">' + i + '</button>';
+    }
+    html += '</div></div>';
+  });
+  // Global score display
+  const g = scores.global || 0;
+  html += '<div class="eval-global"><div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;">';
+  html += '<span class="global-score" style="color:' + getScoreColor(g) + '">' + (g||'-') + '</span>';
+  html += '<span class="recommendation ' + (g>=4.5?'rec-high':(g>=4?'rec-mid':(g>=3.5?'rec-low':'rec-bad'))) + '">' + (evalData.recommendation||'未评分') + '</span>';
+  html += '</div>';
+  html += '<div class="global-label">综合评分（加权平均）· ' + (evalData.archetype||'') + '</div></div>';
+  grid.innerHTML = html;
+}
+
+function setDimScore(key, value, btn) {
+  if (!currentEvalData) currentEvalData = { scores:{}, archetype:'', recommendation:'', report:'' };
+  if (!currentEvalData.scores) currentEvalData.scores = {};
+  currentEvalData.scores[key] = value;
+  // Update button states
+  const parent = btn.parentElement;
+  parent.querySelectorAll('button').forEach(b => {
+    b.classList.remove('active');
+    b.style.borderColor = 'var(--border)';
+  });
+  btn.classList.add('active');
+  btn.style.borderColor = EVAL_DIMS.find(d=>d.key===key)? EVAL_DIMS.find(d=>d.key===key).color : 'var(--primary)';
+  // Recalculate global
+  recalcGlobal();
+}
+
+function recalcGlobal() {
+  if (!currentEvalData || !currentEvalData.scores) return;
+  const s = currentEvalData.scores;
+  // Weighted average: match 25%, alignment 20%, comp 15%, culture 15%, redFlags 25% (inverted: higher = better)
+  const weights = { match:0.25, alignment:0.20, comp:0.15, culture:0.15, redFlags:0.25 };
+  let wsum = 0, wtotal = 0;
+  Object.keys(weights).forEach(k => {
+    if (s[k] && s[k] > 0) { wsum += s[k] * weights[k]; wtotal += weights[k]; }
+  });
+  if (wtotal > 0) {
+    s.global = Math.round(wsum / wtotal * 10) / 10;
+    // Update recommendation
+    if (s.global >= 4.5) s.recommendation = '立即申请';
+    else if (s.global >= 4.0) s.recommendation = '值得申请';
+    else if (s.global >= 3.5) s.recommendation = '谨慎考虑';
+    else s.recommendation = '不建议申请';
+  }
+  renderEvalGrid(currentEvalData);
+}
+
+function clearEvalResult() {
+  currentEvalData = null;
+  document.getElementById('evalResult').innerHTML = '';
+  document.getElementById('manualEvalSection').style.display = 'none';
+}
+
+// ========== BATCH EVAL ==========
+function openBatchEval() {
+  renderLocalStats();
+  document.getElementById('batchResult').innerHTML = '';
+  openModal('batchEvalOverlay');
+  const settings = loadSettings();
+  if (!settings.apiUrl || !settings.apiKey) {
+    document.getElementById('batchHint').textContent = '需要在设置中配置 API 地址和密钥才能使用批量评估。';
   } else {
-    document.getElementById('aiHint').textContent = '当前模型: ' + (settings.model || '未设置') + ' | API: ' + settings.apiUrl;
+    document.getElementById('batchHint').textContent = '当前模型: ' + (settings.model||'未设置') + ' | API: ' + settings.apiUrl;
   }
 }
 
 function renderLocalStats() {
   const container = document.getElementById('localStats');
   const total = records.length;
-  const replied = records.filter(r => r.status !== 'pending').length;
-  const responseRate = total > 0 ? Math.round(replied / total * 100) : 0;
-  const offered = records.filter(r => r.status === 'offered').length;
-  const passRate = total > 0 ? Math.round(offered / total * 100) : 0;
-  const interviewing = records.filter(r => r.status === 'interviewing').length;
-  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-  const recent = records.filter(r => { const d = r.applyDate ? new Date(r.applyDate).getTime() : 0; return d >= sevenDaysAgo; }).length;
-  let avgDays = '-';
-  const responded = records.filter(r => r.status !== 'pending' && r.applyDate);
-  if (responded.length > 0) {
-    const days = responded.map(r => (Math.max(r.updatedAt || Date.now(), new Date(r.applyDate).getTime()) - new Date(r.applyDate).getTime()) / (24 * 60 * 60 * 1000));
-    avgDays = Math.round(days.reduce((a, b) => a + b, 0) / days.length) + '天';
-  }
-  container.innerHTML = '<div class="local-stat"><span class="local-stat-value">' + total + '</span><span class="local-stat-label">总投递</span></div>' +
+  const replied = records.filter(r=>r.status!=='pending').length;
+  const responseRate = total>0?Math.round(replied/total*100):0;
+  const offered = records.filter(r=>r.status==='offered').length;
+  const passRate = total>0?Math.round(offered/total*100):0;
+  const evaluated = records.filter(r=>r.evaluation&&r.evaluation.scores&&r.evaluation.scores.global).length;
+  container.innerHTML =
+    '<div class="local-stat"><span class="local-stat-value">' + total + '</span><span class="local-stat-label">总投递</span></div>' +
     '<div class="local-stat"><span class="local-stat-value">' + responseRate + '%</span><span class="local-stat-label">回复率</span></div>' +
     '<div class="local-stat"><span class="local-stat-value">' + passRate + '%</span><span class="local-stat-label">通过率</span></div>' +
-    '<div class="local-stat"><span class="local-stat-value">' + interviewing + '</span><span class="local-stat-label">面试中</span></div>' +
-    '<div class="local-stat"><span class="local-stat-value">' + recent + '</span><span class="local-stat-label">近7天投递</span></div>' +
-    '<div class="local-stat"><span class="local-stat-value">' + avgDays + '</span><span class="local-stat-label">平均回复周期</span></div>';
+    '<div class="local-stat"><span class="local-stat-value">' + evaluated + '/' + total + '</span><span class="local-stat-label">已评估</span></div>';
 }
 
-function formatRecordsForAI() {
-  if (records.length === 0) return '暂无投递记录。';
-  const lines = records.map(function(r, i) {
-    const parts = ['### ' + (i + 1) + '. ' + r.companyName + ' - ' + r.position];
-    parts.push('- 状态: ' + (STATUS_MAP[r.status] ? STATUS_MAP[r.status].label : r.status));
-    if (r.companyWebsite) parts.push('- 网址: ' + r.companyWebsite);
-    if (r.location) parts.push('- 地点: ' + r.location);
-    if (r.salary) parts.push('- 薪资: ' + r.salary);
-    if (r.applyDate) parts.push('- 投递日期: ' + r.applyDate);
-    if (r.interviewDate) parts.push('- 面试日期: ' + r.interviewDate);
-    if (r.companyIntro) parts.push('- 公司简介: ' + r.companyIntro);
-    if (r.notes) parts.push('- 备注: ' + r.notes);
-    return parts.join('\n');
-  });
-  return '以下是求职投递记录（共 ' + records.length + ' 条）：\n\n' + lines.join('\n\n');
-}
-
-async function runAIAnalysis() {
+async function runBatchEval() {
   const settings = loadSettings();
   if (!settings.apiUrl || !settings.apiKey) {
-    document.getElementById('aiResult').innerHTML = '<div class="ai-error">尚未配置 API。请点击"设置"按钮配置 API 地址和密钥。</div>';
+    document.getElementById('batchResult').innerHTML = '<div class="ai-error">尚未配置 API。</div>';
     return;
   }
-  if (records.length === 0) {
-    document.getElementById('aiResult').innerHTML = '<div class="ai-error">暂无记录可分析，请先添加投递记录。</div>';
+  // Find records that have JD but no evaluation
+  const toEval = records.filter(r => r.companyIntro && r.companyIntro.length > 50 && !(r.evaluation && r.evaluation.scores && r.evaluation.scores.global));
+  if (toEval.length === 0) {
+    document.getElementById('batchResult').innerHTML = '<div class="ai-error">没有需要评估的记录（需要有公司简介/JD 内容且尚未评估）。</div>';
     return;
   }
-  const btn = document.getElementById('btnRunAI');
-  btn.disabled = true;
-  document.getElementById('aiResult').innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>AI 正在分析 ' + records.length + ' 条记录...</span></div>';
-  try {
-    const systemPrompt = settings.systemPrompt || DEFAULT_SYSTEM_PROMPT;
-    const userContent = formatRecordsForAI();
-    const response = await fetch(settings.apiUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + settings.apiKey },
-      body: JSON.stringify({
-        model: settings.model || 'gpt-4o-mini',
-        messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userContent }],
-        temperature: 0.7,
-        max_tokens: 4096
-      })
-    });
-    if (!response.ok) { const errText = await response.text(); throw new Error('API 返回 ' + response.status + ': ' + errText.slice(0, 200)); }
-    const data = await response.json();
-    const content = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || 'AI 返回了空结果。';
-    if (typeof marked !== 'undefined') {
-      document.getElementById('aiResult').innerHTML = marked.parse(content);
-    } else {
-      document.getElementById('aiResult').textContent = content;
+  const cvData = loadCV();
+  const cvText = cvData.cvText || '';
+  const resultContainer = document.getElementById('batchResult');
+  resultContainer.innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>正在批量评估 ' + toEval.length + ' 条记录...</span></div>';
+
+  let results = [];
+  for (let i=0; i<toEval.length; i++) {
+    const r = toEval[i];
+    resultContainer.innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>正在评估 ' + (i+1) + '/' + toEval.length + ': ' + escapeHtml(r.companyName) + '...</span></div>';
+    try {
+      const response = await fetch(settings.apiUrl, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
+        body: JSON.stringify({
+          model: settings.model || 'gpt-4o-mini',
+          messages:[
+            { role:'system', content: CAREER_OPS_SYSTEM_PROMPT },
+            { role:'user', content: '## 候选人 CV:\n' + cvText + '\n\n## 职位描述 (JD):\n' + (r.companyIntro||'') + '\n公司: ' + r.companyName + '\n职位: ' + r.position }
+          ],
+          temperature:0.5,
+          max_tokens:8192
+        })
+      });
+      if (!response.ok) throw new Error('API ' + response.status);
+      const data = await response.json();
+      const content = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'';
+      let evalObj = null;
+      const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/);
+      if (jsonMatch) { try { evalObj = JSON.parse(jsonMatch[1]); } catch(e) {} }
+      results.push({ recordId:r.id, report:content, evalObj });
+    } catch(err) {
+      results.push({ recordId:r.id, error:err.message });
     }
-  } catch(err) {
-    document.getElementById('aiResult').innerHTML = '<div class="ai-error">分析失败: ' + escapeHtml(err.message) + '</div><p class="ai-hint">请检查 API 设置是否正确，或使用"复制分析数据"按钮手动分析。</p>';
-  } finally { btn.disabled = false; }
+  }
+  // Apply results
+  results.forEach(res => {
+    const idx = records.findIndex(r => r.id === res.recordId);
+    if (idx < 0) return;
+    if (res.error) {
+      records[idx].evaluation = records[idx].evaluation || {};
+      records[idx].evaluation.error = res.error;
+    } else if (res.evalObj) {
+      records[idx].evaluation = {
+        archetype: res.evalObj.archetype || '',
+        scores: res.evalObj.scores || {},
+        recommendation: res.evalObj.recommendation || '',
+        legitimacy: res.evalObj.legitimacy || '',
+        report: res.report || ''
+      };
+    } else if (res.report) {
+      records[idx].evaluation = records[idx].evaluation || {};
+      records[idx].evaluation.report = res.report;
+    }
+  });
+  saveData();
+  renderAll();
+  // Show summary
+  const success = results.filter(r=>!r.error).length;
+  resultContainer.innerHTML = '<div style="padding:16px;background:#d1fae5;border-radius:var(--radius-sm);color:#065f46;font-weight:600;">批量评估完成！成功 ' + success + '/' + results.length + ' 条。评分已保存到记录中。</div>';
 }
 
 function copyDataForAI() {
-  const text = formatRecordsForAI();
-  navigator.clipboard.writeText(text).then(function() { showToast('分析数据已复制到剪贴板'); }).catch(function() {
-    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('分析数据已复制到剪贴板');
+  const cvData = loadCV();
+  let text = '# 求职记录数据\n\n';
+  text += '## 我的 CV:\n' + (cvData.cvText||'（未配置）') + '\n\n';
+  text += '## 投递记录:\n\n';
+  records.forEach((r,i) => {
+    text += '### ' + (i+1) + '. ' + r.companyName + ' — ' + r.position + '\n';
+    text += '- 状态: ' + (STATUS_MAP[r.status]?STATUS_MAP[r.status].label:r.status) + '\n';
+    if (r.companyIntro) text += '- 公司/JD 信息:\n```\n' + r.companyIntro + '\n```\n';
+    if (r.salary) text += '- 薪资: ' + r.salary + '\n';
+    if (r.location) text += '- 地点: ' + r.location + '\n';
+    text += '\n';
+  });
+  navigator.clipboard.writeText(text).then(function(){ showToast('数据已复制，可粘贴到 AI 对话中'); }).catch(function(){
+    const ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('数据已复制');
   });
 }
 
+// ========== CV CONFIG ==========
+function openCVConfig() {
+  const cvData = loadCV();
+  document.getElementById('cvContent').value = cvData.cvText || '';
+  const prefContainer = document.getElementById('archetypePrefs');
+  prefContainer.innerHTML = ARCHETYPES.map(a => {
+    const active = (cvData.archetypes||[]).includes(a.id) ? 'style="background:var(--primary-light);border-color:var(--primary);color:var(--primary-dark);"' : '';
+    return '<button class="btn btn-icon" ' + active + ' onclick="toggleArchetypePref(\'' + a.id + '\',this)">' + a.label + '</button>';
+  }).join('');
+  openModal('cvModalOverlay');
+}
+
+function toggleArchetypePref(id, btn) {
+  const cvData = loadCV();
+  if (!cvData.archetypes) cvData.archetypes = [];
+  const idx = cvData.archetypes.indexOf(id);
+  if (idx >= 0) { cvData.archetypes.splice(idx,1); btn.style.background=''; btn.style.borderColor='var(--border)'; btn.style.color=''; }
+  else { cvData.archetypes.push(id); btn.style.background='var(--primary-light)'; btn.style.borderColor='var(--primary)'; btn.style.color='var(--primary-dark)'; }
+  saveCV(cvData);
+}
+
+function saveCVConfig() {
+  const cvData = loadCV();
+  cvData.cvText = document.getElementById('cvContent').value.trim();
+  saveCV(cvData);
+  closeModal('cvModalOverlay');
+  showToast('CV 配置已保存');
+}
+
+// ========== SETTINGS ==========
 function openSettings() {
   const s = loadSettings();
   document.getElementById('sApiUrl').value = s.apiUrl || '';
   document.getElementById('sApiKey').value = s.apiKey || '';
   document.getElementById('sModel').value = s.model || '';
-  document.getElementById('sSystemPrompt').value = s.systemPrompt || '';
   document.getElementById('sPreset').value = '';
   openModal('settingsModalOverlay');
 }
 
 function applyPreset() {
-  const preset = document.getElementById('sPreset').value;
-  if (!preset) return;
-  const config = PRESETS[preset];
-  if (config) { document.getElementById('sApiUrl').value = config.apiUrl; document.getElementById('sModel').value = config.model; }
+  const p = document.getElementById('sPreset').value;
+  if (!p) return;
+  const map = {
+    openai:{ url:'https://api.openai.com/v1/chat/completions', model:'gpt-4o-mini' },
+    deepseek:{ url:'https://api.deepseek.com/v1/chat/completions', model:'deepseek-chat' },
+    moonshot:{ url:'https://api.moonshot.cn/v1/chat/completions', model:'moonshot-v1-8k' },
+    qwen:{ url:'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', model:'qwen-plus' }
+  };
+  const c = map[p];
+  if (c) { document.getElementById('sApiUrl').value = c.url; document.getElementById('sModel').value = c.model; }
 }
 
 function saveSettings() {
-  const settings = { apiUrl: document.getElementById('sApiUrl').value.trim(), apiKey: document.getElementById('sApiKey').value.trim(), model: document.getElementById('sModel').value.trim(), systemPrompt: document.getElementById('sSystemPrompt').value.trim() };
-  saveSettingsToStorage(settings);
+  const s = {
+    apiUrl: document.getElementById('sApiUrl').value.trim(),
+    apiKey: document.getElementById('sApiKey').value.trim(),
+    model: document.getElementById('sModel').value.trim()
+  };
+  saveSettingsToStorage(s);
   closeModal('settingsModalOverlay');
   showToast('设置已保存');
 }
@@ -746,16 +1310,18 @@ function saveSettings() {
 function clearAllData() {
   closeModal('settingsModalOverlay');
   document.getElementById('confirmText').innerHTML = '确认清空 <span class="company-name">所有 ' + records.length + ' 条</span> 记录？此操作不可撤销！';
-  document.getElementById('confirmBtn').onclick = function() { records = []; saveData(); renderAll(); closeModal('confirmModalOverlay'); showToast('所有记录已清空'); };
+  document.getElementById('confirmBtn').onclick = function() { records=[]; saveData(); renderAll(); closeModal('confirmModalOverlay'); showToast('所有记录已清空'); };
   openModal('confirmModalOverlay');
 }
 
+// ========== EXPORT / IMPORT ==========
 function exportData() {
-  if (records.length === 0) { showToast('暂无记录可导出'); return; }
-  const data = { exportedAt: new Date().toISOString(), version: 1, records: records };
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  if (records.length===0) { showToast('暂无记录可导出'); return; }
+  const cvData = loadCV();
+  const data = { exportedAt:new Date().toISOString(), version:2, records:records, cv:cvData };
+  const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = 'interview-records-' + new Date().toISOString().slice(0, 10) + '.json'; a.click();
+  const a = document.createElement('a'); a.href=url; a.download='interview-records-' + new Date().toISOString().slice(0,10) + '.json'; a.click();
   URL.revokeObjectURL(url);
   showToast('已导出 ' + records.length + ' 条记录');
 }
@@ -769,9 +1335,11 @@ function importData(event) {
       const data = JSON.parse(e.target.result);
       const imported = Array.isArray(data) ? data : (data.records || []);
       if (!Array.isArray(imported)) { showToast('文件格式不正确'); return; }
-      const existingIds = new Set(records.map(r => r.id));
+      const existingIds = new Set(records.map(r=>r.id));
       let added = 0;
-      imported.forEach(r => { if (!existingIds.has(r.id)) { if (!r.id) r.id = Date.now() + Math.random(); records.push(r); added++; } });
+      imported.forEach(r => { if (!existingIds.has(r.id)) { if (!r.id) r.id=Date.now()+Math.random(); records.push(r); added++; } });
+      // Also import CV if present
+      if (data.cv && data.cv.cvText) saveCV(data.cv);
       saveData(); renderAll(); showToast('已导入 ' + added + ' 条记录');
     } catch(err) { showToast('导入失败: 文件格式不正确'); }
   };
@@ -779,6 +1347,7 @@ function importData(event) {
   event.target.value = '';
 }
 
+// ========== UTILITIES ==========
 function escapeHtml(text) {
   if (!text) return '';
   const div = document.createElement('div'); div.textContent = String(text); return div.innerHTML;
@@ -788,19 +1357,20 @@ function showToast(msg) {
   const toast = document.getElementById('toast');
   toast.textContent = msg; toast.classList.add('show');
   clearTimeout(toast._timer);
-  toast._timer = setTimeout(function() { toast.classList.remove('show'); }, 2500);
+  toast._timer = setTimeout(function(){ toast.classList.remove('show'); }, 2500);
 }
 
 document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
-  if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); openRecordModal(); }
-  if ((e.ctrlKey || e.metaKey) && e.key === 'f') { e.preventDefault(); document.getElementById('searchInput').focus(); }
+  if (e.key==='Escape') document.querySelectorAll('.modal-overlay.active').forEach(m=>m.classList.remove('active'));
+  if ((e.ctrlKey||e.metaKey)&&e.key==='n') { e.preventDefault(); openRecordModal(); }
+  if ((e.ctrlKey||e.metaKey)&&e.key==='f') { e.preventDefault(); document.getElementById('searchInput').focus(); }
 });
 
 document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
-  overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.classList.remove('active'); });
+  overlay.addEventListener('click', function(e) { if (e.target===overlay) overlay.classList.remove('active'); });
 });
 
+// ========== INIT ==========
 loadData();
 renderAll();
 </script>
