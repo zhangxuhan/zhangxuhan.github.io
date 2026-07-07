@@ -1945,10 +1945,6 @@ document.addEventListener('keydown', function(e) {
   if ((e.ctrlKey||e.metaKey)&&e.key==='f') { e.preventDefault(); document.getElementById('searchInput').focus(); }
 });
 
-document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
-  overlay.addEventListener('click', function(e) { if (e.target===overlay) overlay.classList.remove('active'); });
-});
-
 // ========== INIT ==========
 loadData();
 renderAll();
