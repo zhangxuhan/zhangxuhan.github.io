@@ -444,6 +444,18 @@ body {
 .btn-gen:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 .btn-copy { font-size:12px; padding:5px 10px; }
 .hint-text { font-size:12px; color:var(--text-tertiary); margin-top:6px; line-height:1.5; }
+.doc-custom-input {
+  width:100%; padding:6px 10px; font-size:12px; font-family:inherit;
+  border:1px dashed var(--border); border-radius:var(--radius-sm);
+  background:var(--bg); color:var(--text-secondary);
+  margin-top:8px; transition:var(--transition);
+}
+.doc-custom-input:focus {
+  outline:none; border-color:var(--primary); border-style:solid;
+  background:var(--surface); color:var(--text);
+  box-shadow:0 0 0 3px rgba(99,102,241,0.08);
+}
+.doc-custom-input::placeholder { color:var(--text-tertiary); font-style:italic; }
 
 </style>
 </head>
@@ -565,6 +577,7 @@ body {
               <span class="block-title">AI 公司调研（事业内容/企业理念/技术栈/最近新闻/竞合关系）</span>
             </div>
             <p class="hint-text">根据公司名和网址，AI 将搜索该公司的事业内容、企业文化、技术栈、近期动态等信息，帮助生成更精准的求职文档。</p>
+            <input class="doc-custom-input" id="docCompanyResearchCustom" placeholder="微调说明（可选）：例如"重点关注技术栈和面试情报"" />
             <div class="block-actions">
               <button class="btn-research" id="btnCompanyResearch" onclick="researchCompany()">搜索公司信息</button>
               <button class="btn btn-icon btn-copy" onclick="copyDocContent('companyResearch')" title="复制">复制</button>
@@ -580,6 +593,7 @@ body {
               <span class="block-tag tag-rireki">履歴書</span>
             </div>
             <p class="hint-text">AI 将根据您的 CV 和岗位 JD，生成针对性的志望動機（为什么想加入这家公司/这个职位）。</p>
+            <input class="doc-custom-input" id="docMotivationCustom" placeholder="微调说明（可选）：例如"强调对AI产品的兴趣、加入创业公司的发展潜力"" />
             <div class="block-actions">
               <button class="btn-gen" id="btnGenMotivation" onclick="generateDoc('motivation')">生成志望動機</button>
               <button class="btn btn-icon btn-copy" onclick="copyDocContent('motivation')" title="复制">复制</button>
@@ -596,6 +610,7 @@ body {
               <span class="block-tag tag-rireki">履歴書</span>
             </div>
             <p class="hint-text">AI 将根据您的 CV 和岗位 JD，生成针对性的自己PR（突出哪些经历/技能最符合这个目标岗位）。</p>
+            <input class="doc-custom-input" id="docPrRirekiCustom" placeholder="微调说明（可选）：例如"突出团队协作和项目交付能力"" />
             <div class="block-actions">
               <button class="btn-gen" id="btnGenPrRireki" onclick="generateDoc('pr_rireki')">生成自己PR（履歴書）</button>
               <button class="btn btn-icon btn-copy" onclick="copyDocContent('pr_rireki')" title="复制">复制</button>
@@ -612,6 +627,7 @@ body {
               <span class="block-tag tag-shokumu">職務経歴書</span>
             </div>
             <p class="hint-text">AI 将根据您的 CV 和岗位 JD，生成针对性的職務要約（简洁概括您的相关工作经验，突出与目标岗位的关联性）。</p>
+            <input class="doc-custom-input" id="docSummaryCustom" placeholder="微调说明（可选）：例如"侧重后端开发经历，弱化前端部分"" />
             <div class="block-actions">
               <button class="btn-gen" id="btnGenSummary" onclick="generateDoc('summary')">生成職務要約</button>
               <button class="btn btn-icon btn-copy" onclick="copyDocContent('summary')" title="复制">复制</button>
@@ -628,6 +644,7 @@ body {
               <span class="block-tag tag-shokumu">職務経歴書</span>
             </div>
             <p class="hint-text">AI 将根据您的 CV（尤其是具体项目/职责）和岗位 JD，生成针对性的自己PR（用具体事例证明您的能力）。</p>
+            <input class="doc-custom-input" id="docPrShokumuCustom" placeholder="微调说明（可选）：例如"用最近一个项目的案例、突出性能优化成果"" />
             <div class="block-actions">
               <button class="btn-gen" id="btnGenPrShokumu" onclick="generateDoc('pr_shokumu')">生成自己PR（職務経歴書）</button>
               <button class="btn btn-icon btn-copy" onclick="copyDocContent('pr_shokumu')" title="复制">复制</button>
@@ -644,6 +661,7 @@ body {
               <span class="block-tag tag-other">その他</span>
             </div>
             <p class="hint-text">AI 将根据您的 CV 和岗位 JD，生成针对性的キャリアビジョン（中长期职业目标、在该公司的发展路径、想实现的愿景）。</p>
+            <input class="doc-custom-input" id="docCareerVisionCustom" placeholder="微调说明（可选）：例如"希望往技术管理方向发展、对游戏行业有长期兴趣"" />
             <div class="block-actions">
               <button class="btn-gen" id="btnGenCareerVision" onclick="generateDoc('career_vision')">生成キャリアビジョン</button>
               <button class="btn btn-icon btn-copy" onclick="copyDocContent('career_vision')" title="复制">复制</button>
@@ -660,6 +678,7 @@ body {
               <span class="block-tag tag-other">その他</span>
             </div>
             <p class="hint-text">AI 将全面审阅您的求职文档（已生成的志望動機/自己PR/職務要約），结合 CV 和 JD，给出具体的修改建议：哪些地方可以更精准、更有说服力、更符合日本求职习惯。</p>
+            <input class="doc-custom-input" id="docImprovementSuggestionsCustom" placeholder="微调说明（可选）：例如"重点关注敬语是否恰当、有没有AI感太重的表达"" />
             <div class="block-actions">
               <button class="btn-gen" id="btnGenImprovementSuggestions" onclick="generateDoc('improvement_suggestions')">生成修改建议</button>
               <button class="btn btn-icon btn-copy" onclick="copyDocContent('improvement_suggestions')" title="复制">复制</button>
@@ -1278,7 +1297,10 @@ ${website ? '网址：' + website : ''}
 
 输出格式：Markdown，用 ## 标注各小节`;
 
-    const result = await callAIAPI(settings, prompt);
+    const customInst = (document.getElementById('docCompanyResearchCustom')||{}).value||'';
+    const finalPrompt = customInst ? prompt + '\n\n## 用户的微调要求（务必遵从）\n' + customInst : prompt;
+
+    const result = await callAIAPI(settings, finalPrompt);
     const html = typeof marked !== 'undefined' ? marked.parse(result) : escapeHtml(result).replace(/\n/g, '<br>');
     outputEl.innerHTML = html;
     outputEl.dataset.generated = result;
@@ -1365,7 +1387,8 @@ async function generateDoc(type) {
   outputEl.style.display = 'block';
 
   try {
-    const prompt = buildDocPrompt(type, rec, cv.cvText||'', jd);
+    const customInst = (document.getElementById('doc' + capitalize(type) + 'Custom')||{}).value||'';
+    const prompt = buildDocPrompt(type, rec, cv.cvText||'', jd, customInst);
     const result = await callAIAPI(settings, prompt);
     const html = typeof marked !== 'undefined' ? marked.parse(result) : escapeHtml(result).replace(/\n/g, '<br>');
     outputEl.innerHTML = html;
@@ -1384,7 +1407,7 @@ async function generateDoc(type) {
 
 function capitalize(s) { return s.split('_').map(w => w.replace(/^\w/, c => c.toUpperCase())).join(''); }
 
-function buildDocPrompt(type, rec, cv, jd) {
+function buildDocPrompt(type, rec, cv, jd, customInstruction) {
   const dt = DOC_TYPES[type];
   const companyResearch = getCompanyResearch();
 
@@ -1426,6 +1449,7 @@ ${cv}
 ${jd || rec.notes || '无'}
 ${companyResearch ? '\n## 公司调研信息（务必充分引用）\n' + companyResearch + '\n' : ''}
 ${otherDocsSummary}
+${customInstruction ? '\n## 用户的微调要求（非常重要，请务必据此调整生成内容和侧重点）\n' + customInstruction + '\n' : ''}
 ## 撰写要求
 `;
 
@@ -1603,18 +1627,34 @@ function clearAllDocs() {
     if (edit) { edit.value = ''; edit.style.display = 'none'; }
     const btn = document.getElementById('btnGen' + capitalize(t));
     if (btn) btn.textContent = '生成' + DOC_TYPES[t].label;
+    const customEl = document.getElementById('doc' + capitalize(t) + 'Custom');
+    if (customEl) customEl.value = '';
   });
   // Clear company research too
   const crOut = document.getElementById('docCompanyResearchOutput');
   if (crOut) { crOut.innerHTML = ''; crOut.classList.remove('show'); crOut.style.display = 'none'; delete crOut.dataset.generated; }
   const crBtn = document.getElementById('btnCompanyResearch');
   if (crBtn) crBtn.textContent = '搜索公司信息';
+  const crCustom = document.getElementById('docCompanyResearchCustom');
+  if (crCustom) crCustom.value = '';
   showToast('已清除全部生成内容');
 }
 
 function loadDocContents(id) {
   const rec = records.find(r => r.id === id);
-  if (!rec || !rec.docs) return;
+  if (!rec || !rec.docs) { 
+    // 即使没有 docs，也尝试加载 customs
+    if (rec && rec.docCustoms) {
+      const types = ALL_DOC_TYPES;
+      types.forEach(t => {
+        const customEl = document.getElementById('doc' + capitalize(t) + 'Custom');
+        if (customEl && rec.docCustoms[t]) customEl.value = rec.docCustoms[t];
+      });
+      const crCustom = document.getElementById('docCompanyResearchCustom');
+      if (crCustom && rec.docCustoms['companyResearch']) crCustom.value = rec.docCustoms['companyResearch'];
+    }
+    return;
+  }
   const types = ALL_DOC_TYPES;
   types.forEach(t => {
     if (rec.docs[t]) {
@@ -1629,18 +1669,37 @@ function loadDocContents(id) {
       const btn = document.getElementById('btnGen' + capitalize(t));
       if (btn) btn.textContent = '重新生成';
     }
+    // 加载自定义说明
+    if (rec.docCustoms && rec.docCustoms[t]) {
+      const customEl = document.getElementById('doc' + capitalize(t) + 'Custom');
+      if (customEl) customEl.value = rec.docCustoms[t];
+    }
   });
+  // 加载公司调研自定义说明
+  if (rec.docCustoms && rec.docCustoms['companyResearch']) {
+    const crCustom = document.getElementById('docCompanyResearchCustom');
+    if (crCustom) crCustom.value = rec.docCustoms['companyResearch'];
+  }
 }
 
 function saveDocContents(id) {
   const rec = records.find(r => r.id === id);
   if (!rec) return;
   if (!rec.docs) rec.docs = {};
+  if (!rec.docCustoms) rec.docCustoms = {};
   const types = ALL_DOC_TYPES;
   types.forEach(t => {
     const out = document.getElementById('doc' + capitalize(t) + 'Output');
     if (out && out.dataset.generated) rec.docs[t] = out.dataset.generated;
+    const customEl = document.getElementById('doc' + capitalize(t) + 'Custom');
+    if (customEl && customEl.value.trim()) rec.docCustoms[t] = customEl.value.trim();
+    else delete rec.docCustoms[t];
   });
+  // 保存公司调研自定义说明
+  const crCustom = document.getElementById('docCompanyResearchCustom');
+  if (crCustom && crCustom.value.trim()) rec.docCustoms['companyResearch'] = crCustom.value.trim();
+  else delete rec.docCustoms['companyResearch'];
+  if (Object.keys(rec.docCustoms).length === 0) delete rec.docCustoms;
 }
 
 // ========== EVALUATION ==========
