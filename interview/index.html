@@ -387,6 +387,31 @@ body {
 .tag-rireki { background:#dbeafe; color:#1e40af; }
 .tag-shokumu { background:#d1fae5; color:#065f46; }
 .tag-other { background:#fef3c7; color:#92400e; }
+.company-research-block {
+  background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%);
+  border:2px solid #7dd3fc; border-radius:var(--radius); padding:16px 18px; margin-bottom:12px;
+}
+.company-research-block .block-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.company-research-block .block-title { font-size:14px; font-weight:700; color:#0369a1; }
+.company-research-block .generated-content {
+  background:#fff; border:1px solid #bae6fd; border-radius:var(--radius-sm);
+  padding:14px 16px; font-size:13px; line-height:1.8; max-height:400px; overflow-y:auto;
+  display:none;
+}
+.company-research-block .generated-content.show { display:block; }
+.company-research-block .generated-content h1, .company-research-block .generated-content h2, .company-research-block .generated-content h3 { font-weight:700; color:#0369a1; margin:10px 0 6px; }
+.company-research-block .generated-content h1 { font-size:15px; }
+.company-research-block .generated-content h2 { font-size:14px; }
+.company-research-block .generated-content h3 { font-size:13px; }
+.company-research-block .generated-content ul, .company-research-block .generated-content ol { padding-left:18px; margin:6px 0; }
+.btn-research {
+  background:linear-gradient(135deg,#0284c7 0%,#0369a1 100%);
+  color:#fff; border:none; font-weight:600; font-family:inherit;
+  padding:7px 14px; font-size:13px; border-radius:var(--radius-sm); cursor:pointer;
+  transition:var(--transition);
+}
+.btn-research:hover { box-shadow:0 4px 12px rgba(2,132,199,0.3); transform:translateY(-1px); }
+.btn-research:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
 .doc-gen-block textarea {
   width:100%; min-height:100px; padding:10px 12px; font-size:13px; font-family:inherit;
   border:1px solid var(--border); border-radius:var(--radius-sm);
@@ -532,6 +557,21 @@ body {
       </div>
       <!-- Tab: Job Docs Generator -->
       <div class="tab-panel" id="tabDocs">
+        <!-- Company Research -->
+        <div class="doc-gen-section">
+          <h3>企业调研（公司研究）</h3>
+          <div class="company-research-block">
+            <div class="block-header">
+              <span class="block-title">AI 公司调研（事业内容/企业理念/技术栈/最近新闻/竞合关系）</span>
+            </div>
+            <p class="hint-text">根据公司名和网址，AI 将搜索该公司的事业内容、企业文化、技术栈、近期动态等信息，帮助生成更精准的求职文档。</p>
+            <div class="block-actions">
+              <button class="btn-research" id="btnCompanyResearch" onclick="researchCompany()">搜索公司信息</button>
+              <button class="btn btn-icon btn-copy" onclick="copyDocContent('companyResearch')" title="复制">复制</button>
+            </div>
+            <div class="generated-content" id="docCompanyResearchOutput"></div>
+          </div>
+        </div>
         <div class="doc-gen-section">
           <h3>履歴書 — 志望動機</h3>
           <div class="doc-gen-block">
@@ -1070,6 +1110,8 @@ function openRecordModal(id) {
     }
     // Load generated docs
     loadDocContents(id);
+    // Load company research
+    loadCompanyResearch(id);
   } else {
     document.getElementById('fCompany').value = '';
     document.getElementById('fPosition').value = '';
@@ -1149,6 +1191,7 @@ function saveRecord() {
   };
   if (editingId) {
     saveDocContents(editingId);
+    saveCompanyResearch(editingId);
     const idx = records.findIndex(r => r.id === editingId);
     if (idx >= 0) records[idx] = Object.assign({}, records[idx], data);
     showToast('记录已更新');
@@ -1161,6 +1204,9 @@ function saveRecord() {
       if (out && out.dataset.generated) docs[t] = out.dataset.generated;
     });
     if (Object.keys(docs).length) data.docs = docs;
+    // 保存公司调研
+    var researchOut = document.getElementById('docCompanyResearchOutput');
+    if (researchOut && researchOut.dataset.generated) data.companyResearch = researchOut.dataset.generated;
     data.id = Date.now();
     data.createdAt = Date.now();
     records.push(data);
@@ -1193,6 +1239,83 @@ const DOC_TYPES = {
   improvement_suggestions: { label:'修改建议', file:'その他', promptRole:'全文档修改建议（改善提案）' },
 };
 const ALL_DOC_TYPES = ['motivation','pr_rireki','summary','pr_shokumu','career_vision','improvement_suggestions'];
+
+// ========== COMPANY RESEARCH ==========
+async function researchCompany() {
+  const settings = loadSettings();
+  if (!settings.apiUrl || !settings.apiKey) { showToast('请先配置 API（顶部"设置"按钮）'); return; }
+  const rec = editingId ? records.find(r => r.id === editingId) : null;
+  if (!rec) { showToast('请先保存记录后再搜索'); return; }
+
+  const companyName = rec.companyName || '';
+  const website = rec.companyWebsite || '';
+  if (!companyName && !website) { showToast('请先填写公司名称或网址'); return; }
+
+  const outputEl = document.getElementById('docCompanyResearchOutput');
+  const btnEl = document.getElementById('btnCompanyResearch');
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '搜索中...'; }
+  outputEl.classList.add('show');
+  outputEl.style.display = 'block';
+  outputEl.innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>AI 正在搜索公司信息...</span></div>';
+
+  try {
+    const prompt = `你是一位日本求职顾问，请根据以下信息，尽可能全面地搜索和分析这家公司。
+
+公司名：${companyName}
+${website ? '网址：' + website : ''}
+
+请从以下维度分析（用中文输出，但公司/产品名保持原文）：
+1. 事业内容：主营业务、主要产品/服务、商业模式
+2. 企业理念/文化：公司愿景、价值观、文化特点
+3. 技术栈：主要使用的技术、开源项目、技术博客等（如果是技术公司）
+4. 市场地位：行业排名、竞争对手、市场份额
+5. 最新动态：近期的新闻、融资、扩张、新产品等
+6. 工作环境：办公地点、远程政策、员工评价（如有著名评价平台信息）
+7. 面试情报：常见的面试流程、难度、关注点
+
+如果信息不足，不需要编造，请标注"【根据模型知识】"来区分确定信息和推测信息。
+最后用一句话总结：在这家公司工作的最大亮点是什么。
+
+输出格式：Markdown，用 ## 标注各小节`;
+
+    const result = await callAIAPI(settings, prompt);
+    const html = typeof marked !== 'undefined' ? marked.parse(result) : escapeHtml(result).replace(/\n/g, '<br>');
+    outputEl.innerHTML = html;
+    outputEl.dataset.generated = result;
+    showToast('公司调研完成');
+  } catch(err) {
+    outputEl.innerHTML = '<div class="ai-error">搜索失败: ' + escapeHtml(err.message) + '</div>';
+  } finally {
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = '重新搜索'; }
+  }
+}
+
+function loadCompanyResearch(id) {
+  const rec = records.find(r => r.id === id);
+  if (!rec || !rec.companyResearch) return;
+  const out = document.getElementById('docCompanyResearchOutput');
+  if (out) {
+    out.innerHTML = typeof marked !== 'undefined' ? marked.parse(rec.companyResearch) : escapeHtml(rec.companyResearch).replace(/\n/g, '<br>');
+    out.classList.add('show'); out.style.display = 'block';
+    out.dataset.generated = rec.companyResearch;
+  }
+  const btn = document.getElementById('btnCompanyResearch');
+  if (btn) btn.textContent = '重新搜索';
+}
+
+function saveCompanyResearch(id) {
+  const rec = records.find(r => r.id === id);
+  if (!rec) return;
+  const out = document.getElementById('docCompanyResearchOutput');
+  if (out && out.dataset.generated) rec.companyResearch = out.dataset.generated;
+}
+
+function getCompanyResearch() {
+  const out = document.getElementById('docCompanyResearchOutput');
+  if (out && out.dataset.generated) return out.dataset.generated;
+  const rec = editingId ? records.find(r => r.id === editingId) : null;
+  return rec && rec.companyResearch ? rec.companyResearch : '';
+}
 
 async function callAIAPI(settings, prompt) {
   const response = await fetch(settings.apiUrl, {
@@ -1263,6 +1386,7 @@ function capitalize(s) { return s.split('_').map(w => w.replace(/^\w/, c => c.to
 
 function buildDocPrompt(type, rec, cv, jd) {
   const dt = DOC_TYPES[type];
+  const companyResearch = getCompanyResearch();
   const base = `你是一位专业的日本求职顾问，擅长帮候选人撰写针对性的日本求职文档。
 
 ## 目标文档
@@ -1280,7 +1404,7 @@ ${cv}
 
 ## 职位描述（JD）
 ${jd || rec.notes || '无'}
-
+${companyResearch ? '\n## 公司调研信息（务必充分引用）\n' + companyResearch + '\n' : ''}
 ## 撰写要求
 `;
 
@@ -1419,6 +1543,11 @@ function clearAllDocs() {
     const btn = document.getElementById('btnGen' + capitalize(t));
     if (btn) btn.textContent = '生成' + DOC_TYPES[t].label;
   });
+  // Clear company research too
+  const crOut = document.getElementById('docCompanyResearchOutput');
+  if (crOut) { crOut.innerHTML = ''; crOut.classList.remove('show'); crOut.style.display = 'none'; delete crOut.dataset.generated; }
+  const crBtn = document.getElementById('btnCompanyResearch');
+  if (crBtn) crBtn.textContent = '搜索公司信息';
   showToast('已清除全部生成内容');
 }
 
