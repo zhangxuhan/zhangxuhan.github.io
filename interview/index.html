@@ -386,6 +386,7 @@ body {
 }
 .tag-rireki { background:#dbeafe; color:#1e40af; }
 .tag-shokumu { background:#d1fae5; color:#065f46; }
+.tag-other { background:#fef3c7; color:#92400e; }
 .doc-gen-block textarea {
   width:100%; min-height:100px; padding:10px 12px; font-size:13px; font-family:inherit;
   border:1px solid var(--border); border-radius:var(--radius-sm);
@@ -595,8 +596,40 @@ body {
             <textarea id="docPrShokumuEdit" placeholder="生成的内容会显示在这里，您也可以手动编辑..." style="display:none;"></textarea>
           </div>
         </div>
+        <div class="doc-gen-section">
+          <h3>キャリアビジョン</h3>
+          <div class="doc-gen-block">
+            <div class="block-header">
+              <span class="block-title">キャリアビジョン（职业愿景/规划）</span>
+              <span class="block-tag tag-other">その他</span>
+            </div>
+            <p class="hint-text">AI 将根据您的 CV 和岗位 JD，生成针对性的キャリアビジョン（中长期职业目标、在该公司的发展路径、想实现的愿景）。</p>
+            <div class="block-actions">
+              <button class="btn-gen" id="btnGenCareerVision" onclick="generateDoc('career_vision')">生成キャリアビジョン</button>
+              <button class="btn btn-icon btn-copy" onclick="copyDocContent('career_vision')" title="复制">复制</button>
+            </div>
+            <div class="generated-content" id="docCareerVisionOutput"></div>
+            <textarea id="docCareerVisionEdit" placeholder="生成的内容会显示在这里，您也可以手动编辑..." style="display:none;"></textarea>
+          </div>
+        </div>
+        <div class="doc-gen-section">
+          <h3>其他内容的修改建议</h3>
+          <div class="doc-gen-block">
+            <div class="block-header">
+              <span class="block-title">全文档修改建议（改善提案）</span>
+              <span class="block-tag tag-other">その他</span>
+            </div>
+            <p class="hint-text">AI 将全面审阅您的求职文档（已生成的志望動機/自己PR/職務要約），结合 CV 和 JD，给出具体的修改建议：哪些地方可以更精准、更有说服力、更符合日本求职习惯。</p>
+            <div class="block-actions">
+              <button class="btn-gen" id="btnGenImprovementSuggestions" onclick="generateDoc('improvement_suggestions')">生成修改建议</button>
+              <button class="btn btn-icon btn-copy" onclick="copyDocContent('improvement_suggestions')" title="复制">复制</button>
+            </div>
+            <div class="generated-content" id="docImprovementSuggestionsOutput"></div>
+            <textarea id="docImprovementSuggestionsEdit" placeholder="生成的内容会显示在这里，您也可以手动编辑..." style="display:none;"></textarea>
+          </div>
+        </div>
         <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
-          <button class="btn btn-ai" onclick="generateAllDocs()">一键生成全部 4 项</button>
+          <button class="btn btn-ai" onclick="generateAllDocs()">一键生成全部 6 项</button>
           <button class="btn" onclick="clearAllDocs()">清除全部</button>
         </div>
       </div>
@@ -1112,7 +1145,7 @@ function saveRecord() {
     showToast('记录已更新');
   } else {
     // 新建：从 DOM 读取已生成的 docs 内容
-    const docTypes = ['motivation','pr_rireki','summary','pr_shokumu'];
+    const docTypes = ALL_DOC_TYPES;
     const docs = {};
     docTypes.forEach(function(t) {
       var out = document.getElementById('doc' + capitalize(t) + 'Output');
@@ -1147,7 +1180,10 @@ const DOC_TYPES = {
   pr_rireki:  { label:'自己PR',   file:'履歴書', promptRole:'自己PR（个人亮点/优势，用于履歴書）' },
   summary:    { label:'職務要約', file:'職務経歴書', promptRole:'職務要約（工作概要）' },
   pr_shokumu: { label:'自己PR',   file:'職務経歴書', promptRole:'自己PR（用具体事例证明能力，用于職務経歴書）' },
+  career_vision: { label:'キャリアビジョン', file:'その他', promptRole:'キャリアビジョン（职业愿景/中长期规划）' },
+  improvement_suggestions: { label:'修改建议', file:'その他', promptRole:'全文档修改建议（改善提案）' },
 };
+const ALL_DOC_TYPES = ['motivation','pr_rireki','summary','pr_shokumu','career_vision','improvement_suggestions'];
 
 async function callAIAPI(settings, prompt) {
   const response = await fetch(settings.apiUrl, {
@@ -1297,13 +1333,54 @@ ${jd || rec.notes || '无'}
 3. 语气：具体、有说服力，避免抽象描述
 4. 输出格式：纯日文，分段落，适合直接复制到職務経歴書
 
-请直接输出自己PR正文，不要加标题。`
+请直接输出自己PR正文，不要加标题。`,
+
+    career_vision: `${base}
+请撰写一段"キャリアビジョン"（职业愿景/中长期职业规划）。
+
+要求：
+1. 长度：200-350字（日文）
+2. 内容结构：
+   - 短期目标（1-2年）：在这个岗位上想学到什么、达成什么
+   - 中期目标（3-5年）：想在公司/行业中扮演什么角色，想建立什么能力
+   - 长期愿景（5-10年）：理想的职业方向、想为社会/行业创造什么价值
+   - 与公司的关联：为什么认为在这个公司能实现这些目标
+3. 语气：真诚、有抱负但不浮夸，体现对公司业务的理解
+4. 必须结合 JD 中的具体业务方向和技术栈
+5. 输出格式：纯日文，分段落
+
+请直接输出キャリアビジョン正文，不要加标题。`,
+
+    improvement_suggestions: `${base}
+请全面审阅我已有的求职文档，并给出具体的修改建议。
+
+## 已生成的内容（如有）
+- 志望動機：${rec.docs && rec.docs.motivation ? '【已有，见下方】' : '【未生成】'}
+- 自己PR（履歴書）：${rec.docs && rec.docs.pr_rireki ? '【已有，见下方】' : '【未生成】'}
+- 職務要約：${rec.docs && rec.docs.summary ? '【已有，见下方】' : '【未生成】'}
+- 自己PR（職務経歴書）：${rec.docs && rec.docs.pr_shokumu ? '【已有，见下方】' : '【未生成】'}
+- キャリアビジョン：${rec.docs && rec.docs.career_vision ? '【已有，见下方】' : '【未生成】'}
+
+要求：
+1. 长度：300-500字（日文）
+2. 分析维度：
+   - 整体评价：每份文档的优缺点（是否精准匹配 JD）
+   - 志望動機：动机是否具体、是否充分结合公司特点
+   - 自己PR：论据是否充分、事例是否具体、与岗位关联性
+   - 職務要約：是否简洁有力、是否突出核心亮点
+   - キャリアビジョン：愿景是否合理、与公司的发展方向契合度
+   - 语言表达：是否符合日本求职文档的惯用表达、敬语使用是否恰当
+3. 每个建议必须是具体的、可操作的（不是泛泛的"写得更好"）
+4. 按优先级排列修改建议（最重要→次要）
+5. 输出格式：纯日文，用简洁的标题分段，建议用「→」标注修改方向
+
+请直接输出修改建议正文，不要加标题。`
   };
   return prompts[type] || base;
 }
 
 async function generateAllDocs() {
-  const types = ['motivation','pr_rireki','summary','pr_shokumu'];
+  const types = ALL_DOC_TYPES;
   for (const t of types) {
     await generateDoc(t);
     await new Promise(r => setTimeout(r, 500)); // 避免速率限制
@@ -1324,7 +1401,7 @@ function copyDocContent(type) {
 }
 
 function clearAllDocs() {
-  const types = ['motivation','pr_rireki','summary','pr_shokumu'];
+  const types = ALL_DOC_TYPES;
   types.forEach(t => {
     const out = document.getElementById('doc' + capitalize(t) + 'Output');
     const edit = document.getElementById('doc' + capitalize(t) + 'Edit');
@@ -1339,7 +1416,7 @@ function clearAllDocs() {
 function loadDocContents(id) {
   const rec = records.find(r => r.id === id);
   if (!rec || !rec.docs) return;
-  const types = ['motivation','pr_rireki','summary','pr_shokumu'];
+  const types = ALL_DOC_TYPES;
   types.forEach(t => {
     if (rec.docs[t]) {
       const out = document.getElementById('doc' + capitalize(t) + 'Output');
@@ -1360,7 +1437,7 @@ function saveDocContents(id) {
   const rec = records.find(r => r.id === id);
   if (!rec) return;
   if (!rec.docs) rec.docs = {};
-  const types = ['motivation','pr_rireki','summary','pr_shokumu'];
+  const types = ALL_DOC_TYPES;
   types.forEach(t => {
     const out = document.getElementById('doc' + capitalize(t) + 'Output');
     if (out && out.dataset.generated) rec.docs[t] = out.dataset.generated;
