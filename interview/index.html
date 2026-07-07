@@ -1017,6 +1017,8 @@ function openRecordModal(id) {
     document.getElementById('fInterviewDate').value = r.interviewDate || '';
     document.getElementById('fIntro').value = r.companyIntro || '';
     document.getElementById('fNotes').value = r.notes || '';
+    // Load saved JD
+    document.getElementById('evalJDInput').value = r.jd || '';
     // Load existing eval if any
     if (r.evaluation && r.evaluation.report) {
       document.getElementById('evalResult').innerHTML = typeof marked !== 'undefined' ? marked.parse(r.evaluation.report) : escapeHtml(r.evaluation.report);
@@ -1099,6 +1101,7 @@ function saveRecord() {
     interviewDate: document.getElementById('fInterviewDate').value,
     companyIntro: document.getElementById('fIntro').value.trim(),
     notes: document.getElementById('fNotes').value.trim(),
+    jd: document.getElementById('evalJDInput').value.trim(),
     updatedAt: Date.now(),
     evaluation: currentEvalData
   };
@@ -1178,7 +1181,7 @@ async function generateDoc(type) {
     openCVConfig(); return;
   }
 
-  const jd = (rec.jd || '');
+  const jd = rec.jd || document.getElementById('evalJDInput').value.trim() || '';
   if (!jd && !rec.notes) {
     showToast('请先在"Career-Ops 评估"标签页粘贴职位描述（JD）'); return;
   }
