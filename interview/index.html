@@ -368,6 +368,57 @@ body {
   .header { flex-direction:column; gap:16px; align-items:stretch; }
   .tab-bar { overflow-x:auto; }
 }
+/* Job Doc Generator */
+.doc-gen-section { margin-bottom:24px; }
+.doc-gen-section h3 { font-size:15px; font-weight:700; margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.doc-gen-section h3::before { content:''; width:4px; height:16px; background:var(--primary); border-radius:2px; }
+.doc-gen-block {
+  background:var(--bg); border-radius:var(--radius); padding:16px 18px; margin-bottom:12px;
+  border:1px solid var(--border); transition:var(--transition);
+}
+.doc-gen-block:hover { border-color:var(--border-strong); }
+.doc-gen-block .block-header {
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;
+}
+.doc-gen-block .block-title { font-size:14px; font-weight:700; color:var(--text); }
+.doc-gen-block .block-tag {
+  font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px;
+}
+.tag-rireki { background:#dbeafe; color:#1e40af; }
+.tag-shokumu { background:#d1fae5; color:#065f46; }
+.doc-gen-block textarea {
+  width:100%; min-height:100px; padding:10px 12px; font-size:13px; font-family:inherit;
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  background:var(--surface); color:var(--text); resize:vertical; line-height:1.7;
+  transition:var(--transition);
+}
+.doc-gen-block textarea:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+.doc-gen-block .block-actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.doc-gen-block .generated-content {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:14px 16px; font-size:13px; line-height:1.8; margin-top:10px;
+  max-height:300px; overflow-y:auto; display:none;
+}
+.doc-gen-block .generated-content.show { display:block; }
+.doc-gen-block .generated-content h1, .doc-gen-block .generated-content h2, .doc-gen-block .generated-content h3 {
+  font-weight:700; margin:10px 0 6px;
+}
+.doc-gen-block .generated-content h1 { font-size:15px; }
+.doc-gen-block .generated-content h2 { font-size:14px; }
+.doc-gen-block .generated-content h3 { font-size:13px; }
+.doc-gen-block .generated-content ul, .doc-gen-block .generated-content ol { padding-left:18px; margin:6px 0; }
+.doc-gen-block .generated-content li { margin:3px 0; }
+.btn-gen {
+  background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);
+  color:#fff; border:none; font-weight:600; font-family:inherit;
+  padding:7px 14px; font-size:13px; border-radius:var(--radius-sm); cursor:pointer;
+  transition:var(--transition);
+}
+.btn-gen:hover { box-shadow:0 4px 12px rgba(99,102,241,0.3); transform:translateY(-1px); }
+.btn-gen:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+.btn-copy { font-size:12px; padding:5px 10px; }
+.hint-text { font-size:12px; color:var(--text-tertiary); margin-top:6px; line-height:1.5; }
+
 </style>
 </head>
 <body>
@@ -434,6 +485,7 @@ body {
     <div class="tab-bar">
       <button class="tab-btn active" onclick="switchTab('tabBasic',this)">基本信息</button>
       <button class="tab-btn" onclick="switchTab('tabEval',this)">Career-Ops 评估</button>
+      <button class="tab-btn" onclick="switchTab('tabDocs',this)">求职文档生成</button>
     </div>
     <div class="modal-body">
       <!-- Tab: Basic -->
@@ -475,6 +527,77 @@ body {
         <div class="ai-section" id="manualEvalSection" style="display:none;">
           <h3>手动评分（可手动调整 AI 结果）</h3>
           <div class="eval-grid" id="evalGrid"></div>
+        </div>
+      </div>
+      <!-- Tab: Job Docs Generator -->
+      <div class="tab-panel" id="tabDocs">
+        <div class="doc-gen-section">
+          <h3>履歴書 — 志望動機</h3>
+          <div class="doc-gen-block">
+            <div class="block-header">
+              <span class="block-title">志望動機（求职动机）</span>
+              <span class="block-tag tag-rireki">履歴書</span>
+            </div>
+            <p class="hint-text">AI 将根据您的 CV 和岗位 JD，生成针对性的志望動機（为什么想加入这家公司/这个职位）。</p>
+            <div class="block-actions">
+              <button class="btn-gen" id="btnGenMotivation" onclick="generateDoc('motivation')">生成志望動機</button>
+              <button class="btn btn-icon btn-copy" onclick="copyDocContent('motivation')" title="复制">复制</button>
+            </div>
+            <div class="generated-content" id="docMotivationOutput"></div>
+            <textarea id="docMotivationEdit" placeholder="生成的内容会显示在这里，您也可以手动编辑..." style="display:none;"></textarea>
+          </div>
+        </div>
+        <div class="doc-gen-section">
+          <h3>履歴書 — 自己PR</h3>
+          <div class="doc-gen-block">
+            <div class="block-header">
+              <span class="block-title">自己PR（个人亮点/优势）</span>
+              <span class="block-tag tag-rireki">履歴書</span>
+            </div>
+            <p class="hint-text">AI 将根据您的 CV 和岗位 JD，生成针对性的自己PR（突出哪些经历/技能最符合这个目标岗位）。</p>
+            <div class="block-actions">
+              <button class="btn-gen" id="btnGenPrRireki" onclick="generateDoc('pr_rireki')">生成自己PR（履歴書）</button>
+              <button class="btn btn-icon btn-copy" onclick="copyDocContent('pr_rireki')" title="复制">复制</button>
+            </div>
+            <div class="generated-content" id="docPrRirekiOutput"></div>
+            <textarea id="docPrRirekiEdit" placeholder="生成的内容会显示在这里，您也可以手动编辑..." style="display:none;"></textarea>
+          </div>
+        </div>
+        <div class="doc-gen-section">
+          <h3>職務経歴書 — 職務要約</h3>
+          <div class="doc-gen-block">
+            <div class="block-header">
+              <span class="block-title">職務要約（工作概要）</span>
+              <span class="block-tag tag-shokumu">職務経歴書</span>
+            </div>
+            <p class="hint-text">AI 将根据您的 CV 和岗位 JD，生成针对性的職務要約（简洁概括您的相关工作经验，突出与目标岗位的关联性）。</p>
+            <div class="block-actions">
+              <button class="btn-gen" id="btnGenSummary" onclick="generateDoc('summary')">生成職務要約</button>
+              <button class="btn btn-icon btn-copy" onclick="copyDocContent('summary')" title="复制">复制</button>
+            </div>
+            <div class="generated-content" id="docSummaryOutput"></div>
+            <textarea id="docSummaryEdit" placeholder="生成的内容会显示在这里，您也可以手动编辑..." style="display:none;"></textarea>
+          </div>
+        </div>
+        <div class="doc-gen-section">
+          <h3>職務経歴書 — 自己PR</h3>
+          <div class="doc-gen-block">
+            <div class="block-header">
+              <span class="block-title">自己PR（工作经历版）</span>
+              <span class="block-tag tag-shokumu">職務経歴書</span>
+            </div>
+            <p class="hint-text">AI 将根据您的 CV（尤其是具体项目/职责）和岗位 JD，生成针对性的自己PR（用具体事例证明您的能力）。</p>
+            <div class="block-actions">
+              <button class="btn-gen" id="btnGenPrShokumu" onclick="generateDoc('pr_shokumu')">生成自己PR（職務経歴書）</button>
+              <button class="btn btn-icon btn-copy" onclick="copyDocContent('pr_shokumu')" title="复制">复制</button>
+            </div>
+            <div class="generated-content" id="docPrShokumuOutput"></div>
+            <textarea id="docPrShokumuEdit" placeholder="生成的内容会显示在这里，您也可以手动编辑..." style="display:none;"></textarea>
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+          <button class="btn btn-ai" onclick="generateAllDocs()">一键生成全部 4 项</button>
+          <button class="btn" onclick="clearAllDocs()">清除全部</button>
         </div>
       </div>
     </div>
@@ -901,6 +1024,8 @@ function openRecordModal(id) {
       document.getElementById('manualEvalSection').style.display = 'block';
       renderEvalGrid(r.evaluation);
     }
+    // Load generated docs
+    loadDocContents(id);
   } else {
     document.getElementById('fCompany').value = '';
     document.getElementById('fPosition').value = '';
@@ -912,6 +1037,7 @@ function openRecordModal(id) {
     document.getElementById('fInterviewDate').value = '';
     document.getElementById('fIntro').value = '';
     document.getElementById('fNotes').value = '';
+    clearAllDocs();
   }
   openModal('recordModalOverlay');
   setTimeout(function() { document.getElementById('fCompany').focus(); }, 100);
@@ -977,10 +1103,19 @@ function saveRecord() {
     evaluation: currentEvalData
   };
   if (editingId) {
+    saveDocContents(editingId);
     const idx = records.findIndex(r => r.id === editingId);
     if (idx >= 0) records[idx] = Object.assign({}, records[idx], data);
     showToast('记录已更新');
   } else {
+    // 新建：从 DOM 读取已生成的 docs 内容
+    const docTypes = ['motivation','pr_rireki','summary','pr_shokumu'];
+    const docs = {};
+    docTypes.forEach(function(t) {
+      var out = document.getElementById('doc' + capitalize(t) + 'Output');
+      if (out && out.dataset.generated) docs[t] = out.dataset.generated;
+    });
+    if (Object.keys(docs).length) data.docs = docs;
     data.id = Date.now();
     data.createdAt = Date.now();
     records.push(data);
@@ -1001,6 +1136,232 @@ function confirmDelete(id) {
     saveData(); renderAll(); closeModal('confirmModalOverlay'); showToast('记录已删除');
   };
   openModal('confirmModalOverlay');
+}
+
+// ========== JOB DOC GENERATOR ==========
+const DOC_TYPES = {
+  motivation:  { label:'志望動機', file:'履歴書', promptRole:'志望動機（求职动机）' },
+  pr_rireki:  { label:'自己PR',   file:'履歴書', promptRole:'自己PR（个人亮点/优势，用于履歴書）' },
+  summary:    { label:'職務要約', file:'職務経歴書', promptRole:'職務要約（工作概要）' },
+  pr_shokumu: { label:'自己PR',   file:'職務経歴書', promptRole:'自己PR（用具体事例证明能力，用于職務経歴書）' },
+};
+
+async function callAIAPI(settings, prompt) {
+  const response = await fetch(settings.apiUrl, {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
+    body: JSON.stringify({
+      model: settings.model || 'gpt-4o-mini',
+      messages:[
+        { role:'user', content: prompt }
+      ],
+      temperature:0.6,
+      max_tokens:4096
+    })
+  });
+  if (!response.ok) { const err = await response.text(); throw new Error('API ' + response.status + ': ' + err.slice(0,200)); }
+  const data = await response.json();
+  return (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content) || '';
+}
+
+async function generateDoc(type) {
+  const settings = loadSettings();
+  if (!settings.apiUrl || !settings.apiKey) {
+    showToast('请先配置 API（顶部"设置"按钮）'); return;
+  }
+  const rec = editingId ? records.find(r => r.id === editingId) : null;
+  if (!rec) { showToast('请先保存记录后再生成'); return; }
+
+  const cv = loadCV();
+  if (!cv || !cv.cvText) {
+    if (!confirm('未配置"我的CV"。是否现在去配置？')) return;
+    openCVConfig(); return;
+  }
+
+  const jd = (rec.jd || '');
+  if (!jd && !rec.notes) {
+    showToast('请先在"Career-Ops 评估"标签页粘贴职位描述（JD）'); return;
+  }
+
+  const outputEl = document.getElementById('doc' + capitalize(type) + 'Output');
+  const editEl   = document.getElementById('doc' + capitalize(type) + 'Edit');
+  const btnEl    = document.getElementById('btnGen' + capitalize(type));
+
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '生成中...'; }
+
+  outputEl.classList.add('show');
+  outputEl.innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>AI 正在生成' + DOC_TYPES[type].label + '...</span></div>';
+  outputEl.style.display = 'block';
+
+  try {
+    const prompt = buildDocPrompt(type, rec, cv.cvText||'', jd);
+    const result = await callAIAPI(settings, prompt);
+    const html = typeof marked !== 'undefined' ? marked.parse(result) : escapeHtml(result).replace(/\n/g, '<br>');
+    outputEl.innerHTML = html;
+    outputEl.dataset.generated = result;
+    if (editEl) {
+      editEl.value = result;
+      editEl.style.display = 'block';
+    }
+    showToast(DOC_TYPES[type].label + '生成完成');
+  } catch(err) {
+    outputEl.innerHTML = '<div class="ai-error">生成失败: ' + escapeHtml(err.message) + '</div>';
+  } finally {
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = '重新生成'; }
+  }
+}
+
+function capitalize(s) { return s.split('_').map(w => w.replace(/^\w/, c => c.toUpperCase())).join(''); }
+
+function buildDocPrompt(type, rec, cv, jd) {
+  const dt = DOC_TYPES[type];
+  const base = `你是一位专业的日本求职顾问，擅长帮候选人撰写针对性的日本求职文档。
+
+## 目标文档
+- 文档类型：${dt.file}
+- 撰写内容：${dt.promptRole}
+
+## 候选人 CV（基础信息）
+${cv}
+
+## 目标岗位
+- 公司：${rec.company || '未填写'}
+- 职位：${rec.position || '未填写'}
+- 地点：${rec.location || '未填写'}
+- 薪资：${rec.salary || '未填写'}
+
+## 职位描述（JD）
+${jd || rec.notes || '无'}
+
+## 撰写要求
+`;
+
+  const prompts = {
+    motivation: `${base}
+请撰写一段"志望動機"（求职动机），用于履歴書。
+
+要求：
+1. 长度：200-300字（日文）
+2. 内容结构：
+   - 开头：为什么对这家公司/这个行业感兴趣（结合公司业务/特点）
+   - 中间：为什么觉得自己适合这个职位（结合自己的技能/经验）
+   - 结尾：入职后的抱负/想在公司实现什么
+3. 语气：真诚、具体，避免泛泛而谈
+4. 必须引用 JD 中的具体业务/技术栈/公司特点
+5. 输出格式：纯日文，分段落，适合直接复制到履歴書
+
+请直接输出志望動機正文，不要加标题。`,
+
+    pr_rireki: `${base}
+请撰写一段"自己PR"（个人亮点/优势），用于履歴書。
+
+要求：
+1. 长度：150-250字（日文）
+2. 内容结构：
+   - 核心优势：用一句话概括自己的最大亮点
+   - 支撑论据：列举 2-3 个具体的技能/经验/成果（结合 CV）
+   - 与岗位的关联：说明这些优势如何帮助在这个岗位上取得成功
+3. 语气：自信但不自夸，用具体事实支撑
+4. 输出格式：纯日文，分段落，适合直接复制到履歴書
+
+请直接输出自己PR正文，不要加标题。`,
+
+    summary: `${base}
+请撰写一段"職務要約"（工作概要），用于職務経歴書。
+
+要求：
+1. 长度：100-200字（日文）
+2. 内容结构：
+   - 一句话概括最近/最相关的职位职责
+   - 关键技术栈/业务领域
+   - 主要成果（量化，如果 CV 中有数据）
+   - 与目标的关联性
+3. 语气：专业、简洁
+4. 输出格式：纯日文，1-2段，适合直接复制到職務経歴書
+
+请直接输出職務要約正文，不要加标题。`,
+
+    pr_shokumu: `${base}
+请撰写一段"自己PR"（用具体事例证明能力），用于職務経歴書。
+
+要求：
+1. 长度：200-350字（日文）
+2. 内容结构：
+   - 主题句：用一句话说明想证明的能力（如"困難な課題に対する解決能力"）
+   - 具体事例：STAR 法（Situation/Task/Action/Result）简述 1-2 个来自 CV 的具体项目/经历
+   - 成果：量化结果（性能提升 X%、按时交付、用户增长等）
+   - 与岗位的关联：说明这个能力如何在新岗位上发挥作用
+3. 语气：具体、有说服力，避免抽象描述
+4. 输出格式：纯日文，分段落，适合直接复制到職務経歴書
+
+请直接输出自己PR正文，不要加标题。`
+  };
+  return prompts[type] || base;
+}
+
+async function generateAllDocs() {
+  const types = ['motivation','pr_rireki','summary','pr_shokumu'];
+  for (const t of types) {
+    await generateDoc(t);
+    await new Promise(r => setTimeout(r, 500)); // 避免速率限制
+  }
+}
+
+function copyDocContent(type) {
+  const outputEl = document.getElementById('doc' + capitalize(type) + 'Output');
+  const text = outputEl ? outputEl.innerText || outputEl.dataset.generated || '' : '';
+  if (!text) { showToast('暂无内容可复制'); return; }
+  navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板')).catch(() => {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('已复制到剪贴板');
+  });
+}
+
+function clearAllDocs() {
+  const types = ['motivation','pr_rireki','summary','pr_shokumu'];
+  types.forEach(t => {
+    const out = document.getElementById('doc' + capitalize(t) + 'Output');
+    const edit = document.getElementById('doc' + capitalize(t) + 'Edit');
+    if (out) { out.innerHTML = ''; out.classList.remove('show'); out.style.display = 'none'; }
+    if (edit) { edit.value = ''; edit.style.display = 'none'; }
+    const btn = document.getElementById('btnGen' + capitalize(t));
+    if (btn) btn.textContent = '生成' + DOC_TYPES[t].label;
+  });
+  showToast('已清除全部生成内容');
+}
+
+function loadDocContents(id) {
+  const rec = records.find(r => r.id === id);
+  if (!rec || !rec.docs) return;
+  const types = ['motivation','pr_rireki','summary','pr_shokumu'];
+  types.forEach(t => {
+    if (rec.docs[t]) {
+      const out = document.getElementById('doc' + capitalize(t) + 'Output');
+      const edit = document.getElementById('doc' + capitalize(t) + 'Edit');
+      if (out) {
+        out.innerHTML = typeof marked !== 'undefined' ? marked.parse(rec.docs[t]) : escapeHtml(rec.docs[t]).replace(/\n/g,'<br>');
+        out.classList.add('show'); out.style.display = 'block';
+        out.dataset.generated = rec.docs[t];
+      }
+      if (edit) { edit.value = rec.docs[t]; edit.style.display = 'block'; }
+      const btn = document.getElementById('btnGen' + capitalize(t));
+      if (btn) btn.textContent = '重新生成';
+    }
+  });
+}
+
+function saveDocContents(id) {
+  const rec = records.find(r => r.id === id);
+  if (!rec) return;
+  if (!rec.docs) rec.docs = {};
+  const types = ['motivation','pr_rireki','summary','pr_shokumu'];
+  types.forEach(t => {
+    const out = document.getElementById('doc' + capitalize(t) + 'Output');
+    if (out && out.dataset.generated) rec.docs[t] = out.dataset.generated;
+  });
 }
 
 // ========== EVALUATION ==========
