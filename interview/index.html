@@ -469,12 +469,14 @@ body {
 /* 读音标注（振り仮名 / 外来语英語） */
 .generated-content p { margin:8px 0; line-height:1.8; }
 .generated-content strong { font-weight:700; }
-.generated-content ruby { ruby-position:over; }
-.generated-content rt { font-size:0.62em; color:var(--text-tertiary); font-weight:400; }
+.generated-content .fk { display:inline-flex; flex-direction:column; align-items:center; vertical-align:text-bottom; line-height:1; margin:0 1px; }
+.generated-content .fk-rt { font-size:0.58em; line-height:1.1; color:var(--text-tertiary); font-weight:400; }
+.generated-content .fk-base { line-height:1; }
 .generated-content .loanword { font-weight:500; }
 .generated-content .loanword-en { font-size:0.78em; color:var(--primary); font-weight:500; margin-left:2px; }
-.ai-result ruby { ruby-position:over; }
-.ai-result rt { font-size:0.62em; color:var(--text-tertiary); font-weight:400; }
+.ai-result .fk { display:inline-flex; flex-direction:column; align-items:center; vertical-align:text-bottom; line-height:1; margin:0 1px; }
+.ai-result .fk-rt { font-size:0.58em; line-height:1.1; color:var(--text-tertiary); font-weight:400; }
+.ai-result .fk-base { line-height:1; }
 .ai-result .loanword { font-weight:500; }
 .ai-result .loanword-en { font-size:0.78em; color:var(--primary); font-weight:500; margin-left:2px; }
 
@@ -1833,11 +1835,11 @@ function saveDocContents(id) {
 // 将「漢字《かんじ》」转为 <ruby> 振り仮名，将「カタカナ《English》」转为外来语标注
 function renderFurigana(md) {
   if (!md) return '';
-  const converted = md.replace(/([ァ-ヶ一-龯][ぁ-んァ-ヶー・]*?)《([^》]+)》/g, function(m, word, reading) {
+  const converted = md.replace(/([ァ-ヶ一-龯][ぁ-んァ-ヶ一-龯ー・]*?)《([^》]+)》/g, function(m, word, reading) {
     if (/[A-Za-z]/.test(reading)) {
       return '<span class="loanword">' + word + '<span class="loanword-en">(' + reading + ')</span></span>';
     }
-    return '<ruby>' + word + '<rt>' + reading + '</rt></ruby>';
+    return '<span class="fk"><span class="fk-rt">' + reading + '</span><span class="fk-base">' + word + '</span></span>';
   });
   return typeof marked !== 'undefined' ? marked.parse(converted, { breaks: true }) : escapeHtml(converted).replace(/\n/g, '<br>');
 }
