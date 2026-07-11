@@ -457,6 +457,47 @@ body {
 }
 .doc-custom-input::placeholder { color:var(--text-tertiary); font-style:italic; }
 
+/* 面试问题预测 */
+.interview-block {
+  background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 100%);
+  border:2px solid #c4b5fd; border-radius:var(--radius); padding:16px 18px; margin-bottom:12px;
+}
+.interview-block .block-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.interview-block .block-title { font-size:14px; font-weight:700; color:#6d28d9; }
+.tag-interview { background:#ede9fe; color:#6d28d9; }
+
+/* 读音标注（振り仮名 / 外来语英語） */
+.generated-content ruby { ruby-position:over; }
+.generated-content rt { font-size:0.62em; color:var(--text-tertiary); font-weight:400; }
+.generated-content .loanword { font-weight:500; }
+.generated-content .loanword-en { font-size:0.78em; color:var(--primary); font-weight:500; margin-left:2px; }
+.ai-result ruby { ruby-position:over; }
+.ai-result rt { font-size:0.62em; color:var(--text-tertiary); font-weight:400; }
+.ai-result .loanword { font-weight:500; }
+.ai-result .loanword-en { font-size:0.78em; color:var(--primary); font-weight:500; margin-left:2px; }
+
+/* 面试问题预测 inner 元素（复用文档生成区的样式） */
+.interview-block .block-actions { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+.interview-block .generated-content {
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm);
+  padding:14px 16px; font-size:13px; line-height:1.8; margin-top:10px;
+  max-height:300px; overflow-y:auto; display:none;
+}
+.interview-block .generated-content.show { display:block; }
+.interview-block .generated-content h1, .interview-block .generated-content h2, .interview-block .generated-content h3 { font-weight:700; margin:10px 0 6px; }
+.interview-block .generated-content h1 { font-size:15px; }
+.interview-block .generated-content h2 { font-size:14px; }
+.interview-block .generated-content h3 { font-size:13px; }
+.interview-block .generated-content ul, .interview-block .generated-content ol { padding-left:18px; margin:6px 0; }
+.interview-block .generated-content li { margin:3px 0; }
+.interview-block textarea {
+  width:100%; min-height:100px; padding:10px 12px; font-size:13px; font-family:inherit;
+  border:1px solid var(--border); border-radius:var(--radius-sm);
+  background:var(--surface); color:var(--text); resize:vertical; line-height:1.7;
+  transition:var(--transition);
+}
+.interview-block textarea:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(99,102,241,0.1); }
+
 </style>
 </head>
 <body>
@@ -506,6 +547,7 @@ body {
       <option value="companyName-asc">公司名称</option>
     </select>
     <div class="toolbar-spacer"></div>
+    <button class="btn btn-ai" onclick="openGeneralInterview()">通用面试问题</button>
     <button class="btn btn-ai" onclick="openBatchEval()">批量评估</button>
     <button class="btn btn-primary" onclick="openRecordModal()">+ 添加记录</button>
   </section>
@@ -524,6 +566,7 @@ body {
       <button class="tab-btn active" onclick="switchTab('tabBasic',this)">基本信息</button>
       <button class="tab-btn" onclick="switchTab('tabEval',this)">Career-Ops 评估</button>
       <button class="tab-btn" onclick="switchTab('tabDocs',this)">求职文档生成</button>
+      <button class="tab-btn" onclick="switchTab('tabInterview',this)">面试问题</button>
     </div>
     <div class="modal-body">
       <!-- Tab: Basic -->
@@ -692,6 +735,28 @@ body {
           <button class="btn" onclick="clearAllDocs()">清除全部</button>
         </div>
       </div>
+
+      <!-- Tab: Interview Q&A -->
+      <div class="tab-panel" id="tabInterview">
+        <div class="doc-gen-section">
+          <h3>面试问题预测（这家公司 × 这个岗位）</h3>
+          <div class="interview-block">
+            <div class="block-header">
+              <span class="block-title">想定質問＆模範回答</span>
+              <span class="block-tag tag-interview">面接対策</span>
+            </div>
+            <p class="hint-text">AI 基于公司名、岗位 JD 以及已生成的「公司调研」，推测最可能被问到的面试问题（参考同类公司与岗位的 typical 面经套路），并给出用日语撰写、标注读音的模范回答。汉字后标假名、外来语后标英语。</p>
+            <input class="doc-custom-input" id="docInterviewCustom" placeholder="微调说明（可选）：例如&quot;侧重技术深挖题、增加逆質問、用更口语的回答&quot;" />
+            <div class="block-actions">
+              <button class="btn-gen" id="btnGenInterview" onclick="generateInterview()">生成面试问题</button>
+              <button class="btn btn-icon btn-copy" onclick="copyInterview()" title="复制">复制</button>
+            </div>
+            <div class="generated-content" id="docInterviewOutput"></div>
+            <textarea id="docInterviewEdit" placeholder="生成的内容会显示在这里，您也可以手动编辑..." style="display:none;"></textarea>
+          </div>
+        </div>
+      </div>
+
     </div>
     <div class="modal-footer">
       <button class="btn" onclick="closeModal('recordModalOverlay')">取消</button>
@@ -710,6 +775,31 @@ body {
     <div class="modal-body report-content" id="reportContent"></div>
     <div class="modal-footer">
       <button class="btn" onclick="closeModal('reportModalOverlay')">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- General Interview Modal -->
+<div class="modal-overlay" id="generalInterviewOverlay">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h2>通用面试问题（基于我的 CV）</h2>
+      <button class="modal-close" onclick="closeModal('generalInterviewOverlay')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="ai-section">
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">AI 基于您配置的「我的 CV」，生成最通用、好记、且贴合您自身经历的面试问题与模范回答（日语、标注读音）。适合反复背诵，应对任何公司的共通问题。</p>
+        <input class="doc-custom-input" id="generalInterviewCustom" placeholder="微调说明（可选）：例如&quot;希望偏技术向、减少 behavioral 题、增加逆質問&quot;" style="margin-bottom:12px;" />
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-ai" id="btnGenGeneralInterview" onclick="generateGeneralInterview()">生成通用面试问题</button>
+          <button class="btn btn-icon btn-copy" onclick="copyGeneralInterview()" title="复制">复制</button>
+          <button class="btn" onclick="clearGeneralInterview()">清除</button>
+        </div>
+        <div class="ai-result" id="generalInterviewResult" style="margin-top:16px;"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('generalInterviewOverlay')">关闭</button>
     </div>
   </div>
 </div>
@@ -1131,6 +1221,8 @@ function openRecordModal(id) {
     loadDocContents(id);
     // Load company research
     loadCompanyResearch(id);
+    // Load interview Q&A
+    loadInterview(id);
   } else {
     document.getElementById('fCompany').value = '';
     document.getElementById('fPosition').value = '';
@@ -1143,6 +1235,11 @@ function openRecordModal(id) {
     document.getElementById('fIntro').value = '';
     document.getElementById('fNotes').value = '';
     clearAllDocs();
+    // Clear interview Q&A
+    const io = document.getElementById('docInterviewOutput'); if (io) { io.innerHTML=''; io.style.display='none'; io.dataset.generated=''; }
+    const ie = document.getElementById('docInterviewEdit'); if (ie) { ie.value=''; ie.style.display='none'; }
+    const ic = document.getElementById('docInterviewCustom'); if (ic) ic.value='';
+    const ib = document.getElementById('btnGenInterview'); if (ib) ib.textContent='生成面试问题';
   }
   openModal('recordModalOverlay');
   setTimeout(function() { document.getElementById('fCompany').focus(); }, 100);
@@ -1211,6 +1308,7 @@ function saveRecord() {
   if (editingId) {
     saveDocContents(editingId);
     saveCompanyResearch(editingId);
+    saveInterview(editingId);
     const idx = records.findIndex(r => r.id === editingId);
     if (idx >= 0) records[idx] = Object.assign({}, records[idx], data);
     showToast('记录已更新');
@@ -1226,6 +1324,11 @@ function saveRecord() {
     // 保存公司调研
     var researchOut = document.getElementById('docCompanyResearchOutput');
     if (researchOut && researchOut.dataset.generated) data.companyResearch = researchOut.dataset.generated;
+    // 保存面试问题
+    var interviewOut = document.getElementById('docInterviewOutput');
+    if (interviewOut && interviewOut.dataset.generated) data.interview = interviewOut.dataset.generated;
+    var interviewCustom = document.getElementById('docInterviewCustom');
+    if (interviewCustom && interviewCustom.value.trim()) data.interviewCustom = interviewCustom.value.trim();
     data.id = Date.now();
     data.createdAt = Date.now();
     records.push(data);
@@ -1722,6 +1825,206 @@ function saveDocContents(id) {
   if (crCustom && crCustom.value.trim()) rec.docCustoms['companyResearch'] = crCustom.value.trim();
   else delete rec.docCustoms['companyResearch'];
   if (Object.keys(rec.docCustoms).length === 0) delete rec.docCustoms;
+}
+
+// ========== INTERVIEW Q&A (FURIGANA / LOANWORD) ==========
+// 将「漢字《かんじ》」转为 <ruby> 振り仮名，将「カタカナ《English》」转为外来语标注
+function renderFurigana(md) {
+  if (!md) return '';
+  const converted = md.replace(/([ぁ-んァ-ヶ一-龯ー・]+?)《([^》]+)》/g, function(m, word, reading) {
+    if (/[A-Za-z]/.test(reading)) {
+      return '<span class="loanword">' + word + '<span class="loanword-en">(' + reading + ')</span></span>';
+    }
+    return '<ruby>' + word + '<rt>' + reading + '</rt></ruby>';
+  });
+  return typeof marked !== 'undefined' ? marked.parse(converted) : escapeHtml(converted).replace(/\n/g, '<br>');
+}
+
+// ---- 单条记录：基于公司+JD 预测面试问题 ----
+async function generateInterview() {
+  const settings = loadSettings();
+  if (!settings.apiUrl || !settings.apiKey) { showToast('请先配置 API（顶部"设置"按钮）'); return; }
+  const rec = editingId ? records.find(r => r.id === editingId) : null;
+  if (!rec) { showToast('请先保存记录后再生成'); return; }
+  const cv = loadCV();
+  const cvText = (cv && cv.cvText) ? cv.cvText : '（未配置 CV，仅根据 JD 与公司分析）';
+  const jd = rec.jd || document.getElementById('evalJDInput').value.trim() || rec.notes || '';
+  if (!jd && !rec.companyIntro && !rec.companyName) { showToast('请先填写公司/岗位信息或粘贴 JD'); return; }
+
+  const outputEl = document.getElementById('docInterviewOutput');
+  const editEl = document.getElementById('docInterviewEdit');
+  const btnEl = document.getElementById('btnGenInterview');
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '生成中...'; }
+  outputEl.classList.add('show'); outputEl.style.display = 'block';
+  outputEl.innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>AI 正在预测面试问题...</span></div>';
+
+  try {
+    const customInst = (document.getElementById('docInterviewCustom')||{}).value||'';
+    const companyResearch = getCompanyResearch();
+    const prompt = buildInterviewPrompt(rec, cvText, jd, companyResearch, customInst);
+    const result = await callAIAPI(settings, prompt);
+    outputEl.innerHTML = renderFurigana(result);
+    outputEl.dataset.generated = result;
+    if (editEl) { editEl.value = result; editEl.style.display = 'block'; }
+    showToast('面试问题生成完成');
+  } catch(err) {
+    outputEl.innerHTML = '<div class="ai-error">生成失败: ' + escapeHtml(err.message) + '</div>';
+  } finally {
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = '重新生成'; }
+  }
+}
+
+function buildInterviewPrompt(rec, cvText, jd, companyResearch, customInst) {
+  return `你是一位经验丰富的日本面试教练（面接対策のプロ），深谙日本企业招聘的面试套路与常见的面经问题。
+请基于以下信息，为该候选人预测在【${rec.companyName||'该公司'}】应聘【${rec.position||'该岗位'}】时，最有可能被问到的面试问题，并给出用日语撰写的模范回答。
+
+## 候选人 CV
+${cvText}
+
+## 目标岗位
+- 公司：${rec.companyName||'未填写'}
+- 职位：${rec.position||'未填写'}
+- 地点：${rec.location||'未填写'}
+- 薪资：${rec.salary||'未填写'}
+${rec.companyIntro ? '\n## 公司简介\n' + rec.companyIntro + '\n' : ''}
+## 职位描述（JD）
+${jd || '（未提供）'}
+${companyResearch ? '\n## 公司调研情报（务必参考，问题要贴合这家公司的真实情况与行业特点）\n' + companyResearch + '\n' : ''}
+
+## 输出要求
+1. 预测 10-14 个最可能被问到的问题，按以下维度组织（用 Markdown 标题分隔，顺序如下）：
+   - ① 自己紹介（1分間）：开场必问题
+   - ② 志望動機：为什么是这家公司、这个岗位
+   - ③ 自己PR / 強み：用具体经历证明
+   - ④ 弱み・克服：诚实但积极的回答（不暴露致命伤）
+   - ⑤ 技術・経験の深掘り：基于 JD 的技术栈/项目深挖（重点，多出几道贴合 JD 的题）
+   - ⑥ チームワーク・協調性 / 苦労した経験
+   - ⑦ キャリアビジョン：短期・中期
+   - ⑧ 逆質問：你该问公司的问题（给 3-5 个好问题）
+   - ⑨ 该公司特有：结合公司调研/行业，给 1-2 道这家公司风格的问题
+2. 每个问题用「### Qn. 質問（日语）」形式，下一行写「**A（模範回答）：**」然后回答正文（日语，2-4 句，自然、口语化但得体，像真人会说的话）。
+3. 回答要具体、贴合 CV 与 JD，避免空泛；弱点类要真诚。
+4. 语气：です・ます調，自然有温度，像真的在面试现场。
+5. 【读音标注 - 必须严格遵守】
+   - 汉字后方标注假名读音，格式：漢字《かんじ》。例：履歴書《りれきしょ》を拝見《はいけん》しました。
+   - 外来语（片假名）后方标注英语原词，格式：カタカナ《English》。例：コミュニケーション《communication》が重要《じゅうよう》です。
+   - 常见简单汉字（会社・学生・日本等）可省略以减噪；重点标注生僻或易误读的汉字。
+   ${customInst ? '\n## 用户的微调要求（最高优先级，务必遵从）\n' + customInst : ''}
+请直接输出，不要加总标题。`;
+}
+
+function loadInterview(id) {
+  const rec = records.find(r => r.id === id);
+  if (!rec) return;
+  const out = document.getElementById('docInterviewOutput');
+  const edit = document.getElementById('docInterviewEdit');
+  const custom = document.getElementById('docInterviewCustom');
+  if (out && rec.interview) {
+    out.innerHTML = renderFurigana(rec.interview);
+    out.classList.add('show'); out.style.display = 'block'; out.dataset.generated = rec.interview;
+  }
+  if (edit && rec.interview) { edit.value = rec.interview; edit.style.display = 'block'; }
+  if (custom && rec.interviewCustom) custom.value = rec.interviewCustom;
+  const btn = document.getElementById('btnGenInterview');
+  if (btn && rec.interview) btn.textContent = '重新生成';
+}
+
+function saveInterview(id) {
+  const rec = records.find(r => r.id === id);
+  if (!rec) return;
+  const out = document.getElementById('docInterviewOutput');
+  if (out && out.dataset.generated) rec.interview = out.dataset.generated;
+  const custom = document.getElementById('docInterviewCustom');
+  if (custom && custom.value.trim()) rec.interviewCustom = custom.value.trim();
+}
+
+function copyInterview() {
+  const out = document.getElementById('docInterviewOutput');
+  const text = out ? (out.innerText || out.dataset.generated || '') : '';
+  if (!text) { showToast('暂无内容可复制'); return; }
+  navigator.clipboard.writeText(text).then(() => showToast('已复制')).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('已复制');
+  });
+}
+
+// ---- 首页：基于 CV 的通用面试问题 ----
+async function generateGeneralInterview() {
+  const settings = loadSettings();
+  if (!settings.apiUrl || !settings.apiKey) { showToast('请先配置 API（顶部"设置"按钮）'); return; }
+  const cv = loadCV();
+  if (!cv || !cv.cvText) {
+    if (!confirm('未配置"我的CV"。是否现在去配置？')) return;
+    openCVConfig(); return;
+  }
+  const outputEl = document.getElementById('generalInterviewResult');
+  const btnEl = document.getElementById('btnGenGeneralInterview');
+  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '生成中...'; }
+  outputEl.innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>AI 正在生成通用面试问题...</span></div>';
+
+  try {
+    const customInst = (document.getElementById('generalInterviewCustom')||{}).value||'';
+    const prompt = `你是一位经验丰富的日本面试教练。请基于以下候选人的 CV，生成最通用、最高频、且最贴合该候选人自身经历的面试问题与模范回答。
+
+## 候选人 CV
+${cv.cvText}
+
+## 输出要求
+1. 生成 8-12 个任何日本公司面试都会问的「共通问题」，需满足：
+   - 通用性高（几乎每场面试都会出现，如自己紹介、強み・弱み、志望動機、キャリア目標、ストレス対処、チームでの役割、失敗談、逆質問等）
+   - 高度贴合 CV：每个问题的模范回答都要引用 CV 中真实的具体经历/技能，让人一眼看出"这就是你"
+   - 好记：回答要有记忆点（一句话金句 + 具体事例支撑），方便反复背诵
+2. 用 Markdown 组织：每个问题「### Qn. 質問（日语）」，下一行「**A（模範回答）：**」+ 回答正文（日语，2-4 句，自然口语化、有温度）。
+3. 语气：です・ます調，像真的在面试现场。
+4. 【读音标注 - 必须严格遵守】
+   - 汉字后方标注假名读音，格式：漢字《かんじ》。例：経験《けいけん》を活《い》かしたいです。
+   - 外来语（片假名）后方标注英语原词，格式：カタカナ《English》。例：プログラミング《programming》が好《す》きです。
+   - 常见简单汉字可省略以减噪。
+   ${customInst ? '\n## 用户的微调要求（最高优先级，务必遵从）\n' + customInst : ''}
+请直接输出，不要加总标题。`;
+    const result = await callAIAPI(settings, prompt);
+    outputEl.innerHTML = renderFurigana(result);
+    outputEl.dataset.generated = result;
+    try { localStorage.setItem('interview_general', JSON.stringify({ content: result, custom: customInst })); } catch(e) {}
+    showToast('通用面试问题生成完成');
+  } catch(err) {
+    outputEl.innerHTML = '<div class="ai-error">生成失败: ' + escapeHtml(err.message) + '</div>';
+  } finally {
+    if (btnEl) { btnEl.disabled = false; btnEl.textContent = '重新生成'; }
+  }
+}
+
+function openGeneralInterview() {
+  const overlay = document.getElementById('generalInterviewOverlay');
+  overlay.classList.add('active');
+  try {
+    const raw = localStorage.getItem('interview_general');
+    if (raw) {
+      const d = JSON.parse(raw);
+      const out = document.getElementById('generalInterviewResult');
+      if (d.content) { out.innerHTML = renderFurigana(d.content); out.dataset.generated = d.content; out.classList.add('show'); out.style.display = 'block'; }
+      const btn = document.getElementById('btnGenGeneralInterview'); if (btn) btn.textContent = '重新生成';
+      const cust = document.getElementById('generalInterviewCustom'); if (cust && d.custom) cust.value = d.custom;
+    }
+  } catch(e) {}
+}
+
+function copyGeneralInterview() {
+  const out = document.getElementById('generalInterviewResult');
+  const text = out ? (out.innerText || out.dataset.generated || '') : '';
+  if (!text) { showToast('暂无内容可复制'); return; }
+  navigator.clipboard.writeText(text).then(() => showToast('已复制')).catch(() => {
+    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast('已复制');
+  });
+}
+
+function clearGeneralInterview() {
+  const out = document.getElementById('generalInterviewResult');
+  out.innerHTML = ''; out.classList.remove('show'); out.style.display = 'none'; delete out.dataset.generated;
+  const btn = document.getElementById('btnGenGeneralInterview'); if (btn) btn.textContent = '生成通用面试问题';
+  localStorage.removeItem('interview_general');
+  showToast('已清除');
 }
 
 // ========== EVALUATION ==========
