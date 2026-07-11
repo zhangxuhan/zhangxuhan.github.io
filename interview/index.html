@@ -467,6 +467,8 @@ body {
 .tag-interview { background:#ede9fe; color:#6d28d9; }
 
 /* 读音标注（振り仮名 / 外来语英語） */
+.generated-content p { margin:8px 0; line-height:1.8; }
+.generated-content strong { font-weight:700; }
 .generated-content ruby { ruby-position:over; }
 .generated-content rt { font-size:0.62em; color:var(--text-tertiary); font-weight:400; }
 .generated-content .loanword { font-weight:500; }
@@ -1837,7 +1839,7 @@ function renderFurigana(md) {
     }
     return '<ruby>' + word + '<rt>' + reading + '</rt></ruby>';
   });
-  return typeof marked !== 'undefined' ? marked.parse(converted) : escapeHtml(converted).replace(/\n/g, '<br>');
+  return typeof marked !== 'undefined' ? marked.parse(converted, { breaks: true }) : escapeHtml(converted).replace(/\n/g, '<br>');
 }
 
 // ---- 单条记录：基于公司+JD 预测面试问题 ----
