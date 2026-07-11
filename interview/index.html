@@ -472,11 +472,13 @@ body {
 .generated-content .fk { display:inline-flex; flex-direction:column; align-items:center; vertical-align:text-bottom; line-height:1; margin:0 1px; }
 .generated-content .fk-rt { font-size:0.58em; line-height:1.1; color:var(--text-tertiary); font-weight:400; }
 .generated-content .fk-base { line-height:1; }
+.generated-content .cn-tr { color:#6b7280; font-size:0.9em; }
 .generated-content .loanword { font-weight:500; }
 .generated-content .loanword-en { font-size:0.78em; color:var(--primary); font-weight:500; margin-left:2px; }
 .ai-result .fk { display:inline-flex; flex-direction:column; align-items:center; vertical-align:text-bottom; line-height:1; margin:0 1px; }
 .ai-result .fk-rt { font-size:0.58em; line-height:1.1; color:var(--text-tertiary); font-weight:400; }
 .ai-result .fk-base { line-height:1; }
+.ai-result .cn-tr { color:#6b7280; font-size:0.9em; }
 .ai-result .loanword { font-weight:500; }
 .ai-result .loanword-en { font-size:0.78em; color:var(--primary); font-weight:500; margin-left:2px; }
 
@@ -1840,7 +1842,7 @@ function renderFurigana(md) {
       return '<span class="loanword">' + word + '<span class="loanword-en">(' + reading + ')</span></span>';
     }
     return '<span class="fk"><span class="fk-rt">' + reading + '</span><span class="fk-base">' + word + '</span></span>';
-  });
+  }).replace(/（中：([^）]+)）/g, '<span class="cn-tr">（中：$1）</span>');
   return typeof marked !== 'undefined' ? marked.parse(converted, { breaks: true }) : escapeHtml(converted).replace(/\n/g, '<br>');
 }
 
@@ -1917,6 +1919,11 @@ ${companyResearch ? '\n## 公司调研情报（务必参考，问题要贴合这
    - 外来语（片假名）后方标注英语原词，格式：カタカナ《English》。例：コミュニケーション《communication》は重要《じゅうよう》です。
    - 常见简单汉字（会社・学生・日本等）可省略以减噪；重点标注生僻或易误读的汉字。
    - 标注必须紧贴被标词的汉字/片假名本身，不要把前面的助词（が・を・は・に・で等）一起括进《》：错误「が重要《じゅうよう》」→ 正确「重要《じゅうよう》」。一个词只标一次，严禁拆词标注如「料《りょう》理」。
+6. 【中文翻译 - 必须严格遵守】
+   - 每个问题（"### Qn." 这一行的末尾）和每个回答（回答正文的末尾）都用全角括号附加中文翻译，格式严格为「（中：中文翻译）」。
+   - 示例 — 问题行：### Q1. なぜこの会社を志望《しぼう》しますか？（中：为什么想应聘贵公司？）
+   - 示例 — 回答末尾：…貢献《こうけん》できると確《たし》かめています。（中：我相信自己能为此做出贡献。）
+   - 翻译要准确、口语化、好理解，帮助快速看懂日语意思，不要逐字硬译，也不要加额外解释。
    ${customInst ? '\n## 用户的微调要求（最高优先级，务必遵从）\n' + customInst : ''}
 请直接输出，不要加总标题。`;
 }
@@ -1988,6 +1995,11 @@ ${cv.cvText}
    - 汉字后方标注假名读音，格式：漢字《かんじ》。例：経験《けいけん》を活《い》かしたいです。
    - 外来语（片假名）后方标注英语原词，格式：カタカナ《English》。例：プログラミング《programming》が好《す》きです。
    - 常见简单汉字可省略以减噪。
+5. 【中文翻译 - 必须严格遵守】
+   - 每个问题（"### Qn." 这一行的末尾）和每个回答（回答正文的末尾）都用全角括号附加中文翻译，格式严格为「（中：中文翻译）」。
+   - 示例 — 问题行：### Q1. 自己《じぶん》を一言《いちげん》で表《あらわ》してください。（中：请用一句话介绍自己。）
+   - 示例 — 回答末尾：…成長《せいちょう》できます。（中：我想在这样的环境里不断成长。）
+   - 翻译要准确、口语化、好理解，不要逐字硬译。
    ${customInst ? '\n## 用户的微调要求（最高优先级，务必遵从）\n' + customInst : ''}
 请直接输出，不要加总标题。`;
     const result = await callAIAPI(settings, prompt);
