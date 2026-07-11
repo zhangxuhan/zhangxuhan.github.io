@@ -1444,7 +1444,7 @@ function getCompanyResearch() {
   return rec && rec.companyResearch ? rec.companyResearch : '';
 }
 
-async function callAIAPI(settings, prompt) {
+async function callAIAPI(settings, prompt, maxTokens = 8192) {
   const response = await fetch(settings.apiUrl, {
     method:'POST',
     headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
@@ -1454,7 +1454,7 @@ async function callAIAPI(settings, prompt) {
         { role:'user', content: prompt }
       ],
       temperature:0.6,
-      max_tokens:4096
+      max_tokens: maxTokens
     })
   });
   if (!response.ok) { const err = await response.text(); throw new Error('API ' + response.status + ': ' + err.slice(0,200)); }
@@ -1833,7 +1833,7 @@ function saveDocContents(id) {
 // 将「漢字《かんじ》」转为 <ruby> 振り仮名，将「カタカナ《English》」转为外来语标注
 function renderFurigana(md) {
   if (!md) return '';
-  const converted = md.replace(/([ぁ-んァ-ヶ一-龯ー・]+?)《([^》]+)》/g, function(m, word, reading) {
+  const converted = md.replace(/([ァ-ヶ一-龯][ぁ-んァ-ヶー・]*?)《([^》]+)》/g, function(m, word, reading) {
     if (/[A-Za-z]/.test(reading)) {
       return '<span class="loanword">' + word + '<span class="loanword-en">(' + reading + ')</span></span>';
     }
@@ -1912,8 +1912,9 @@ ${companyResearch ? '\n## 公司调研情报（务必参考，问题要贴合这
 4. 语气：です・ます調，自然有温度，像真的在面试现场。
 5. 【读音标注 - 必须严格遵守】
    - 汉字后方标注假名读音，格式：漢字《かんじ》。例：履歴書《りれきしょ》を拝見《はいけん》しました。
-   - 外来语（片假名）后方标注英语原词，格式：カタカナ《English》。例：コミュニケーション《communication》が重要《じゅうよう》です。
+   - 外来语（片假名）后方标注英语原词，格式：カタカナ《English》。例：コミュニケーション《communication》は重要《じゅうよう》です。
    - 常见简单汉字（会社・学生・日本等）可省略以减噪；重点标注生僻或易误读的汉字。
+   - 标注必须紧贴被标词的汉字/片假名本身，不要把前面的助词（が・を・は・に・で等）一起括进《》：错误「が重要《じゅうよう》」→ 正确「重要《じゅうよう》」。一个词只标一次，严禁拆词标注如「料《りょう》理」。
    ${customInst ? '\n## 用户的微调要求（最高优先级，务必遵从）\n' + customInst : ''}
 请直接输出，不要加总标题。`;
 }
