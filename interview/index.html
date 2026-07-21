@@ -37,6 +37,8 @@
   --status-rejected-bg: #fee2e2;
   --status-declined: #94a3b8;
   --status-declined-bg: #f1f5f9;
+  --status-tobesent: #8b5cf6;
+  --status-tobesent-bg: #ede9fe;
   --score-a: #6366f1;
   --score-b: #8b5cf6;
   --score-c: #06b6d4;
@@ -95,6 +97,7 @@ body {
 .stat-card.interviewing .stat-value { color:var(--status-interviewing); }
 .stat-card.offered .stat-value { color:var(--status-offered); }
 .stat-card.rejected .stat-value { color:var(--status-rejected); }
+.stat-card.tobesent .stat-value { color:var(--status-tobesent); }
 .stat-card .stat-value.score-high { color:#10b981; }
 .stat-card .stat-value.score-mid { color:#6366f1; }
 .stat-card .stat-value.score-low { color:#f59e0b; }
@@ -132,6 +135,7 @@ body {
 .record-card[data-status="offered"]::before { background:var(--status-offered); }
 .record-card[data-status="rejected"]::before { background:var(--status-rejected); }
 .record-card[data-status="declined"]::before { background:var(--status-declined); }
+.record-card[data-status="tobesent"]::before { background:var(--status-tobesent); }
 
 .card-header { display:flex; justify-content:space-between; align-items:flex-start; gap:10px; }
 .card-company { font-size:17px; font-weight:700; letter-spacing:-0.3px; line-height:1.3; }
@@ -144,6 +148,7 @@ body {
 .badge.offered { background:var(--status-offered-bg); color:#065f46; }
 .badge.rejected { background:var(--status-rejected-bg); color:#991b1b; }
 .badge.declined { background:var(--status-declined-bg); color:#475569; }
+.badge.tobesent { background:var(--status-tobesent-bg); color:#5b21b6; }
 
 /* Score badge */
 .score-badge {
@@ -530,6 +535,7 @@ body {
     </div>
     <select class="select" id="filterStatus" onchange="renderRecords()">
       <option value="">全部状态</option>
+      <option value="tobesent">待投递</option>
       <option value="pending">待回复</option>
       <option value="interviewing">面试中</option>
       <option value="offered">已通过</option>
@@ -586,6 +592,7 @@ body {
           <div class="form-group">
             <label>状态</label>
             <select id="fStatus">
+              <option value="tobesent">待投递</option>
               <option value="pending">待回复</option>
               <option value="interviewing">面试中</option>
               <option value="offered">已通过</option>
@@ -916,6 +923,7 @@ const SETTINGS_KEY = 'ai_settings_v2';
 const CV_KEY = 'career_ops_cv';
 
 const STATUS_MAP = {
+  tobesent:    { label:'待投递', class:'tobesent' },
   pending:     { label:'待回复', class:'pending' },
   interviewing: { label:'面试中', class:'interviewing' },
   offered:     { label:'已通过', class:'offered' },
@@ -1062,6 +1070,7 @@ function renderAll() { renderStats(); renderRecords(); }
 function renderStats() {
   const container = document.getElementById('statsBar');
   const total = records.length;
+  const tobesent = records.filter(r=>r.status==='tobesent').length;
   const pending = records.filter(r=>r.status==='pending').length;
   const interviewing = records.filter(r=>r.status==='interviewing').length;
   const offered = records.filter(r=>r.status==='offered').length;
@@ -1072,6 +1081,7 @@ function renderStats() {
     : '-';
   container.innerHTML =
     '<div class="stat-card"><span class="stat-value">' + total + '</span><span class="stat-label">总投递</span></div>' +
+    '<div class="stat-card tobesent"><span class="stat-value">' + tobesent + '</span><span class="stat-label">待投递</span></div>' +
     '<div class="stat-card pending"><span class="stat-value">' + pending + '</span><span class="stat-label">待回复</span></div>' +
     '<div class="stat-card interviewing"><span class="stat-value">' + interviewing + '</span><span class="stat-label">面试中</span></div>' +
     '<div class="stat-card offered"><span class="stat-value">' + offered + '</span><span class="stat-label">已通过</span></div>' +
@@ -1142,7 +1152,7 @@ function renderRecords() {
     return;
   }
   list.innerHTML = filtered.map(r => {
-    const st = STATUS_MAP[r.status] || STATUS_MAP.pending;
+    const st = STATUS_MAP[r.status] || STATUS_MAP.tobesent;
     const website = r.companyWebsite ? '<a href="' + escapeHtml(r.companyWebsite) + '" target="_blank" rel="noopener">' + escapeHtml(r.companyName) + '</a>' : escapeHtml(r.companyName);
     const evalData = r.evaluation && r.evaluation.scores;
     const globalScore = evalData && evalData.global ? evalData.global : 0;
@@ -1209,7 +1219,7 @@ function openRecordModal(id) {
     document.getElementById('fWebsite').value = r.companyWebsite || '';
     document.getElementById('fLocation').value = r.location || '';
     document.getElementById('fSalary').value = r.salary || '';
-    document.getElementById('fStatus').value = r.status || 'pending';
+    document.getElementById('fStatus').value = r.status || 'tobesent';
     document.getElementById('fApplyDate').value = r.applyDate || '';
     document.getElementById('fInterviewDate').value = r.interviewDate || '';
     document.getElementById('fIntro').value = r.companyIntro || '';
@@ -2185,7 +2195,7 @@ function openBatchEval() {
 function renderLocalStats() {
   const container = document.getElementById('localStats');
   const total = records.length;
-  const replied = records.filter(r=>r.status!=='pending').length;
+  const replied = records.filter(r=>r.status!=='pending' && r.status!=='tobesent').length;
   const responseRate = total>0?Math.round(replied/total*100):0;
   const offered = records.filter(r=>r.status==='offered').length;
   const passRate = total>0?Math.round(offered/total*100):0;
