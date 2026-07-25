@@ -856,7 +856,16 @@ body {
       <div class="form-grid">
         <div class="form-group full"><label>API 地址</label><input type="url" id="sApiUrl" placeholder="https://api.openai.com/v1/chat/completions"></div>
         <div class="form-group full"><label>API Key</label><input type="password" id="sApiKey" placeholder="sk-..."></div>
-        <div class="form-group"><label>模型</label><input type="text" id="sModel" placeholder="gpt-4o-mini"></div>
+        <div class="form-group"><label>模型</label><input type="text" id="sModel" placeholder="gpt-4o-mini" list="modelList"><datalist id="modelList">
+          <option value="deepseek-v4-flash">
+          <option value="deepseek-v4-pro">
+          <option value="deepseek-chat">
+          <option value="deepseek-reasoner">
+          <option value="gpt-4o-mini">
+          <option value="gpt-4o">
+          <option value="moonshot-v1-8k">
+          <option value="qwen-plus">
+        </datalist></div>
         <div class="form-group">
           <label>快捷预设</label>
           <select id="sPreset" onchange="applyPreset()">
@@ -1044,7 +1053,15 @@ function saveData() {
 function loadSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const s = JSON.parse(raw);
+      // 一次性迁移：DeepSeek 老模型名 deepseek-chat 在新端点已不可用，自动切换为 v4-flash
+      if (s && s.model === 'deepseek-chat' && /deepseek/i.test(s.apiUrl || '')) {
+        s.model = 'deepseek-v4-flash';
+        try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); } catch(e) {}
+      }
+      return s;
+    }
   } catch(e) {}
   return { apiUrl:'', apiKey:'', model:'' };
 }
@@ -1471,7 +1488,19 @@ async function callAIAPI(settings, prompt, maxTokens = 8192) {
       max_tokens: maxTokens
     })
   });
-  if (!response.ok) { const err = await response.text(); throw new Error('API ' + response.status + ': ' + err.slice(0,200)); }
+  if (!response.ok) {
+    const err = await response.text();
+    let msg = 'API ' + response.status + ': ' + err.slice(0,200);
+    // 模型名不被支持的友好提示
+    if (response.status === 400 && /model|supported API model/i.test(err)) {
+      const m = err.match(/(supported[^"]*|The supported API model names are[^"]*)/i);
+      const supported = m ? m[1].replace(/["\\]/g,'').trim() : '';
+      msg = 'API 400：模型名「' + (settings.model || '(空)') + '」不被该端点支持。'
+          + (supported ? ' 支持的模型：' + supported + '。' : '')
+          + ' 请在设置里把「模型」改成支持的模型名（如 deepseek-v4-flash），或重新选择 DeepSeek 预设后保存。';
+    }
+    throw new Error(msg);
+  }
   const data = await response.json();
   return (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content) || '';
 }
@@ -2086,7 +2115,19 @@ async function runSingleEval() {
         max_tokens:8192
       })
     });
-    if (!response.ok) { const err = await response.text(); throw new Error('API ' + response.status + ': ' + err.slice(0,200)); }
+    if (!response.ok) {
+    const err = await response.text();
+    let msg = 'API ' + response.status + ': ' + err.slice(0,200);
+    // 模型名不被支持的友好提示
+    if (response.status === 400 && /model|supported API model/i.test(err)) {
+      const m = err.match(/(supported[^"]*|The supported API model names are[^"]*)/i);
+      const supported = m ? m[1].replace(/["\\]/g,'').trim() : '';
+      msg = 'API 400：模型名「' + (settings.model || '(空)') + '」不被该端点支持。'
+          + (supported ? ' 支持的模型：' + supported + '。' : '')
+          + ' 请在设置里把「模型」改成支持的模型名（如 deepseek-v4-flash），或重新选择 DeepSeek 预设后保存。';
+    }
+    throw new Error(msg);
+  }
     const data = await response.json();
     const content = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content) || '';
     // Parse JSON from response
@@ -2342,7 +2383,7 @@ function applyPreset() {
   if (!p) return;
   const map = {
     openai:{ url:'https://api.openai.com/v1/chat/completions', model:'gpt-4o-mini' },
-    deepseek:{ url:'https://api.deepseek.com/v1/chat/completions', model:'deepseek-chat' },
+    deepseek:{ url:'https://api.deepseek.com/v1/chat/completions', model:'deepseek-v4-flash' },
     moonshot:{ url:'https://api.moonshot.cn/v1/chat/completions', model:'moonshot-v1-8k' },
     qwen:{ url:'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions', model:'qwen-plus' }
   };
