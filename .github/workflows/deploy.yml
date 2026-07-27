@@ -30,8 +30,19 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # 部署整个仓库根目录（含 sim/ 等所有静态资源）
+          # 部署整个仓库根目录（含 sim/ 等所有静态站点资源）
           path: '.'
+          # 排除不应进入站点的本地开发产物，缩小体积、避免泄漏
+          exclude: |
+            node_modules/**
+            .git/**
+            package*.json
+            package-lock.json
+            run-hexo.bat
+            start-server.js
+            _config.yml
+            task-summary*.md
+            .workbuddy/**
 
       - name: Deploy to GitHub Pages
         id: deployment
