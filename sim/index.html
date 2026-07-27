@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xuhan Zhang — Autonomous-Driving & Real-time Simulation</title>
+<style>
+  :root{
+    --bg:#05080f; --bg2:#080d18; --panel:rgba(140,180,220,0.035);
+    --ink:#e9eef6; --sub:#8fa2bd; --faint:#5d6e88;
+    --cyan:#5fd6df; --blue:#6aa9ff; --cyan-dim:rgba(95,214,223,0.5);
+    --orange:#ff9a52; --orange-dim:rgba(255,154,82,0.4);
+    --line:rgba(120,170,210,0.13); --line2:rgba(120,170,210,0.07);
+    --mono:"SFMono-Regular",ui-monospace,"JetBrains Mono","Consolas",monospace;
+    --sans:"Inter","Segoe UI",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:rgba(95,214,223,0.22)}
+  a{color:var(--cyan);text-decoration:none}
+
+  /* ---------- NAV ---------- */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+    padding:16px 32px;background:rgba(5,8,15,0.55);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line2);font-size:13px;letter-spacing:.04em}
+  nav .brand{font-weight:600;letter-spacing:.06em;color:var(--ink);display:flex;align-items:center;gap:10px}
+  nav .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan-dim)}
+  nav .nav-right{display:flex;align-items:center;gap:22px}
+  nav .links{display:flex;gap:22px}
+  nav .links a{color:var(--sub);transition:color .25s}
+  nav .links a:hover{color:var(--ink)}
+
+  /* ---------- LANGUAGE SWITCH (prominent) ---------- */
+  .lang-switch{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--cyan-dim);border-radius:999px;
+    padding:4px 6px 4px 11px;background:rgba(95,214,223,0.10);backdrop-filter:blur(6px);flex:none;
+    box-shadow:0 0 0 1px rgba(95,214,223,0.08),0 0 16px rgba(95,214,223,0.12)}
+  .lang-ico{color:var(--cyan);opacity:.9;flex:none;margin-right:5px;width:15px;height:15px}
+  .lang-opt{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--sub);background:none;
+    border:none;cursor:pointer;padding:6px 12px;border-radius:999px;transition:all .22s;line-height:1;white-space:nowrap}
+  .lang-opt:hover{color:var(--ink)}
+  .lang-opt.active{background:var(--cyan);color:#04121a;font-weight:700;box-shadow:0 0 12px var(--cyan-dim)}
+
+  @media(max-width:1200px){nav .links{display:none}}
+  @media(max-width:520px){nav{padding:12px 16px}.lang-opt{padding:5px 11px}}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;height:100vh;min-height:620px;overflow:hidden;background:
+    radial-gradient(120% 90% at 50% 8%,#0c1424 0%,#070b15 45%,#05080f 100%)}
+  #heroCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .hero-vignette{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(120% 100% at 50% 40%,transparent 55%,rgba(3,5,10,0.72) 100%);
+    mix-blend-mode:multiply}
+  .hero-grain{position:absolute;inset:0;pointer-events:none;opacity:.05;
+    background-image:repeating-conic-gradient(#fff 0 0.0006deg,transparent 0.0006deg 0.5deg);}
+  .hero-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;
+    padding:0 8vw;pointer-events:none;z-index:3}
+  .hero-kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.32em;color:var(--cyan);
+    text-transform:uppercase;margin-bottom:18px;opacity:0;animation:rise 1s .2s forwards}
+  .hero h1{font-size:clamp(34px,6vw,68px);font-weight:600;line-height:1.05;letter-spacing:-.01em;
+    max-width:14ch;opacity:0;animation:rise 1s .35s forwards}
+  .hero h1 .thin{font-weight:300;color:var(--sub)}
+  .hero .sub{margin-top:22px;font-size:clamp(14px,1.8vw,18px);color:var(--sub);max-width:46ch;
+    opacity:0;animation:rise 1s .55s forwards}
+  .hero .sub b{color:var(--ink);font-weight:500}
+  .hero-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px;opacity:0;animation:rise 1s .75s forwards}
+  .hero-tags span{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;color:var(--sub);
+    border:1px solid var(--line);border-radius:999px;padding:6px 13px;background:var(--panel)}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  .scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:4;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:var(--faint);text-transform:uppercase;
+    display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:rise 1s 1.1s forwards}
+  .scroll-hint .bar{width:1px;height:34px;background:linear-gradient(var(--cyan),transparent);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+  /* ---------- HERO HUD FRAME ---------- */
+  .hero-frame{position:absolute;inset:22px;z-index:2;pointer-events:none}
+  .hero-frame .corner{position:absolute;width:26px;height:26px;border:2px solid var(--cyan);opacity:.85;
+    filter:drop-shadow(0 0 5px rgba(95,214,223,.4))}
+  .hero-frame .corner.tl{top:0;left:0;border-right:none;border-bottom:none}
+  .hero-frame .corner.tr{top:0;right:0;border-left:none;border-bottom:none}
+  .hero-frame .corner.bl{bottom:0;left:0;border-right:none;border-top:none}
+  .hero-frame .corner.br{bottom:0;right:0;border-left:none;border-top:none}
+  .hud{position:absolute;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;line-height:1.75;
+    color:var(--sub);text-transform:uppercase}
+  .hud .k{color:var(--cyan);opacity:.85}
+  .hud-tl{top:64px;left:26px}
+  .hud-br{bottom:26px;right:26px;text-align:right}
+  .hud .live{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--cyan);
+    box-shadow:0 0 6px var(--cyan);margin-right:6px;vertical-align:middle;animation:blink 1.6s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+  .scan{position:absolute;left:10px;right:10px;height:1px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(95,214,223,.5),transparent);
+    box-shadow:0 0 9px rgba(95,214,223,.45);animation:scan 7.5s ease-in-out infinite}
+  @keyframes scan{0%{top:5%}50%{top:95%}100%{top:5%}}
+  @media(max-width:760px){.hud{display:none}.hero-frame .corner{width:18px;height:18px}}
+
+  /* ---------- ABOUT STRIP ---------- */
+  .about{max-width:1080px;margin:0 auto;padding:120px 32px 30px;text-align:center}
+  .about .role{font-family:var(--mono);font-size:12px;letter-spacing:.28em;color:var(--cyan);
+    text-transform:uppercase;margin-bottom:20px}
+  .about h2{font-size:clamp(22px,3.4vw,34px);font-weight:400;line-height:1.4;color:var(--ink)}
+  .about h2 b{font-weight:600;color:#fff}
+  .about p{margin:24px auto 0;max-width:62ch;color:var(--sub);font-size:15.5px}
+
+  /* ---------- GENERIC SECTION ---------- */
+  .sys{max-width:1180px;margin:0 auto;padding:84px 32px;border-top:1px solid var(--line2)}
+  .sys .sec-num{font-family:var(--mono);font-size:13px;color:var(--cyan);letter-spacing:.1em}
+  .sys .stitle{font-size:clamp(21px,2.6vw,28px);font-weight:500;margin-top:8px;letter-spacing:-.01em;line-height:1.2}
+  .sys .ssub{color:var(--sub);font-size:14.5px;margin-top:14px;max-width:62ch;text-wrap:pretty}
+  .sys .lead{margin-top:22px;font-size:15px;color:var(--ink);max-width:72ch;line-height:1.7;text-wrap:pretty}
+  .nowrap{white-space:nowrap}
+  .about p{text-wrap:pretty}
+  .sys .lead b{font-weight:600;color:#fff}
+  .sys .note{margin-top:30px;border:1px solid var(--line);border-left:3px solid var(--orange);border-radius:10px;
+    padding:20px 24px;background:var(--panel)}
+  .sys .note h4{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin-bottom:12px}
+  .sys .note p{font-size:13.5px;color:var(--sub);line-height:1.65;margin-top:10px}
+  .sys .note p:first-of-type{margin-top:0}
+
+  /* split: text + media side by side, equal-height (flexbox for predictable layout) */
+  .sys.split{display:flex;gap:46px;align-items:stretch}
+  /* media-left: media on the left, text on the right (HTML order is text first) */
+  .sys.split.media-left{flex-direction:row-reverse}
+  .sys.split.media-right{flex-direction:row}
+  .sys.split .sec-text,.sys.split .sec-media{flex:1 1 0;min-width:0;display:flex;flex-direction:column}
+  /* media fills its column with a 2x2 grid that stretches to match text height */
+  .sys.split .sec-media .gallery{flex:1;width:100%;display:grid;gap:14px;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;align-content:stretch}
+  .sys.split .sec-media .shot{display:flex;height:100%}
+  .sys.split .sec-media .shot img{flex:1;width:100%;height:100%;object-fit:cover;display:block}
+
+  /* stacked: text on top, media full width below (for image-heavy sections) */
+  .sys.stacked .sec-media{margin-top:44px}
+
+  /* description bullets */
+  .bullets{display:grid;grid-template-columns:1fr;gap:11px 30px;list-style:none}
+  .sys.split .bullets{grid-template-columns:repeat(2,1fr)}
+  .sys.stacked .bullets{grid-template-columns:repeat(3,1fr)}
+  .sys.no-media .bullets{grid-template-columns:repeat(2,1fr)}
+  .bullets li{position:relative;padding-left:20px;font-size:14px;color:var(--sub);line-height:1.5;min-width:0;overflow-wrap:break-word}
+  .bullets li::before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:50%;
+    background:var(--cyan);box-shadow:0 0 6px var(--cyan-dim)}
+  .bullets li b{color:var(--ink);font-weight:500}
+
+  /* media gallery */
+  .sec-media{margin-top:0}
+  .gallery{display:grid;gap:14px}
+  .sys.split .gallery{grid-template-columns:repeat(2,1fr)}
+  .sys.stacked .gallery{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .sys.stacked .gallery.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sys.stacked .gallery.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .shot{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0a0f1a;aspect-ratio:4/3}
+  .shot img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92) contrast(1.02);transition:transform .6s ease,filter .4s}
+  .shot:hover img{transform:scale(1.04)}
+  .shot .ov{position:absolute;inset:0;background:rgba(5,8,15,0);transition:background .3s;pointer-events:none}
+  .shot figcaption{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;font-size:11.5px;color:var(--ink);
+    background:linear-gradient(transparent,rgba(4,7,13,0.86));font-family:var(--sans)}
+  .shot figcaption b{display:block;color:#fff;font-weight:500;font-size:12px}
+  .shot figcaption .cap-no{color:var(--acc,#4ea3ff);font-weight:700;font-size:11px;letter-spacing:.03em}
+  .shot{cursor:zoom-in}
+  .shot .zoom{position:absolute;top:9px;right:9px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(8,12,20,.5);backdrop-filter:blur(4px);border:1px solid var(--line);color:#cdd6e6;opacity:0;transform:scale(.85);transition:opacity .25s,transform .25s;pointer-events:none;font-size:14px}
+  .shot:hover .zoom{opacity:1;transform:scale(1)}
+  .lightbox{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(3,5,10,.92);backdrop-filter:blur(6px);padding:4vh 4vw;cursor:zoom-out}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:92vw;max-height:84vh;width:auto;height:auto;object-fit:contain;border-radius:10px;box-shadow:0 24px 80px rgba(0,0,0,.6);background:#0a0f1a}
+  .lightbox .lb-cap{position:absolute;left:50%;bottom:3.4vh;transform:translateX(-50%);width:fit-content;max-width:90vw;padding:9px 16px;border-radius:10px;background:rgba(10,14,22,.82);border:1px solid var(--line);color:#e6ecf6;font-size:13px;font-family:var(--sans);text-align:center}
+  .lightbox .lb-close{position:absolute;top:18px;right:22px;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(10,14,22,.7);border:1px solid var(--line);color:#e6ecf6;font-size:20px;cursor:pointer}
+
+  @media(max-width:860px){
+    .sys.split{flex-direction:column;gap:28px}
+    .sys.split.media-left{flex-direction:column}
+    .sys.split.media-right{flex-direction:column}
+    .sys.split .sec-text,.sys.split .sec-media{flex:1 1 auto;width:100%}
+    .sys.split .sec-media .gallery{grid-template-columns:repeat(2,1fr);grid-template-rows:auto}
+    .sys.split .sec-media .shot{height:auto;aspect-ratio:4/3}
+    .sys.stacked .gallery.cols-3{grid-template-columns:repeat(2,1fr)}
+    .sys.stacked .bullets{grid-template-columns:repeat(2,1fr)}
+    .sys.no-media .bullets{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:520px){.gallery,.sys.stacked .gallery.cols-3,.sys.stacked .gallery.cols-2,.sys.no-media .bullets{grid-template-columns:1fr}.sys.stacked .bullets{grid-template-columns:1fr}}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--line2);padding:70px 32px 60px;text-align:center;
+    background:linear-gradient(180deg,transparent,rgba(8,13,24,0.5))}
+  footer .name{font-size:20px;font-weight:500;letter-spacing:.02em}
+  footer .tag{font-family:var(--mono);font-size:12px;color:var(--cyan);letter-spacing:.18em;margin-top:10px;text-transform:uppercase}
+  footer .meta{margin-top:18px;color:var(--faint);font-size:12.5px;font-family:var(--mono);line-height:2}
+  footer .disc{margin-top:26px;color:var(--faint);font-size:11px;max-width:60ch;margin-left:auto;margin-right:auto;line-height:1.7}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand"><span class="dot"></span>XUHAN ZHANG</div>
+  <div class="nav-right">
+    <div class="links">
+      <a href="#about" data-i18n="nav_about">About</a>
+      <a href="#ad" data-i18n="nav_ad">AD Simulation</a>
+      <a href="#uav" data-i18n="nav_uav">Unmanned Sim</a>
+      <a href="#viz" data-i18n="nav_viz">3D Viz</a>
+      <a href="#systems" data-i18n="nav_systems">Sim Systems</a>
+      <a href="#games" data-i18n="nav_games">Games</a>
+    </div>
+    <div class="lang-switch" role="tablist" aria-label="Language / 语言 / 言語">
+      <svg class="lang-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M3 12h18"></path>
+        <path d="M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"></path>
+      </svg>
+      <button type="button" class="lang-opt active" data-lang="en" role="tab" aria-selected="true">EN</button>
+      <button type="button" class="lang-opt" data-lang="zh" role="tab" aria-selected="false">中</button>
+      <button type="button" class="lang-opt" data-lang="ja" role="tab" aria-selected="false">日本語</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-vignette"></div>
+  <div class="hero-grain"></div>
+
+  <div class="hero-frame">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <div class="hud hud-tl">
+      <div><span class="live"></span>SIL · CLOSED-LOOP</div>
+      <div><span class="k">SIM&nbsp;T</span> <span id="hudTime">0.0</span> s</div>
+      <div><span class="k">FPS</span> RT</div>
+      <div><span class="k">ACTORS</span> 0</div>
+    </div>
+    <div class="hud hud-br">
+      <div><span class="k">SENSORS</span> CAM · LiDAR · PERCEPTION</div>
+      <div><span class="k">RANGE</span> —</div>
+      <div><span class="k">SYNC</span> DDS</div>
+      <div><span class="k">MODE</span> <span id="hudMode">REALTIME</span></div>
+    </div>
+    <div class="scan"></div>
+  </div>
+
+  <div class="hero-overlay">
+    <div class="hero-kicker" data-i18n="hero_kicker">Autonomous Driving · Real-time Simulation</div>
+    <h1 data-i18n="hero_h1">Real-Time Simulation &amp; System Integration for Autonomous Driving</h1>
+    <p class="sub" data-i18n="hero_sub">I'm a <b>senior C++ engineer</b> working on <b>real-time simulation systems</b> for autonomous driving —
+      from sensor &amp; vehicle-dynamics simulation to closed-loop integration and distributed co-simulation.</p>
+    <div class="hero-tags">
+      <span>C++ / Python</span><span>Real-time Systems</span><span>CARLA / UE4</span>
+      <span>SIL Closed-loop</span><span>Distributed Sim</span>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll<span class="bar"></span></div>
+</header>
+
+<!-- ============ ABOUT ============ -->
+<section class="about reveal" id="about">
+  <div class="role" data-i18n="about_role">Senior C++ Engineer · Simulation Systems</div>
+  <h2 data-i18n="about_h2">I build the <b>simulation layer</b> that lets autonomous-driving software run, sense and decide —
+    <b>without a physical vehicle in the loop.</b></h2>
+  <p data-i18n="about_p">My scope is the simulation &amp; integration layer: extending a CARLA/UE4-based platform, wiring external
+    dynamics and control programs into a software-in-the-loop closed loop, and running it across distributed nodes
+    under real-time constraints.</p>
+</section>
+
+<!-- ============ 01 · AUTONOMOUS-DRIVING SIMULATION ============ -->
+<section class="sys stacked reveal" id="ad">
+  <div class="sec-text">
+  <div class="sec-num">01</div>
+  <h3 class="stitle" data-i18n="ad_stitle">Autonomous-Driving Simulation</h3>
+  <p class="ssub" data-i18n="ad_ssub">A software-in-the-loop (SIL) environment built on CARLA and Matlab+UE co-simulation — so driving software can run, sense and decide without a physical vehicle.</p>
+  <ul class="bullets">
+    <li data-i18n="ad_b1">CARLA / Matlab virtual vehicles &amp; traffic scenarios</li>
+    <li data-i18n="ad_b2">Virtual sensors — Camera, LiDAR and more</li>
+    <li data-i18n="ad_b3">Vehicle state &amp; control-command exchange</li>
+    <li data-i18n="ad_b4">External program integration</li>
+    <li data-i18n="ad_b5">Software-in-the-loop (SIL) closed-loop testing</li>
+    <li data-i18n="ad_b6">Timestamp-Based Log Replay</li>
+    <li data-i18n="ad_b7">Amesim dynamics-model replacement</li>
+  </ul>
+  </div>
+  <div class="sec-media">
+    <div class="gallery cols-3 reveal">
+      <figure class="shot"><img src="media/carla.jpg" alt="CARLA simulation" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">1.1</span> <span data-i18n="ad_im1"><b>CARLA simulation</b>Virtual environment &amp; sensors</span></figcaption></figure>
+      <figure class="shot"><img src="media/Matlab+UE联合仿真.jpg" alt="Matlab and UE co-simulation" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">1.2</span> <span data-i18n="ad_im2"><b>Matlab + UE co-simulation</b>Model &amp; engine link</span></figcaption></figure>
+      <figure class="shot"><img src="media/Matlab+UE联合仿真2.jpg" alt="Matlab and UE co-simulation 2" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">1.3</span> <span data-i18n="ad_im3"><b>Matlab + UE co-simulation</b>Closed-loop link</span></figcaption></figure>
+      <figure class="shot"><img src="media/实地跑测道路.jpg" alt="On-site test track" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">1.4</span> <span data-i18n="ad_im4"><b>Test-track data</b>Field reference</span></figcaption></figure>
+      <figure class="shot"><img src="media/carla_战场仿真.jpg" alt="CARLA scenario simulation" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">1.5</span> <span data-i18n="ad_im5"><b>CARLA scenario</b>Scripted traffic &amp; events</span></figcaption></figure>
+      <figure class="shot"><img src="media/carla_战场仿真2.jpg" alt="CARLA scenario simulation 2" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">1.6</span> <span data-i18n="ad_im6"><b>CARLA scenario</b>Multi-actor scene</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 · DISTRIBUTED UNMANNED-SYSTEM SIMULATION ============ -->
+<section class="sys split media-left reveal" id="uav">
+  <div class="sec-text">
+  <div class="sec-num">02</div>
+  <h3 class="stitle" data-i18n="uav_stitle">Distributed Unmanned-System Simulation</h3>
+  <p class="ssub" data-i18n="uav_ssub">Multi-node co-simulation of unmanned systems: many entities, tight data sync and real-time 3D display under hard latency budgets.</p>
+  <ul class="bullets">
+    <li data-i18n="uav_b1">State update of multiple UAV entities</li>
+    <li data-i18n="uav_b2">Scenario behaviour &amp; mission-process simulation</li>
+    <li data-i18n="uav_b3">Multi-node coordination</li>
+    <li data-i18n="uav_b4">Unreal 3D display</li>
+    <li data-i18n="uav_b5">DDS communication</li>
+    <li data-i18n="uav_b6">Multi-node data synchronisation</li>
+    <li data-i18n="uav_b7">External simulation-system integration</li>
+    <li data-i18n="uav_b8">Real-time state distribution</li>
+    <li data-i18n="uav_b9">Data interfaces between modules</li>
+  </ul>
+  </div>
+  <div class="sec-media">
+    <div class="gallery cols-2 reveal">
+      <figure class="shot"><img src="media/Amesim+UE仿真_模型.jpg" alt="AMESim flight-control model" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">2.1</span> <span data-i18n="uav_im1"><b>AMESim flight-control model</b>External dynamics</span></figcaption></figure>
+      <figure class="shot"><img src="media/Amesim+UE仿真_模型2.jpg" alt="AMESim flight-control model 2" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">2.2</span> <span data-i18n="uav_im2"><b>AMESim flight-control model</b>Dynamics detail</span></figcaption></figure>
+      <figure class="shot"><img src="media/Amesim+UE仿真_多模型协同仿真.jpg" alt="AMESim multi-model co-sim" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">2.3</span> <span data-i18n="uav_im3"><b>Multi-model co-simulation</b>Model coordination</span></figcaption></figure>
+      <figure class="shot"><img src="media/Amesim+UE仿真_多节点蜂群.jpg" alt="AMESim multi-node swarm" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">2.4</span> <span data-i18n="uav_im4"><b>Multi-node co-simulation</b>Distributed swarm</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 · REAL-TIME 3D VISUALIZATION ============ -->
+<section class="sys stacked reveal" id="viz">
+  <div class="sec-text">
+  <div class="sec-num">03</div>
+  <h3 class="stitle" data-i18n="viz_stitle">Real-Time 3D Visualization</h3>
+  <p class="ssub" data-i18n="viz_ssub">Real-time rendering of large-scale terrain and scenes, with entity state, HUD and situational-awareness overlays.</p>
+  <ul class="bullets">
+    <li data-i18n="viz_b1">Terrain &amp; large-scale scenarios</li>
+    <li data-i18n="viz_b2">Entity state display</li>
+    <li data-i18n="viz_b3">HUD &amp; situational-awareness visualization</li>
+    <li data-i18n="viz_b4">World Machine terrain data</li>
+    <li data-i18n="viz_b5">Level streaming &amp; performance handling</li>
+  </ul>
+  </div>
+  <div class="sec-media">
+    <div class="gallery cols-3 reveal">
+      <figure class="shot"><img src="media/World Machine构建真实世界地形.jpg" alt="World Machine terrain" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">3.1</span> <span data-i18n="viz_im1"><b>Real-world terrain</b>World Machine build</span></figcaption></figure>
+      <figure class="shot"><img src="media/大世界流送关卡.jpg" alt="Large world streaming" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">3.2</span> <span data-i18n="viz_im2"><b>Large-world streaming</b>Level streaming</span></figcaption></figure>
+      <figure class="shot"><img src="media/点云.jpg" alt="Virtual point cloud" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">3.3</span> <span data-i18n="viz_im3"><b>Virtual point cloud</b>Simulated LiDAR</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 04 · REAL-TIME SIMULATION SYSTEMS ============ -->
+<section class="sys split media-right reveal" id="systems">
+  <div class="sec-text">
+  <div class="sec-num">04</div>
+  <h3 class="stitle" data-i18n="sys_stitle">Real-Time Simulation Systems</h3>
+  <p class="ssub" data-i18n="sys_ssub">Embedded Linux runtime connecting simulation to real hardware — for hardware-in-the-loop testing and field validation.</p>
+  <ul class="bullets">
+    <li data-i18n="sys_b1">Embedded Linux System</li>
+    <li data-i18n="sys_b2">Hardware-Connected Real-Time Simulation</li>
+    <li data-i18n="sys_b3">Runtime integration</li>
+    <li data-i18n="sys_b4">Hardware communication</li>
+    <li data-i18n="sys_b5">On-device visualization / monitoring</li>
+    <li data-i18n="sys_b6">Field validation</li>
+  </ul>
+  </div>
+  <div class="sec-media">
+    <div class="gallery cols-2 reveal">
+      <figure class="shot"><img src="media/仿真系统.jpg" alt="Simulation system interface" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">4.1</span> <span data-i18n="sys_im1"><b>Simulation system UI</b>Config &amp; monitor</span></figcaption></figure>
+      <figure class="shot"><img src="media/嵌入式+linux仪表.jpg" alt="Embedded Linux runtime" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">4.2</span> <span data-i18n="sys_im2"><b>Embedded Linux runtime</b>Deployment &amp; ops</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 · SCALABLE REAL-TIME SYSTEMS / GAMES ============ -->
+<section class="sys no-media reveal" id="games">
+  <div class="sec-num">05</div>
+  <h3 class="stitle" data-i18n="games_stitle">Scalable Real-Time Systems / Games</h3>
+  <p class="ssub" data-i18n="games_ssub">From zero to launch on large-scale real-time online projects — metaverse and multi-platform games with hundreds of millions of users.</p>
+  <p class="lead" data-i18n="games_lead">Developed two projects from zero to launch: QQHome — integrating Unreal-engine-based interactive experiences into the QQ platform, serving a broader ecosystem with over 500 million monthly active users; Fun Party — a large-scale massively-multiplayer online multi-platform game that reached 129M+ users within 3 months of launch and DAU at the 10-million scale.</p>
+  <ul class="bullets">
+    <li data-i18n="games_b1">Large-scale real-time online systems</li>
+    <li data-i18n="games_b2">Multi-player state synchronisation</li>
+    <li data-i18n="games_b3">Dedicated Server</li>
+    <li data-i18n="games_b4">Performance, memory &amp; multi-threading optimisation</li>
+    <li data-i18n="games_b5">Cross-platform development</li>
+    <li data-i18n="games_b6">Cross-team system integration</li>
+    <li data-i18n="games_b7">Python scheduled asset-processing pipeline</li>
+    <li data-i18n="games_b8">Code review &amp; engineering collaboration</li>
+  </ul>
+  <div class="note">
+    <h4 data-i18n="games_note_h">Note</h4>
+    <p data-i18n="games_note_p1">Comprehensive engineering skill set across rich software stacks, with extensive hands-on simulation project experience — having designed multiple large-scale systems end-to-end and quickly shaping solution designs.</p>
+    <p data-i18n="games_note_p2">Deep understanding of UE architecture &amp; development — rendering, animation, physics, memory management, character 3C, network protocols, multi-threaded development, UI, materials, post-processing, DS, servers, multi-platform adaptation, hot-update, professional production pipelines and their debugging, complex GamePlay logic, etc.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="name">Xuhan Zhang</div>
+  <div class="tag" data-i18n="foot_tag">Senior C++ Engineer · Real-time Simulation</div>
+  <div class="meta">
+    CARLA / UE4 · C++ / Python · SIL Closed-loop · DDS · AMESim · Linux / Docker<br>
+    <span data-i18n="foot_chain">Simulation → Integration → Replay → Deployment → Performance</span>
+  </div>
+  <p class="disc" data-i18n="foot_disc">Selected simulation captures shown are real work in the simulation &amp; integration scope.
+    Client names, sensitive scenarios and company IP are not disclosed.</p>
+</footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+  <div class="lb-close" id="lbClose" title="关闭">×</div>
+  <img id="lbImg" alt="">
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<script>
+/* ============ HERO ============ */
+(function(){
+  const cv=document.getElementById('heroCanvas');
+  const ctx=cv.getContext('2d');
+  let W,H,sky=[],lidar=[];
+  const horiz=()=>H*0.54;
+  function resize(){
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cv.clientWidth; H=cv.clientHeight;
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    sky=[]; let x=-40;
+    while(x<W+60){
+      const bw=28+Math.random()*70, bh=40+Math.random()*Math.min(H*0.34,210);
+      const lit=[]; const cols=Math.floor(bw/12), rows=Math.floor(bh/16);
+      for(let i=0;i<cols*rows;i++) if(Math.random()<0.32) lit.push(i);
+      sky.push({x,bw,bh,lit,cols,rows});
+      x+=bw+(6+Math.random()*22);
+    }
+    lidar=[];
+    for(let i=0;i<280;i++){
+      lidar.push({depth:Math.random(),lateral:(Math.random()*2-1)*0.95,ph:Math.random()*6.28});
+    }
+  }
+  window.addEventListener('resize',resize); resize();
+
+  function proj(depth,lateral){
+    const hy=horiz();
+    const y=hy+(H-hy)*Math.pow(depth,1.65);
+    const scale=0.10+depth*1.30;
+    const x=W/2+lateral*(W*0.34)*depth;
+    return {x,y,scale};
+  }
+
+  /* traffic agents, detection boxes and car drawing removed per request */
+
+  const elTime=document.getElementById('hudTime');
+  let last=performance.now();
+
+  function draw(now){
+    last=now;
+    const t=now/1000;
+
+    const g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#070c16'); g.addColorStop(0.5,'#0a1120'); g.addColorStop(1,'#05080f');
+    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+
+    const hg=ctx.createRadialGradient(W/2,horiz(),10,W/2,horiz(),W*0.5);
+    hg.addColorStop(0,'rgba(80,150,210,0.10)'); hg.addColorStop(1,'transparent');
+    ctx.fillStyle=hg; ctx.fillRect(0,0,W,horiz()+40);
+
+    for(const b of sky){
+      const by=horiz()-b.bh;
+      ctx.fillStyle='rgba(18,28,46,0.85)'; ctx.fillRect(b.x,by,b.bw,b.bh);
+      ctx.fillStyle='rgba(120,170,210,0.16)';
+      for(const li of b.lit){
+        const cx=b.x+6+(li%b.cols)*12, cy=by+8+Math.floor(li/b.cols)*16;
+        if(cy<horiz()-4) ctx.fillRect(cx,cy,4,6);
+      }
+    }
+
+    ctx.fillStyle='#060a12'; ctx.fillRect(0,horiz(),W,H-horiz());
+
+    for(const p of lidar){
+      const pp=proj(p.depth,p.lateral);
+      const al=0.10+0.12*Math.abs(Math.sin(t*1.5+p.ph));
+      ctx.fillStyle='rgba(120,210,220,'+al.toFixed(3)+')';
+      ctx.fillRect(pp.x,pp.y,1.4,1.4);
+    }
+
+    ctx.strokeStyle='rgba(120,170,210,0.05)'; ctx.lineWidth=1;
+    for(let i=1;i<=10;i++){
+      const d=i/10; const y=horiz()+(H-horiz())*Math.pow(d,1.6);
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+    }
+    for(let i=-6;i<=6;i++){
+      const x=W/2+i*(W*0.06);
+      ctx.beginPath(); ctx.moveTo(W/2,horiz());
+      ctx.lineTo(x+i*(W*0.10),H); ctx.stroke();
+    }
+
+    const dashOff=(t*60)%60;
+    ctx.strokeStyle='rgba(150,190,225,0.30)'; ctx.lineWidth=2; ctx.setLineDash([26,34]); ctx.lineDashOffset=-dashOff;
+    for(const lat of [-0.16,0.16]){
+      const a=proj(0.02,lat), b=proj(1,lat);
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+
+    const carDepth=((t*0.06)%1);
+    const trajPts=[];
+    for(let s=0;s<=1;s+=0.05){
+      const dep=Math.max(0.02, carDepth - s*(carDepth-0.02));
+      const lat=0.12*Math.sin(s*3.0 + t*0.4);
+      trajPts.push(proj(dep,lat));
+    }
+    ctx.strokeStyle='rgba(106,169,255,0.55)'; ctx.lineWidth=2.4;
+    ctx.shadowColor='rgba(106,169,255,0.35)'; ctx.shadowBlur=8;
+    ctx.beginPath(); trajPts.forEach((p,i)=> i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)); ctx.stroke();
+    ctx.shadowBlur=0;
+    const mp=trajPts[Math.floor((t*1.5)%trajPts.length)];
+    if(mp){ctx.fillStyle='#5fd6df';ctx.beginPath();ctx.arc(mp.x,mp.y-2,2.5,0,7);ctx.fill();}
+
+    elTime.textContent=t.toFixed(1);
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* ============ reveal ============ */
+const rio=new IntersectionObserver((ents)=>{
+  ents.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in');rio.unobserve(e.target);} });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>rio.observe(el));
+
+/* ============ i18n ============ */
+const I18N = {
+  en: {
+    nav_about:'About', nav_ad:'AD Simulation', nav_uav:'Unmanned Sim', nav_viz:'3D Viz', nav_systems:'Sim Systems', nav_games:'Games',
+    hero_kicker:'Autonomous Driving · Real-time Simulation',
+    hero_h1:'Real-Time Simulation &amp; System Integration for Autonomous Driving',
+    hero_sub:'I\'m a <b>senior C++ engineer</b> building <b>real-time simulation systems</b> for autonomous driving — spanning sensor and vehicle-dynamics simulation, closed-loop integration and distributed co-simulation.',
+    about_role:'Senior C++ Engineer · Simulation Systems',
+    about_h2:'I build the <b>simulation layer</b> that lets autonomous-driving software run, perceive and decide — <b>without a physical vehicle in the loop.</b>',
+    about_p:'My focus is the simulation &amp; integration layer: extending a CARLA/UE4-based platform, wiring external dynamics and control programs into a software-in-the-loop closed loop, and running it across distributed nodes under real-time constraints.',
+    ad_stitle:'Autonomous-Driving Simulation',
+    ad_ssub:'A software-in-the-loop (SIL) environment built on CARLA and Matlab+UE co-simulation — letting driving software run, perceive and decide without a physical vehicle.',
+    ad_b1:'CARLA / Matlab virtual vehicles and traffic scenarios',
+    ad_b2:'Virtual sensors — Camera, LiDAR and beyond',
+    ad_b3:'Vehicle-state and control-command exchange',
+    ad_b4:'External program integration',
+    ad_b5:'Software-in-the-loop (SIL) closed-loop testing',
+    ad_b6:'Timestamp-Based Log Replay',
+    ad_b7:'Amesim dynamics-model replacement',
+    ad_im1:'<b>CARLA scenario simulation</b>Four-wheel / multi-wheel / tracked vehicles',
+    ad_im2:'<b>Matlab + UE co-simulation</b>Model &amp; engine link',
+    ad_im3:'<b>Matlab + UE co-simulation</b>Closed-loop link',
+    ad_im4:'<b>Test-track data</b>Field reference',
+    ad_im5:'<b>CARLA scenario</b>Scripted traffic &amp; events',
+    ad_im6:'<b>CARLA + Amesim + UE autonomous-driving simulation</b>Four-wheel / multi-wheel / tracked vehicles',
+    uav_stitle:'Distributed Unmanned-System Simulation',
+    uav_ssub:'Multi-node co-simulation of unmanned systems — many entities, tight data synchronisation and real-time 3D display under hard latency budgets.',
+    uav_b1:'State updates for multiple UAV entities',
+    uav_b2:'Scenario behaviour &amp; mission-process simulation',
+    uav_b3:'Multi-node coordination',
+    uav_b4:'Unreal 3D display',
+    uav_b5:'DDS communication',
+    uav_b6:'Multi-node data synchronisation',
+    uav_b7:'External simulation-system integration',
+    uav_b8:'Real-time state distribution',
+    uav_b9:'Data interfaces between modules',
+    uav_im1:'<b>AMESim flight-control model</b>External dynamics',
+    uav_im2:'<b>AMESim flight-control model</b>Dynamics detail',
+    uav_im3:'<b>Multi-model co-simulation</b>Model coordination',
+    uav_im4:'<b>Multi-node co-simulation</b>Distributed swarm',
+    viz_stitle:'Real-Time 3D Visualization',
+    viz_ssub:'Real-time rendering of large-scale terrain and scenes, with entity-state, HUD and situational-awareness overlays.',
+    viz_b1:'Terrain &amp; large-scale scenes',
+    viz_b2:'Entity-state display',
+    viz_b3:'HUD &amp; situational-awareness visualization',
+    viz_b4:'World Machine terrain data',
+    viz_b5:'Level streaming &amp; performance handling',
+    viz_im1:'<b>Real-world terrain</b>World Machine build',
+    viz_im2:'<b>Large-world streaming</b>Level streaming',
+    viz_im3:'<b>Virtual point cloud</b>Simulated LiDAR',
+    sys_stitle:'Real-Time Simulation Systems',
+    sys_ssub:'An embedded Linux runtime that connects simulation to real hardware — for hardware-in-the-loop testing and field validation.',
+    sys_b1:'Embedded Linux System',
+    sys_b2:'Hardware-Connected Real-Time Simulation',
+    sys_b3:'Runtime integration',
+    sys_b4:'Hardware communication',
+    sys_b5:'On-device visualization / monitoring',
+    sys_b6:'Field validation',
+    sys_im1:'<b>Simulation system UI</b>Config &amp; monitor',
+    sys_im2:'<b>Embedded Linux runtime</b>Deployment &amp; ops',
+    games_stitle:'Scalable Real-Time Systems / Games',
+    games_ssub:'Shipping large-scale real-time online systems from zero to launch — metaverse and multi-platform games with hundreds of millions of users.',
+    games_lead:'Developed two projects from zero to launch: QQHome — integrating Unreal-engine-based interactive experiences into the QQ platform, serving a broader ecosystem with over 500 million monthly active users; Fun Party — a large-scale massively-multiplayer online multi-platform game that reached 129M+ users within 3 months of launch and DAU at the 10-million scale.',
+    games_b1:'Large-scale real-time online systems',
+    games_b2:'Multi-player state synchronisation',
+    games_b3:'Dedicated Server',
+    games_b4:'Performance, memory &amp; multi-threading optimisation',
+    games_b5:'Cross-platform development',
+    games_b6:'Cross-team system integration',
+    games_b7:'Python scheduled asset-processing pipeline',
+    games_b8:'Code review &amp; engineering collaboration',
+    games_note_h:'Note',
+    games_note_p1:'Hands-on experience building simulation platforms and large-scale online systems — driving complex features from requirements analysis and technical design through implementation, integration and performance optimization.',
+    games_note_p2:'Long-term user of Unreal Engine and C++, with core expertise spanning real-time systems, multiplayer synchronisation, network communication, Dedicated Server, memory and multi-threading optimisation, and cross-platform toolchains; plus rendering, animation, physics, character 3C, network protocols, UI, materials, DS, multi-platform adaptation, hot-update, production pipelines, engine modification, AI-assisted development, and multi-module integration and debugging.',
+    foot_tag:'Senior C++ Engineer · Real-time Simulation',
+    foot_chain:'Simulation → Integration → Replay → Deployment → Performance',
+    foot_disc:'Selected simulation captures shown are real work within the simulation &amp; integration scope. Client names, sensitive scenarios and company IP are not disclosed.'
+  },
+  ja: {
+    nav_about:'概要', nav_ad:'自動運転シミュレーション', nav_uav:'無人システム・シミュレーション', nav_viz:'3D 可視化', nav_systems:'シミュレーション・システム', nav_games:'ゲーム',
+    hero_kicker:'自動運転 · リアルタイム・シミュレーション',
+    hero_h1:'自動運転のためのリアルタイム・シミュレーションとシステム統合',
+    hero_sub:'私は<b>シニア C++ エンジニア</b>として、自動運転向けの<b>リアルタイム・シミュレーション・システム</b>を開発している。センサおよび車両ダイナミクスのシミュレーションから、クローズドループ統合、分散協調シミュレーションまでを担う。',
+    about_role:'シニア C++ エンジニア · シミュレーション・システム',
+    about_h2:'私は<b>シミュレーション層</b>を構築し、自動運転ソフトウェアが実車を介さずに動作し、知覚し、意思決定できるようにする——<b>実車をシミュレーションループに含めずに検証できます。</b>',
+    about_p:'私の担当領域はシミュレーション＆統合層である。CARLA/UE4 ベースのプラットフォームを拡張し、外部のダイナミクスおよび制御プログラムをソフトウェアインザループ（SIL）のクローズドループに接続し、リアルタイム制約の下で分散ノード上で稼働させる。',
+    ad_stitle:'自動運転シミュレーション',
+    ad_ssub:'CARLA および Matlab+UE 協調シミュレーションを基盤としたソフトウェアインザループ（SIL）環境——実車を介さずに運転ソフトウェアを動作・知覚・意思決定させる。',
+    ad_b1:'CARLA / Matlab の仮想車両と交通シナリオ',
+    ad_b2:'仮想センサ——Camera、LiDAR など',
+    ad_b3:'車両状態と制御指令のやり取り',
+    ad_b4:'外部プログラムの統合',
+    ad_b5:'ソフトウェアインザループ（SIL）クローズドループ試験',
+    ad_b6:'タイムスタンプベースのログ再生',
+    ad_b7:'Amesim による力学モデルの置換',
+    ad_im1:'<b>CARLA シナリオ・シミュレーション</b>四輪 / 多輪 / 履帯車両',
+    ad_im2:'<b>Matlab + UE 協調シミュレーション</b>モデルとエンジンの連携',
+    ad_im3:'<b>Matlab + UE 協調シミュレーション</b>クローズドループ連携',
+    ad_im4:'<b>テストコース・データ</b>実車参照',
+    ad_im5:'<b>CARLA シナリオ</b>スクリプト化された交通とイベント',
+    ad_im6:'<b>CARLA + Amesim + UE 自動運転シミュレーション</b>四輪 / 多輪 / 履帯車両',
+    uav_stitle:'分散型無人システム・シミュレーション',
+    uav_ssub:'無人システムのマルチノード協調シミュレーション——多数のエンティティ、厳密なデータ同期、および厳しい遅延予算の下でのリアルタイム 3D 表示。',
+    uav_b1:'複数 UAV エンティティの状態更新',
+    uav_b2:'シーン挙動とミッションプロセスのシミュレーション',
+    uav_b3:'マルチノード協調',
+    uav_b4:'Unreal 3D 表示',
+    uav_b5:'DDS 通信',
+    uav_b6:'マルチノード・データ同期',
+    uav_b7:'外部シミュレーション・システム統合',
+    uav_b8:'リアルタイム状態配信',
+    uav_b9:'モジュール間のデータ・インタフェース',
+    uav_im1:'<b>AMESim 飛行制御モデル</b>外部ダイナミクス',
+    uav_im2:'<b>AMESim 飛行制御モデル</b>ダイナミクス詳細',
+    uav_im3:'<b>マルチモデル協調シミュレーション</b>モデル協調',
+    uav_im4:'<b>マルチノード協調シミュレーション</b>分散スウォーム',
+    viz_stitle:'リアルタイム 3D 可視化',
+    viz_ssub:'大規模地形とシーンのリアルタイム描画。エンティティ状態、HUD、および状況認識のオーバレイを備える。',
+    viz_b1:'地形と大規模シーン',
+    viz_b2:'エンティティ状態表示',
+    viz_b3:'HUD と状況認識の可視化',
+    viz_b4:'World Machine 地形データ',
+    viz_b5:'レベル・ストリーミングとパフォーマンス処理',
+    viz_im1:'<b>実世界の地形</b>World Machine 構築',
+    viz_im2:'<b>ラージワールド・ストリーミング</b>レベル・ストリーミング',
+    viz_im3:'<b>仮想点群</b>シミュレーション LiDAR',
+    sys_stitle:'リアルタイム・シミュレーション・システム',
+    sys_ssub:'シミュレーションを実機ハードウェアに接続する組込 Linux ランタイム——ハードウェアインザループ試験と現場検証を支える。',
+    sys_b1:'組込 Linux システム',
+    sys_b2:'ハードウェア接続型リアルタイム・シミュレーション',
+    sys_b3:'ランタイム統合',
+    sys_b4:'ハードウェア通信',
+    sys_b5:'デバイス側可視化・監視',
+    sys_b6:'現場検証',
+    sys_im1:'<b>シミュレーション・システム UI</b>設定と監視',
+    sys_im2:'<b>組込 Linux ランタイム</b>配備と運用',
+    games_stitle:'スケーラブル・リアルタイム・システム / ゲーム',
+    games_ssub:'大規模リアルタイム・オンライン・システムをゼロからローンチへ——数億ユーザーのメタバースおよびマルチプラットフォーム・ゲーム。',
+    games_lead:'2 つのプロジェクトをゼロから開発・リリースまで手がけた。QQHome——Unreal Engine ベースのインタラクティブ体験を QQ プラットフォームに統合し、月間利用者 5 億超のより広範なエコシステムに貢献；Fun Party——大規模な多人数同時参加型オンライン・マルチプラットフォーム・ゲームで、リリース 3 ヶ月で 1.29 億超のユーザー、DAU は千万級に達した。',
+    games_b1:'大規模リアルタイム・オンライン・システム',
+    games_b2:'マルチプレイヤー状態同期',
+    games_b3:'Dedicated Server',
+    games_b4:'パフォーマンス・メモリ・マルチスレッド最適化',
+    games_b5:'クロスプラットフォーム開発',
+    games_b6:'クロスチーム・システム統合',
+    games_b7:'Python 定期アセット処理パイプライン',
+    games_b8:'コードレビューとエンジニアリング協業',
+    games_note_h:'備考',
+    games_note_p1:'シミュレーションプラットフォームおよび大規模オンラインシステムの開発経験があり、要件定義・技術設計から実装・統合・パフォーマンス最適化まで複雑な機能を完遂できる。',
+    games_note_p2:'長年 Unreal Engine と C++ を使用。中核の専門領域はリアルタイムシステム、マルチプレイヤー同期、ネットワーク通信、Dedicated Server、メモリ・マルチスレッド最適化、クロスプラットフォーム・ツールチェーン。さらにレンダリング、アニメーション、物理、キャラクター 3C、ネットワークプロトコル、UI、マテリアル、DS、マルチプラットフォーム対応、ホットアップデート、制作パイプライン、エンジン改修、AI 活用開発、マルチモジュール統合とデバッグの経験を持つ。',
+    foot_tag:'シニア C++ エンジニア · リアルタイム・シミュレーション',
+    foot_chain:'Simulation → Integration → Replay → Deployment → Performance',
+    foot_disc:'掲載したシミュレーション画像は、シミュレーション＆統合領域における実際の成果である。顧客名、機微となるシナリオ、および企業の知財は開示しない。'
+  },
+  zh: {
+    nav_about:'关于', nav_ad:'自动驾驶仿真', nav_uav:'无人系统仿真', nav_viz:'三维可视化', nav_systems:'仿真系统', nav_games:'游戏',
+    hero_kicker:'自动驾驶 · 实时仿真',
+    hero_h1:'面向自动驾驶的实时仿真与系统集成',
+    hero_sub:'我是一名 <b>资深 C++ 工程师</b>，从事自动驾驶 <b>实时仿真系统</b> 研发——涵盖传感器与车辆动力学仿真、闭环集成以及分布式联合仿真。',
+    about_role:'资深 C++ 工程师 · 仿真系统',
+    about_h2:'我构建 <b>仿真层</b>，让自动驾驶软件能够运行、感知并决策——<b>无需真实车辆参与。</b>',
+    about_p:'我的职责聚焦在仿真与集成层：扩展基于 CARLA/UE4 的平台，将外部动力学与控制程序接入软件在环（SIL）闭环，并在实时约束下跨分布式节点运行。',
+    ad_stitle:'自动驾驶仿真',
+    ad_ssub:'基于 CARLA 与 Matlab+UE 联合仿真的软件在环(SIL)环境——让驾驶软件<span class="nowrap">无需真实车辆</span>即可运行、感知与决策。',
+    ad_b1:'CARLA / Matlab 虚拟车辆与交通场景',
+    ad_b2:'Camera、LiDAR 等虚拟传感器',
+    ad_b3:'车辆状态与控制指令交换',
+    ad_b4:'外部程序接入',
+    ad_b5:'软件在环闭环测试',
+    ad_b6:'基于时间戳的日志回放',
+    ad_b7:'Amesim 替换动力学模型',
+    ad_im1:'<b>CARLA 场景仿真</b>四轮/多轮/履带车辆',
+    ad_im2:'<b>Matlab + UE 联合仿真</b>模型与引擎联动',
+    ad_im3:'<b>Matlab + UE 联合仿真</b>闭环联动',
+    ad_im4:'<b>测试场数据</b>实车参考',
+    ad_im5:'<b>CARLA 场景仿真</b>脚本化交通与事件',
+    ad_im6:'<b>CARLA + Amesim + UE 自动驾驶仿真</b>四轮/多轮/履带车辆',
+    uav_stitle:'分布式无人系统仿真',
+    uav_ssub:'无人系统的多节点协同仿真：大量实体、严格数据同步与硬延迟约束下的实时三维显示。',
+    uav_b1:'多个无人机实体的状态更新',
+    uav_b2:'场景行为与任务过程仿真',
+    uav_b3:'多节点协同',
+    uav_b4:'Unreal 三维显示',
+    uav_b5:'DDS 通信',
+    uav_b6:'多节点数据同步',
+    uav_b7:'外部仿真系统接入',
+    uav_b8:'实时状态分发',
+    uav_b9:'不同模块之间的数据接口',
+    uav_im1:'<b>AMESim 飞控模型</b>外部动力学',
+    uav_im2:'<b>AMESim 飞控模型</b>动力学细节',
+    uav_im3:'<b>多模型协同仿真</b>模型协调',
+    uav_im4:'<b>多节点协同仿真</b>分布式集群',
+    viz_stitle:'实时三维可视化',
+    viz_ssub:'实时渲染的大规模地形与场景，叠加实体状态、HUD 与态势可视化。',
+    viz_b1:'地形与大型场景',
+    viz_b2:'实体状态显示',
+    viz_b3:'HUD 与态势可视化',
+    viz_b4:'World Machine 地形数据',
+    viz_b5:'关卡流送与性能处理',
+    viz_im1:'<b>真实世界地形</b>World Machine 构建',
+    viz_im2:'<b>大世界流式加载</b>关卡流式加载',
+    viz_im3:'<b>虚拟点云</b>模拟激光雷达',
+    sys_stitle:'实时仿真系统',
+    sys_ssub:'嵌入式 Linux 运行环境，将仿真接入真实硬件——支撑硬件在环测试与实地验证。',
+    sys_b1:'嵌入式 Linux 系统',
+    sys_b2:'硬件连接的实时仿真',
+    sys_b3:'运行时集成',
+    sys_b4:'硬件通信',
+    sys_b5:'端侧可视化与监控',
+    sys_b6:'实地验证',
+    sys_im1:'<b>仿真系统界面</b>配置与监控',
+    sys_im2:'<b>嵌入式 Linux 运行环境</b>部署与运维',
+    games_stitle:'可扩展实时系统 / 游戏',
+    games_ssub:'从 0 到发布打造大规模实时在线系统——月活数亿的元宇宙与多平台游戏。',
+    games_lead:'在 2 款项目中从 0 研发到发布上线：QQHome——将基于虚幻引擎的互动体验整合到 QQ 平台，服务于拥有超过 5 亿月活跃用户的更广泛生态系统；Fun Party——一款大型多人在线多平台游戏，上线 3 个月用户超 1.29 亿，DAU 达千万级。',
+    games_b1:'大规模实时在线系统',
+    games_b2:'多人状态同步',
+    games_b3:'Dedicated Server',
+    games_b4:'性能、内存与多线程优化',
+    games_b5:'跨平台开发',
+    games_b6:'跨团队系统集成',
+    games_b7:'Python 定时资源处理流水线',
+    games_b8:'代码审查与工程协作',
+    games_note_h:'备注',
+    games_note_p1:'具备仿真平台与大型在线系统开发经验，从需求分析、技术方案到实现、联调和性能优化推进复杂功能落地。',
+    games_note_p2:'长期使用 Unreal Engine 与 C++，核心经验涵盖实时系统、多人同步、网络通信、Dedicated Server、内存与多线程优化、跨平台适配及工具链，渲染、动画、物理、角色 3C、网络协议、UI、材质、DS、多平台适配、热更新、生产流水线、引擎修改、AI 协同开发、多模块集成与调试经验。',
+    foot_tag:'资深 C++ 工程师 · 实时仿真',
+    foot_chain:'仿真 → 集成 → 回放 → 部署 → 性能',
+    foot_disc:'所示精选仿真图集均为仿真与集成范围内的真实工作。客户名称、敏感场景与公司知识产权不予披露。'
+  }
+};
+
+(function(){
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  function applyLang(lang){
+    document.documentElement.setAttribute('lang', lang);
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const k = el.getAttribute('data-i18n');
+      const val = I18N[lang] && I18N[lang][k];
+      if(val === undefined) return;
+      if(el.namespaceURI === SVG_NS){ el.textContent = val; }
+      else { el.innerHTML = val; }
+    });
+    document.querySelectorAll('.lang-opt').forEach(b=>{
+      const on = b.dataset.lang === lang;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    try{ localStorage.setItem('lang', lang); }catch(e){}
+  }
+  document.querySelectorAll('.lang-opt').forEach(b=>{
+    b.addEventListener('click', ()=> applyLang(b.dataset.lang));
+  });
+  let saved = null;
+  try{ saved = localStorage.getItem('lang'); }catch(e){}
+  if(!saved){ saved = 'en'; }
+  applyLang(saved);
+})();
+
+/* ---- Lightbox: click an image to enlarge ---- */
+(function(){
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbCap = document.getElementById('lbCap');
+  const lbClose = document.getElementById('lbClose');
+  if(!lb) return;
+  function open(src, cap){
+    lbImg.src = src;
+    lbCap.textContent = cap || '';
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close(){
+    lb.classList.remove('open');
+    lbImg.src = '';
+    lbCap.textContent = '';
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.shot').forEach(shot=>{
+    const z = document.createElement('div');
+    z.className = 'zoom';
+    z.innerHTML = '&#10799;';   /* ⤢ */
+    shot.appendChild(z);
+    const im = shot.querySelector('img');
+    if(!im) return;
+    im.style.cursor = 'zoom-in';
+    im.addEventListener('click', e=>{
+      e.stopPropagation();
+      const cap = shot.querySelector('figcaption') ? shot.querySelector('figcaption').textContent.trim() : '';
+      open(im.currentSrc || im.src, cap);
+    });
+  });
+  lb.addEventListener('click', close);
+  lbClose.addEventListener('click', e=>{ e.stopPropagation(); close(); });
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && lb.classList.contains('open')) close(); });
+})();
+</script>
+<script defer src="https://visitor-logger.zhangxuhan.workers.dev/tracker.js"></script>
+</body>
+</html>
