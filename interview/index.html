@@ -1007,35 +1007,20 @@ Top 5 CV/resume changes and top 5 LinkedIn changes to maximize match for this sp
 ### Block G — Posting Legitimacy
 Assess if this is a real, active opening. Output: "High Confidence" / "Proceed with Caution" / "Suspicious" with signal analysis.
 
-## Output Format
+## Output — analysis only
 
-After the 7 blocks, output a JSON block (inside a \`\`\`json code block) with:
-\`\`\`json
-{
-  "archetype": "detected archetype (use exact JD title or closest match from the list above)",
-  "scores": {
-    "match": <1-5 integer>,
-    "alignment": <1-5 integer>,
-    "comp": <1-5 integer>,
-    "culture": <1-5 integer>,
-    "redFlags": <1-5 integer, 5=no red flags, 1=many>,
-    "global": <1-5 float, weighted average>
-  },
-  "recommendation": "立即申请|值得申请|谨慎考虑|不建议申请",
-  "legitimacy": "High Confidence|Proceed with Caution|Suspicious"
-}
-\`\`\`
+Output ONLY the 7-block evaluation in Chinese Markdown (Blocks A–G). Do NOT output any JSON block, score summary, or recommendation at the end — scoring is performed in a separate step.
 
-## Scoring Interpretation
+Be accurate and concrete about gaps, red flags, and match levels, because the scoring step will be done afterward based strictly on the evidence you present here.
+
+## Scoring Interpretation (reference for your analysis, not for output)
 - 4.5+ → 强烈推荐，立即申请
 - 4.0-4.4 → 匹配良好，值得申请
 - 3.5-3.9 → 一般，谨慎考虑
-- <3.5 → 不推荐申请
+- <3.5 → 不推荐申请`;
 
-Output the full 7-block evaluation in Chinese Markdown, followed by the JSON block.`;
-
-// 评分安全网专用：当主评估的报告已生成但 JSON 被截断/未解析时，单独再要一次仅含评分的 JSON
-const CAREER_OPS_SCORE_ONLY_PROMPT = `You are a job-offer score extractor. Based ONLY on the evaluation report you are given, output a single JSON score block (inside a \`\`\`json ... \`\`\`) with this exact schema:
+// 第二步评分专用：拿到 JD + CV + 第一步的分析报告，只输出评分 JSON（保守、严格基于证据）
+const CAREER_OPS_SCORE_ONLY_PROMPT = `You are a rigorous job-offer scorer following the Career-Ops methodology. You are given the candidate's CV, the Job Description (JD), and an evaluation report that already analyzes the JD. Output a single JSON score block (inside a \`\`\`json ... \`\`\`) with this exact schema:
 {
   "archetype": "string (the role archetype from the report)",
   "scores": {
@@ -1049,7 +1034,13 @@ const CAREER_OPS_SCORE_ONLY_PROMPT = `You are a job-offer score extractor. Based
   "recommendation": "立即申请|值得申请|谨慎考虑|不建议申请",
   "legitimacy": "High Confidence|Proceed with Caution|Suspicious"
 }
-Output ONLY the JSON block, no other text. If the report is too vague to judge a dimension, score it 3.`;
+Scoring rules (strict & conservative — treat this as the final end-of-analysis judgment):
+- Base every score on concrete evidence in the JD (and the candidate's CV). Do NOT inflate scores because the role sounds appealing.
+- Verify each JD requirement against the CV before assigning a number. If a requirement is not clearly evidenced, score it LOWER rather than higher.
+- 5 = evidence strongly and explicitly supports it; 3 = partial/uncertain match; 1-2 = clear gap or mismatch.
+- redFlags: 5 = no red flags, 1 = many serious concerns.
+- global = weighted average (match 25%, alignment 20%, comp 15%, culture 15%, redFlags 25%).
+Output ONLY the JSON block, no other text.`;
 
 // ========== STATE ==========
 let records = [];
@@ -2190,7 +2181,9 @@ async function runSingleEval() {
   btn.disabled = true;
   document.getElementById('evalResult').innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>AI 正在评估（Career-Ops 7 块分析）...</span></div>';
   try {
-    const response = await fetch(settings.apiUrl, {
+    // ---- 第一步：只生成 7 段分析报告（不含 JSON，绝不会被截断）----
+    document.getElementById('evalResult').innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>AI 正在评估（Career-Ops 7 块分析）...</span></div>';
+    const analysisResp = await fetch(settings.apiUrl, {
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
       body: JSON.stringify({
@@ -2200,55 +2193,62 @@ async function runSingleEval() {
           { role:'user', content: '## 候选人 CV:\n' + cvText + '\n\n## 职位描述 (JD):\n' + jd }
         ],
         temperature:0.5,
-        max_tokens:8192
+        max_tokens:8000
       })
     });
-    if (!response.ok) {
-    const err = await response.text();
-    let msg = 'API ' + response.status + ': ' + err.slice(0,200);
-    // 模型名不被支持的友好提示
-    if (response.status === 400 && /model|supported API model/i.test(err)) {
-      const m = err.match(/(supported[^"]*|The supported API model names are[^"]*)/i);
-      const supported = m ? m[1].replace(/["\\]/g,'').trim() : '';
-      msg = 'API 400：模型名「' + (settings.model || '(空)') + '」不被该端点支持。'
-          + (supported ? ' 支持的模型：' + supported + '。' : '')
-          + ' 请在设置里把「模型」改成支持的模型名（如 deepseek-v4-flash），或重新选择 DeepSeek 预设后保存。';
+    if (!analysisResp.ok) {
+      const err = await analysisResp.text();
+      let msg = 'API ' + analysisResp.status + ': ' + err.slice(0,200);
+      if (analysisResp.status === 400 && /model|supported API model/i.test(err)) {
+        const m = err.match(/(supported[^"]*|The supported API model names are[^"]*)/i);
+        const supported = m ? m[1].replace(/["\\]/g,'').trim() : '';
+        msg = 'API 400：模型名「' + (settings.model || '(空)') + '」不被该端点支持。'
+            + (supported ? ' 支持的模型：' + supported + '。' : '')
+            + ' 请在设置里把「模型」改成支持的模型名（如 deepseek-v4-flash），或重新选择 DeepSeek 预设后保存。';
+      }
+      throw new Error(msg);
     }
-    throw new Error(msg);
-  }
-    const data = await response.json();
-    const content = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content) || '';
-    // Parse JSON from response (robust: fence / raw / truncated)
-    let evalObj = extractEvalJson(content);
-    // 安全网：报告已生成但评分 JSON 被截断/未解析时，单独再要一次仅含评分的 JSON（不影响默认「先分析后打分」的评分风格）
-    if (!evalObj && content) {
-      try {
-        const r2 = await fetch(settings.apiUrl, {
-          method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
-          body: JSON.stringify({
-            model: settings.model || 'gpt-4o-mini',
-            messages:[
-              { role:'system', content: CAREER_OPS_SCORE_ONLY_PROMPT },
-              { role:'user', content: '## 评估报告：\n' + content + '\n\n请仅输出评分 JSON 块（```json ... ```），不要输出其它内容。' }
-            ],
-            temperature:0.3,
-            max_tokens:1500
-          })
-        });
-        if (r2.ok) {
-          const d2 = await r2.json();
-          const c2 = (d2.choices&&d2.choices[0]&&d2.choices[0].message&&d2.choices[0].message.content) || '';
-          const e2 = extractEvalJson(c2);
-          if (e2) evalObj = e2;
-        }
-      } catch(e2) { /* 安全网失败则回退到手动评分提示 */ }
+    const aData = await analysisResp.json();
+    const report = (aData.choices&&aData.choices[0]&&aData.choices[0].message&&aData.choices[0].message.content) || '';
+
+    // ---- 第二步：基于 JD + CV + 报告，只输出评分 JSON（输出很短，绝不截断）----
+    document.getElementById('evalResult').innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>AI 正在评分（基于分析报告）...</span></div>';
+    const scoreResp = await fetch(settings.apiUrl, {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
+      body: JSON.stringify({
+        model: settings.model || 'gpt-4o-mini',
+        messages:[
+          { role:'system', content: CAREER_OPS_SCORE_ONLY_PROMPT },
+          { role:'user', content: '## 候选人 CV:\n' + cvText + '\n\n## 职位描述 (JD):\n' + jd
+            + '\n\n## 已生成的评估报告：\n' + report
+            + '\n\n请仅输出评分 JSON 块（```json ... ```），严格基于 JD 证据、保守打分。' }
+        ],
+        temperature:0.2,
+        max_tokens:1500
+      })
+    });
+    if (!scoreResp.ok) {
+      const err = await scoreResp.text();
+      let msg = 'API ' + scoreResp.status + ': ' + err.slice(0,200);
+      if (scoreResp.status === 400 && /model|supported API model/i.test(err)) {
+        const m = err.match(/(supported[^"]*|The supported API model names are[^"]*)/i);
+        const supported = m ? m[1].replace(/["\\]/g,'').trim() : '';
+        msg = 'API 400：模型名「' + (settings.model || '(空)') + '」不被该端点支持。'
+            + (supported ? ' 支持的模型：' + supported + '。' : '')
+            + ' 请在设置里把「模型」改成支持的模型名（如 deepseek-v4-flash），或重新选择 DeepSeek 预设后保存。';
+      }
+      throw new Error(msg);
     }
-    // Render result (strip the ```json score block so it isn't shown as raw code)
-    const reportHtml = typeof marked !== 'undefined' ? marked.parse(stripJsonBlock(content)) : '<pre>' + escapeHtml(stripJsonBlock(content)) + '</pre>';
+    const sData = await scoreResp.json();
+    const scoreContent = (sData.choices&&sData.choices[0]&&sData.choices[0].message&&sData.choices[0].message.content) || '';
+    const evalObj = extractEvalJson(scoreContent);
+
+    // Render result (report is the analysis; no JSON block inside it)
+    const reportHtml = typeof marked !== 'undefined' ? marked.parse(stripJsonBlock(report)) : '<pre>' + escapeHtml(stripJsonBlock(report)) + '</pre>';
     let html = reportHtml;
     if (!evalObj) {
-      html += '<div class="ai-warn" style="margin-top:12px;">⚠ 未能从返回内容中解析出评分 JSON（模型可能未按要求输出 JSON 块）。报告已显示，但评分需手动填写：点击下方「手动评分」区域逐项打分，或重新运行评估。</div>';
+      html += '<div class="ai-warn" style="margin-top:12px;">⚠ 评分 JSON 解析失败（模型未按要求输出 JSON 块）。报告已显示，但评分需手动填写：点击下方「手动评分」区域逐项打分，或重新运行评估。</div>';
     }
     document.getElementById('evalResult').innerHTML = html;
     if (evalObj) {
@@ -2257,7 +2257,7 @@ async function runSingleEval() {
         scores: evalObj.scores || {},
         recommendation: evalObj.recommendation || '',
         legitimacy: evalObj.legitimacy || '',
-        report: content
+        report: report
       };
       document.getElementById('manualEvalSection').style.display = 'block';
       renderEvalGrid(currentEvalData);
@@ -2382,6 +2382,7 @@ async function runBatchEval() {
     const r = toEval[i];
     resultContainer.innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>正在评估 ' + (i+1) + '/' + toEval.length + ': ' + escapeHtml(r.companyName) + '...</span></div>';
     try {
+      // 第一步：分析（不含 JSON）
       const response = await fetch(settings.apiUrl, {
         method:'POST',
         headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
@@ -2392,38 +2393,36 @@ async function runBatchEval() {
             { role:'user', content: '## 候选人 CV:\n' + cvText + '\n\n## 职位描述 (JD):\n' + (r.companyIntro||'') + '\n公司: ' + r.companyName + '\n职位: ' + r.position }
           ],
           temperature:0.5,
-          max_tokens:8192
+          max_tokens:8000
         })
       });
       if (!response.ok) throw new Error('API ' + response.status);
       const data = await response.json();
-      const content = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'';
-      let evalObj = extractEvalJson(content);
-      // 安全网：报告已生成但 JSON 被截断/未解析时，单独再要一次仅含评分的 JSON
-      if (!evalObj && content) {
-        try {
-          const r2 = await fetch(settings.apiUrl, {
-            method:'POST',
-            headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
-            body: JSON.stringify({
-              model: settings.model || 'gpt-4o-mini',
-              messages:[
-                { role:'system', content: CAREER_OPS_SCORE_ONLY_PROMPT },
-                { role:'user', content: '## 评估报告：\n' + content + '\n\n请仅输出评分 JSON 块（```json ... ```），不要输出其它内容。' }
-              ],
-              temperature:0.3,
-              max_tokens:1500
-            })
-          });
-          if (r2.ok) {
-            const d2 = await r2.json();
-            const c2 = (d2.choices&&d2.choices[0]&&d2.choices[0].message&&d2.choices[0].message.content)||'';
-            const e2 = extractEvalJson(c2);
-            if (e2) evalObj = e2;
-          }
-        } catch(e2) { /* 安全网失败则回退到仅保存报告 */ }
-      }
-      results.push({ recordId:r.id, report:content, evalObj });
+      const report = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'';
+      // 第二步：评分（短输出，可靠）
+      let evalObj = null;
+      try {
+        const r2 = await fetch(settings.apiUrl, {
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
+          body: JSON.stringify({
+            model: settings.model || 'gpt-4o-mini',
+            messages:[
+              { role:'system', content: CAREER_OPS_SCORE_ONLY_PROMPT },
+              { role:'user', content: '## 候选人 CV:\n' + cvText + '\n\n## 职位描述 (JD):\n' + (r.companyIntro||'') + '\n公司: ' + r.companyName + '\n职位: ' + r.position
+                + '\n\n## 已生成的评估报告：\n' + report + '\n\n请仅输出评分 JSON 块（```json ... ```），严格基于 JD 证据、保守打分。' }
+            ],
+            temperature:0.2,
+            max_tokens:1500
+          })
+        });
+        if (r2.ok) {
+          const d2 = await r2.json();
+          const c2 = (d2.choices&&d2.choices[0]&&d2.choices[0].message&&d2.choices[0].message.content)||'';
+          evalObj = extractEvalJson(c2);
+        }
+      } catch(e2) { /* 评分失败则仅保存报告 */ }
+      results.push({ recordId:r.id, report:report, evalObj });
     } catch(err) {
       results.push({ recordId:r.id, error:err.message });
     }
