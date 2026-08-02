@@ -1007,9 +1007,10 @@ Top 5 CV/resume changes and top 5 LinkedIn changes to maximize match for this sp
 ### Block G — Posting Legitimacy
 Assess if this is a real, active opening. Output: "High Confidence" / "Proceed with Caution" / "Suspicious" with signal analysis.
 
-## Output Format
+## Output Format — JSON MUST COME FIRST
 
-After the 7 blocks, output a JSON block (inside \`\`\`json code block) with:
+CRITICAL: Output the JSON score block at the VERY BEGINNING of your response (inside a \`\`\`json code block), BEFORE any prose. The JSON must be a complete, valid JSON object. Only after the JSON block, output the 7-block Markdown analysis.
+
 \`\`\`json
 {
   "archetype": "detected archetype (use exact JD title or closest match from the list above)",
@@ -1026,13 +1027,13 @@ After the 7 blocks, output a JSON block (inside \`\`\`json code block) with:
 }
 \`\`\`
 
+Then continue with the full 7-block evaluation in Chinese Markdown below the JSON block.
+
 ## Scoring Interpretation
 - 4.5+ → 强烈推荐，立即申请
 - 4.0-4.4 → 匹配良好，值得申请
 - 3.5-3.9 → 一般，谨慎考虑
-- <3.5 → 不推荐申请
-
-Output the full 7-block evaluation in Chinese Markdown, followed by the JSON block.`;
+- <3.5 → 不推荐申请`;
 
 // ========== STATE ==========
 let records = [];
@@ -1311,7 +1312,7 @@ function openReportModal(r) {
     html += '</table>';
   }
   if (evalData && evalData.report) {
-    html += '<div style="margin-top:20px;">' + (typeof marked !== 'undefined' ? marked.parse(evalData.report) : '<pre>' + escapeHtml(evalData.report) + '</pre>') + '</div>';
+    html += '<div style="margin-top:20px;">' + (typeof marked !== 'undefined' ? marked.parse(stripJsonBlock(evalData.report)) : '<pre>' + escapeHtml(stripJsonBlock(evalData.report)) + '</pre>') + '</div>';
   } else {
     html += '<p style="color:var(--text-tertiary);">暂无评估报告。请在编辑记录中运行 AI 评估。</p>';
   }
@@ -2091,20 +2092,39 @@ function clearGeneralInterview() {
 // 鲁棒地从模型输出提取评估 JSON：兼容带/不带 ```json 围栏、大小写、裸 JSON、截断等情况
 function extractEvalJson(content) {
   if (!content) return null;
-  // 1) 围栏代码块：```json / ```JSON / ``` 皆可
-  const fence = content.match(/```(?:json)?\s*([\s\S]*?)```/i);
-  if (fence) {
-    const parsed = tryParseEvalJson(fence[1].trim());
-    if (parsed) return parsed;
+  // 1) 围栏代码块（```json / ```JSON / ```），逐个尝试，命中即返回
+  const fences = [...content.matchAll(/```(?:json)?\s*([\s\S]*?)```/gi)];
+  for (const f of fences) {
+    const parsed = tryParseEvalJson(f[1].trim());
+    if (parsed && looksLikeEval(parsed)) return parsed;
   }
-  // 2) 裸 JSON：取第一个 { 到最后一个 }
-  const first = content.indexOf('{');
-  const last = content.lastIndexOf('}');
-  if (first >= 0 && last > first) {
-    const parsed = tryParseEvalJson(content.slice(first, last + 1));
-    if (parsed) return parsed;
+  // 2) 扫描所有顶层 { } 对象（容错：报告.markdown 中可能含零散花括号），从最长者开始尝试
+  const objs = [];
+  let depth = 0, start = -1, inStr = false, esc = false;
+  for (let i = 0; i < content.length; i++) {
+    const c = content[i];
+    if (esc) { esc = false; continue; }
+    if (c === '\\') { esc = true; continue; }
+    if (c === '"') { inStr = !inStr; continue; }
+    if (inStr) continue;
+    if (c === '{') { if (depth === 0) start = i; depth++; }
+    else if (c === '}') { depth--; if (depth === 0 && start >= 0) { objs.push(content.slice(start, i + 1)); start = -1; } }
+  }
+  objs.sort((a, b) => b.length - a.length);
+  for (const o of objs) {
+    const parsed = tryParseEvalJson(o);
+    if (parsed && looksLikeEval(parsed)) return parsed;
   }
   return null;
+}
+
+// 判断解析出的对象是否像评估 JSON（避免把正文里的普通 {} 误判）
+function looksLikeEval(obj) {
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return false;
+  if (obj.scores && typeof obj.scores === 'object') return true;
+  const hits = ['archetype', 'recommendation', 'legitimacy', 'global', 'match', 'alignment', 'comp', 'culture', 'redFlags']
+    .filter(k => k in obj);
+  return hits.length >= 1;
 }
 
 function tryParseEvalJson(txt) {
@@ -2114,6 +2134,12 @@ function tryParseEvalJson(txt) {
   catch(e) {
     try { return JSON.parse(balanceJson(s)); } catch(e2) { return null; }
   }
+}
+
+// 从展示用文本中移除开头的 ```json 评分块，避免报告里出现原始 JSON（只处理位于文首的代码块）
+function stripJsonBlock(content) {
+  if (!content) return content;
+  return content.replace(/^\s*```json\s*[\s\S]*?```/i, '').replace(/^\s*```\s*[\s\S]*?```/i, '').trim();
 }
 
 function balanceJson(s) {
@@ -2178,8 +2204,8 @@ async function runSingleEval() {
     const content = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content) || '';
     // Parse JSON from response (robust: fence / raw / truncated)
     const evalObj = extractEvalJson(content);
-    // Render result
-    const reportHtml = typeof marked !== 'undefined' ? marked.parse(content) : '<pre>' + escapeHtml(content) + '</pre>';
+    // Render result (strip the leading ```json score block so it isn't shown as raw code)
+    const reportHtml = typeof marked !== 'undefined' ? marked.parse(stripJsonBlock(content)) : '<pre>' + escapeHtml(stripJsonBlock(content)) + '</pre>';
     let html = reportHtml;
     if (!evalObj) {
       html += '<div class="ai-warn" style="margin-top:12px;">⚠ 未能从返回内容中解析出评分 JSON（模型可能未按要求输出 JSON 块）。报告已显示，但评分需手动填写：点击下方「手动评分」区域逐项打分，或重新运行评估。</div>';
