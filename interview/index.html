@@ -1007,10 +1007,9 @@ Top 5 CV/resume changes and top 5 LinkedIn changes to maximize match for this sp
 ### Block G — Posting Legitimacy
 Assess if this is a real, active opening. Output: "High Confidence" / "Proceed with Caution" / "Suspicious" with signal analysis.
 
-## Output Format — JSON MUST COME FIRST
+## Output Format
 
-CRITICAL: Output the JSON score block at the VERY BEGINNING of your response (inside a \`\`\`json code block), BEFORE any prose. The JSON must be a complete, valid JSON object. Only after the JSON block, output the 7-block Markdown analysis.
-
+After the 7 blocks, output a JSON block (inside a \`\`\`json code block) with:
 \`\`\`json
 {
   "archetype": "detected archetype (use exact JD title or closest match from the list above)",
@@ -1027,19 +1026,30 @@ CRITICAL: Output the JSON score block at the VERY BEGINNING of your response (in
 }
 \`\`\`
 
-Then continue with the full 7-block evaluation in Chinese Markdown below the JSON block.
-
-IMPORTANT — Scoring discipline (the JSON is output BEFORE the analysis, so you must NOT rely on optimism):
-- Base every score STRICTLY on concrete evidence in the JD (and the candidate's CV). Do NOT inflate scores because the role sounds appealing.
-- For each dimension, mentally verify the JD against the CV BEFORE assigning the number. If a requirement is not clearly evidenced, score it LOWER rather than higher.
-- Be conservative: a 5 means the evidence strongly and explicitly supports it; a 3 means partial/uncertain match; a 1-2 means clear gap or mismatch.
-- The analysis blocks below must be consistent with these scores — if you later find gaps or red flags, the scores you already output must already reflect them.
-
 ## Scoring Interpretation
 - 4.5+ → 强烈推荐，立即申请
 - 4.0-4.4 → 匹配良好，值得申请
 - 3.5-3.9 → 一般，谨慎考虑
-- <3.5 → 不推荐申请`;
+- <3.5 → 不推荐申请
+
+Output the full 7-block evaluation in Chinese Markdown, followed by the JSON block.`;
+
+// 评分安全网专用：当主评估的报告已生成但 JSON 被截断/未解析时，单独再要一次仅含评分的 JSON
+const CAREER_OPS_SCORE_ONLY_PROMPT = `You are a job-offer score extractor. Based ONLY on the evaluation report you are given, output a single JSON score block (inside a \`\`\`json ... \`\`\`) with this exact schema:
+{
+  "archetype": "string (the role archetype from the report)",
+  "scores": {
+    "match": <1-5 integer>,
+    "alignment": <1-5 integer>,
+    "comp": <1-5 integer>,
+    "culture": <1-5 integer>,
+    "redFlags": <1-5 integer, 5=no red flags, 1=many>,
+    "global": <1-5 float, weighted average>
+  },
+  "recommendation": "立即申请|值得申请|谨慎考虑|不建议申请",
+  "legitimacy": "High Confidence|Proceed with Caution|Suspicious"
+}
+Output ONLY the JSON block, no other text. If the report is too vague to judge a dimension, score it 3.`;
 
 // ========== STATE ==========
 let records = [];
@@ -2142,10 +2152,10 @@ function tryParseEvalJson(txt) {
   }
 }
 
-// 从展示用文本中移除开头的 ```json 评分块，避免报告里出现原始 JSON（只处理位于文首的代码块）
+// 从展示用文本中移除所有 ```json 评分块（json 标签专用于评分块，不会误删报告里的其它代码块）
 function stripJsonBlock(content) {
   if (!content) return content;
-  return content.replace(/^\s*```json\s*[\s\S]*?```/i, '').replace(/^\s*```\s*[\s\S]*?```/i, '').trim();
+  return content.replace(/```json\s*[\s\S]*?```/gi, '').trim();
 }
 
 function balanceJson(s) {
@@ -2209,8 +2219,32 @@ async function runSingleEval() {
     const data = await response.json();
     const content = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content) || '';
     // Parse JSON from response (robust: fence / raw / truncated)
-    const evalObj = extractEvalJson(content);
-    // Render result (strip the leading ```json score block so it isn't shown as raw code)
+    let evalObj = extractEvalJson(content);
+    // 安全网：报告已生成但评分 JSON 被截断/未解析时，单独再要一次仅含评分的 JSON（不影响默认「先分析后打分」的评分风格）
+    if (!evalObj && content) {
+      try {
+        const r2 = await fetch(settings.apiUrl, {
+          method:'POST',
+          headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
+          body: JSON.stringify({
+            model: settings.model || 'gpt-4o-mini',
+            messages:[
+              { role:'system', content: CAREER_OPS_SCORE_ONLY_PROMPT },
+              { role:'user', content: '## 评估报告：\n' + content + '\n\n请仅输出评分 JSON 块（```json ... ```），不要输出其它内容。' }
+            ],
+            temperature:0.3,
+            max_tokens:1500
+          })
+        });
+        if (r2.ok) {
+          const d2 = await r2.json();
+          const c2 = (d2.choices&&d2.choices[0]&&d2.choices[0].message&&d2.choices[0].message.content) || '';
+          const e2 = extractEvalJson(c2);
+          if (e2) evalObj = e2;
+        }
+      } catch(e2) { /* 安全网失败则回退到手动评分提示 */ }
+    }
+    // Render result (strip the ```json score block so it isn't shown as raw code)
     const reportHtml = typeof marked !== 'undefined' ? marked.parse(stripJsonBlock(content)) : '<pre>' + escapeHtml(stripJsonBlock(content)) + '</pre>';
     let html = reportHtml;
     if (!evalObj) {
@@ -2364,7 +2398,31 @@ async function runBatchEval() {
       if (!response.ok) throw new Error('API ' + response.status);
       const data = await response.json();
       const content = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'';
-      const evalObj = extractEvalJson(content);
+      let evalObj = extractEvalJson(content);
+      // 安全网：报告已生成但 JSON 被截断/未解析时，单独再要一次仅含评分的 JSON
+      if (!evalObj && content) {
+        try {
+          const r2 = await fetch(settings.apiUrl, {
+            method:'POST',
+            headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
+            body: JSON.stringify({
+              model: settings.model || 'gpt-4o-mini',
+              messages:[
+                { role:'system', content: CAREER_OPS_SCORE_ONLY_PROMPT },
+                { role:'user', content: '## 评估报告：\n' + content + '\n\n请仅输出评分 JSON 块（```json ... ```），不要输出其它内容。' }
+              ],
+              temperature:0.3,
+              max_tokens:1500
+            })
+          });
+          if (r2.ok) {
+            const d2 = await r2.json();
+            const c2 = (d2.choices&&d2.choices[0]&&d2.choices[0].message&&d2.choices[0].message.content)||'';
+            const e2 = extractEvalJson(c2);
+            if (e2) evalObj = e2;
+          }
+        } catch(e2) { /* 安全网失败则回退到仅保存报告 */ }
+      }
       results.push({ recordId:r.id, report:content, evalObj });
     } catch(err) {
       results.push({ recordId:r.id, error:err.message });
