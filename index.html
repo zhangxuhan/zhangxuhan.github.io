@@ -391,7 +391,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
-      margin: 1.5rem 0;
+      margin: 0.8rem 0;
     }
     
     .project-card {
@@ -451,7 +451,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1.5rem;
-      margin: 2rem 0;
+      margin: 0.4rem 0;
     }
     
     .profile-card {
@@ -630,7 +630,7 @@
     /* Divider */
     .dreamstar-divider {
       text-align: center;
-      margin: 2.5rem 0;
+      margin: 0.6rem 0;
       font-size: 1.5rem;
       letter-spacing: 1rem;
       color: var(--accent);
@@ -812,6 +812,72 @@
       .game-showcase-row { grid-template-columns: 1fr; gap: 1rem; }
       .game-showcase-item img { height: 160px; }
     }
+    /* Simulation Showcase gallery */
+    .sim-gallery {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.8rem;
+      margin-top: 1.8rem;
+    }
+    .sim-thumb {
+      display: block;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: #111;
+      aspect-ratio: 16 / 10;
+      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    }
+    .sim-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform .35s ease;
+    }
+    .sim-thumb:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .sim-thumb:hover img { transform: scale(1.06); }
+    @media (max-width: 900px) {
+      .sim-gallery { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .sim-gallery { grid-template-columns: 1fr; }
+    }
+    .card-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      margin-top: 0.9rem;
+    }
+    .card-gallery .sim-thumb {
+      aspect-ratio: 4 / 3;
+      border-radius: 6px;
+      max-width: 118px;
+      justify-self: start;
+    }
+    .card-gallery .sim-thumb:hover { transform: none; border-color: var(--accent); box-shadow: none; }
+    .card-gallery .sim-thumb:hover img { transform: none; }
+    .lightbox {
+      position: fixed; inset: 0; z-index: 9999;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.92);
+    }
+    .lightbox.show { display: flex; }
+    .lightbox img { max-width: 90vw; max-height: 88vh; border-radius: 8px; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+    .lightbox .lb-close {
+      position: absolute; top: 18px; right: 28px;
+      color: #fff; font-size: 2.4rem; line-height: 1; cursor: pointer;
+      opacity: .8; transition: opacity .2s;
+    }
+    .lightbox .lb-close:hover { opacity: 1; }
+    .lightbox .lb-cap {
+      position: absolute; bottom: 22px; left: 0; right: 0; text-align: center;
+      color: #ccc; font-size: .9rem; padding: 0 1rem;
+    }
   </style>
 </head>
 <body>
@@ -965,12 +1031,22 @@
             <h4>Aerospace Simulation System</h4>
             <p>Led full-stack development of the C++ simulation stack — visual systems, command-and-control UI, and sensor simulation — now serving research institutes across multiple countries.</p>
             <div class="stars">🏢 Enterprise Solution</div>
+            <div class="card-gallery">
+              <a class="sim-thumb" href="sim/media/飞行仿真.jpg" onclick="openLightbox('sim/media/飞行仿真.jpg','Flight simulation');return false;"><img src="sim/media/飞行仿真.jpg" alt="Flight simulation" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/直升机仿真.jpg" onclick="openLightbox('sim/media/直升机仿真.jpg','Helicopter simulation');return false;"><img src="sim/media/直升机仿真.jpg" alt="Helicopter simulation" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/仿真系统.jpg" onclick="openLightbox('sim/media/仿真系统.jpg','Simulation system');return false;"><img src="sim/media/仿真系统.jpg" alt="Simulation system" loading="lazy"></a>
+            </div>
           </div>
           <div class="project-card fade-in">
             <span class="lang-tag">UE4 + CARLA</span>
             <h4>Autonomous Driving Sim</h4>
             <p>A CARLA-based AI simulation platform. Beyond the tech, I shaped China’s industry standards for AI and autonomous-driving simulation — extending vehicle dynamics, building Python/C++ APIs, and creating large-scale scenarios.</p>
             <div class="stars">🤖 AI Research</div>
+            <div class="card-gallery">
+              <a class="sim-thumb" href="sim/media/carla.jpg" onclick="openLightbox('sim/media/carla.jpg','CARLA autonomous-driving simulation');return false;"><img src="sim/media/carla.jpg" alt="CARLA autonomous-driving simulation" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/点云.jpg" onclick="openLightbox('sim/media/点云.jpg','Point cloud');return false;"><img src="sim/media/点云.jpg" alt="Point cloud" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/carla_战场仿真2.jpg" onclick="openLightbox('sim/media/carla_战场仿真2.jpg','CARLA battlefield simulation');return false;"><img src="sim/media/carla_战场仿真2.jpg" alt="CARLA battlefield simulation" loading="lazy"></a>
+            </div>
           </div>
           <div class="project-card fade-in">
             <span class="lang-tag">UE4 Mobile</span>
@@ -985,6 +1061,8 @@
             <div class="stars">⚡ DevOps</div>
           </div>
         </div>
+        
+        <div class="dreamstar-divider">★</div>
         
         <div class="profile-grid">
           <div class="profile-card fade-in">
@@ -1099,12 +1177,22 @@
             <h4>航空航天仿真系统</h4>
             <p>全栈开发 C++ 仿真技术栈——视景系统、指控界面、传感器仿真，已服务于多个国家研究所。</p>
             <div class="stars">🏢 企业级方案</div>
+            <div class="card-gallery">
+              <a class="sim-thumb" href="sim/media/飞行仿真.jpg" onclick="openLightbox('sim/media/飞行仿真.jpg','飞行仿真');return false;"><img src="sim/media/飞行仿真.jpg" alt="飞行仿真" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/直升机仿真.jpg" onclick="openLightbox('sim/media/直升机仿真.jpg','直升机仿真');return false;"><img src="sim/media/直升机仿真.jpg" alt="直升机仿真" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/仿真系统.jpg" onclick="openLightbox('sim/media/仿真系统.jpg','仿真系统');return false;"><img src="sim/media/仿真系统.jpg" alt="仿真系统" loading="lazy"></a>
+            </div>
           </div>
           <div class="project-card fade-in">
             <span class="lang-tag">UE4 + CARLA</span>
             <h4>自动驾驶仿真平台</h4>
             <p>基于CARLA的AI仿真平台。扩展车辆动力学、Python/C++接口与广域场景，推动中国AI与自动驾驶仿真技术的行业标准化。</p>
             <div class="stars">🤖 AI科研项目</div>
+            <div class="card-gallery">
+              <a class="sim-thumb" href="sim/media/carla.jpg" onclick="openLightbox('sim/media/carla.jpg','CARLA 自动驾驶仿真');return false;"><img src="sim/media/carla.jpg" alt="CARLA 自动驾驶仿真" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/点云.jpg" onclick="openLightbox('sim/media/点云.jpg','点云');return false;"><img src="sim/media/点云.jpg" alt="点云" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/carla_战场仿真2.jpg" onclick="openLightbox('sim/media/carla_战场仿真2.jpg','CARLA 战场仿真');return false;"><img src="sim/media/carla_战场仿真2.jpg" alt="CARLA 战场仿真" loading="lazy"></a>
+            </div>
           </div>
           <div class="project-card fade-in">
             <span class="lang-tag">UE4 移动端</span>
@@ -1119,6 +1207,8 @@
             <div class="stars">⚡ DevOps</div>
           </div>
         </div>
+        
+        <div class="dreamstar-divider">★</div>
         
         <div class="profile-grid">
           <div class="profile-card fade-in">
@@ -1233,12 +1323,22 @@
             <h4>航空宇宙シミュレーション</h4>
             <p>フルスタック開発：C++シミュレーション技術スタック（視景システム・指揮制御インターフェース・センサーシミュレーション）を構築し、現在複数国の研究所で運用されている。</p>
             <div class="stars">🏢 エンタープライズ</div>
+            <div class="card-gallery">
+              <a class="sim-thumb" href="sim/media/飞行仿真.jpg" onclick="openLightbox('sim/media/飞行仿真.jpg','飛行シミュレーション');return false;"><img src="sim/media/飞行仿真.jpg" alt="飛行シミュレーション" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/直升机仿真.jpg" onclick="openLightbox('sim/media/直升机仿真.jpg','ヘリコプターシミュレーション');return false;"><img src="sim/media/直升机仿真.jpg" alt="ヘリコプターシミュレーション" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/仿真系统.jpg" onclick="openLightbox('sim/media/仿真系统.jpg','シミュレーション・システム');return false;"><img src="sim/media/仿真系统.jpg" alt="シミュレーション・システム" loading="lazy"></a>
+            </div>
           </div>
           <div class="project-card fade-in">
             <span class="lang-tag">UE4 + CARLA</span>
             <h4>自動運転シミュレーション</h4>
             <p>CARLAベースのAIシミュレーションプラットフォーム。車両動力学の拡張・Python/C++ APIにとどまらず、中国のAI・自動運転シミュレーション技術の業界標準化を推進。</p>
             <div class="stars">🤖 AI研究</div>
+            <div class="card-gallery">
+              <a class="sim-thumb" href="sim/media/carla.jpg" onclick="openLightbox('sim/media/carla.jpg','CARLA 自動運転シミュレーション');return false;"><img src="sim/media/carla.jpg" alt="CARLA 自動運転シミュレーション" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/点云.jpg" onclick="openLightbox('sim/media/点云.jpg','点群レンダリング');return false;"><img src="sim/media/点云.jpg" alt="点群レンダリング" loading="lazy"></a>
+              <a class="sim-thumb" href="sim/media/carla_战场仿真2.jpg" onclick="openLightbox('sim/media/carla_战场仿真2.jpg','CARLA 戦場シミュレーション');return false;"><img src="sim/media/carla_战场仿真2.jpg" alt="CARLA 戦場シミュレーション" loading="lazy"></a>
+            </div>
           </div>
           <div class="project-card fade-in">
             <span class="lang-tag">UE4 モバイル</span>
@@ -1253,6 +1353,8 @@
             <div class="stars">⚡ DevOps</div>
           </div>
         </div>
+        
+        <div class="dreamstar-divider">★</div>
         
         <div class="profile-grid">
           <div class="profile-card fade-in">
@@ -1651,6 +1753,25 @@
   </script>
   <!-- Visitor Tracker -->
   <script src="https://visitor-logger.zhangxuhan.workers.dev/tracker.js" async></script>
+  <div class="lightbox" id="lightbox">
+    <span class="lb-close" onclick="closeLightbox()">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="lb-cap" id="lightbox-cap"></div>
+  </div>
+  <script>
+    function openLightbox(src, cap) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox-cap').textContent = cap || '';
+      document.getElementById('lightbox').classList.add('show');
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('show');
+    }
+    document.getElementById('lightbox').addEventListener('click', function(e){
+      if (e.target.id === 'lightbox') closeLightbox();
+    });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLightbox(); });
+  </script>
 </body>
 </html>
 
