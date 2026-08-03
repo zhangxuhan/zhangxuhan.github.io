@@ -33,9 +33,12 @@ jobs:
           # 部署整个仓库根目录（含 sim/ 等所有静态站点资源）
           path: '.'
           # 排除不应进入站点的本地开发产物，缩小体积、避免泄漏
+          # 注意：video/ 体积大（~100MB），放入产物会导致上传不稳、漏传 sim/media 等小文件，
+          # 故排除；视频通过 raw.githubusercontent.com 分支直链引用（见各页面 /video/ 替换）。
           exclude: |
             node_modules/**
             .git/**
+            video/**
             package*.json
             package-lock.json
             run-hexo.bat
