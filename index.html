@@ -878,6 +878,139 @@
       position: absolute; bottom: 22px; left: 0; right: 0; text-align: center;
       color: #ccc; font-size: .9rem; padding: 0 1rem;
     }
+
+    /* ===== Feature Highlights (功能亮点) ===== */
+    .feature-highlights {
+      margin-top: 1.8rem;
+    }
+    .fh-label {
+      text-align: left;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: #fff;
+      margin: 0 0 1.2rem 0;
+    }
+    .fh-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 700px) {
+      .fh-grid { grid-template-columns: 1fr; }
+    }
+    .fh-group {
+      margin-bottom: 1.2rem;
+    }
+    .fh-subgroup { margin-bottom: 0.5rem; }
+    .fh-sub-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 0.2rem;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+    }
+    .fh-sub-items { display: none; padding-left: 0.9rem; }
+    .fh-subgroup.open > .fh-sub-items { display: block; }
+    .fh-subgroup.open > .fh-sub-toggle .fh-caret { transform: rotate(90deg); }
+    .fh-group-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.1rem 1.4rem;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 1.15rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+    }
+    .fh-caret {
+      display: inline-block;
+      color: var(--accent);
+      font-size: 0.8rem;
+      transition: transform 0.3s ease;
+    }
+    .fh-group.open > .fh-group-toggle .fh-caret { transform: rotate(90deg); }
+    .fh-items { display: none; padding: 0 1.4rem 0.4rem 1.4rem; }
+    .fh-group.open > .fh-items { display: block; }
+    .fh-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.6rem 0.2rem;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      transition: color 0.2s ease, padding-left 0.2s ease;
+    }
+    .fh-item:hover { color: var(--accent); padding-left: 0.9rem; }
+    .fh-item .fh-caret { font-size: 0.7rem; }
+    .fh-item.open .fh-caret { transform: rotate(90deg); }
+    .fh-detail {
+      display: none;
+      padding: 0 0.5rem 0.9rem 1.6rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+    }
+    .fh-item.open + .fh-detail { display: block; }
+    @media (max-width: 600px) {
+      .feature-highlights { margin-top: 2.5rem; padding-top: 2rem; }
+    }
+
+    /* ===== Mobile adaptation ===== */
+    @media (max-width: 768px) {
+      /* Nav: enlarge tap targets without changing nav height (avatar 48px sets it) */
+      .nav-links { gap: 0.85rem; }
+      .nav-links a {
+        display: inline-block;
+        padding: 0.62rem 0.3rem;
+        font-size: 0.95rem;
+      }
+      .nav-brand { display: inline-block; padding: 0.5rem 0; }
+
+      /* Language switcher: single compact row, clear of the fixed nav */
+      .lang-switcher-fixed {
+        top: 5.2rem;
+        right: 0.75rem;
+        display: flex;
+        gap: 0.15rem;
+        padding: 0.3rem 0.4rem;
+        white-space: nowrap;
+      }
+      .lang-btn-fixed {
+        padding: 0.75rem 0.6rem;
+        font-size: 0.8rem;
+        letter-spacing: 0;
+        white-space: nowrap;
+      }
+      .lang-btn-fixed.active { font-size: 0.82rem; }
+
+      /* Project title links in video cards: taller tap area */
+      .video-card .proj-link { padding: 0.5rem 0 0.45rem; }
+    }
+
+    /* Touch devices: drop the cursor-following decoration */
+    @media (pointer: coarse) {
+      #cursor-cat { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -936,7 +1069,7 @@
       
       <!-- ENGLISH VERSION -->
       <div class="lang-content" id="video-en">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem;">
+        <div class="video-grid">
           <div class="video-card fade-in">
             <h3 style="font-size:1.1rem;font-weight:600;margin:0 0 1rem 0;">
               <a href="https://im.qq.com/" target="_blank" class="proj-link">QQ Home <span class="ext-icon">↗</span><span class="host-tag">im.qq.com</span></a>
@@ -960,7 +1093,7 @@
       
       <!-- CHINESE VERSION -->
       <div class="lang-content" id="video-cn">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem;">
+        <div class="video-grid">
           <div class="video-card fade-in">
             <h3 style="font-size:1.1rem;font-weight:600;margin:0 0 1rem 0;">
               <a href="https://im.qq.com/" target="_blank" class="proj-link">QQ小窝 <span class="ext-icon">↗</span><span class="host-tag">im.qq.com</span></a>
@@ -984,7 +1117,7 @@
       
       <!-- JAPANESE VERSION -->
       <div class="lang-content active" id="video-jp">
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2rem;">
+        <div class="video-grid">
           <div class="video-card fade-in">
             <h3 style="font-size:1.1rem;font-weight:600;margin:0 0 1rem 0;">
               <a href="https://im.qq.com/" target="_blank" class="proj-link">QQ小窩 <span class="ext-icon">↗</span><span class="host-tag">im.qq.com</span></a>
@@ -992,7 +1125,7 @@
             <div style="position:relative;background:#000;border-radius:12px;overflow:hidden;">
               <video id="video-qqxw-jp" src="/video/qqxw.mp4" poster="/video/qqxw.jpg" style="width:100%;display:block;" controls></video>
             </div>
-            <p style="font-size:0.85rem;color:var(--text-muted);margin:1rem 0 0 0;line-height:1.6;">月間アクティブ<strong>5億ユーザー</strong>を擁するQQプラットフォームに統合されたメタバース・ソーシャル空間。没入型3D空間・自作家具システム・インタラクティブ要素を設計し、大規模なUGCソーシャル体験を実現。</p>
+            <p style="font-size:0.85rem;color:var(--text-muted);margin:1rem 0 0 0;line-height:1.6;">月間アクティブユーザー数が5億人を超えるQQプラットフォームにUE4エンジンを統合し、インタラクティブな3D仮想空間を構築。大規模なメタバース・ソーシャル体験を提供しました。</p>
           </div>
           <div class="video-card fade-in">
             <h3 style="font-size:1.1rem;font-weight:600;margin:0 0 1rem 0;">
@@ -1005,6 +1138,129 @@
           </div>
         </div>
       </div>
+
+      <!-- FUNCTION HIGHLIGHTS -->
+      <div class="feature-highlights" id="feature-highlights">
+        <p class="fh-label" data-lang-cn="负责功能与技术亮点" data-lang-en="Key Contributions &amp; Technical Highlights" data-lang-jp="担当機能・技術的な工夫">负责功能与技术亮点</p>
+        <div class="fh-grid">
+          <!-- QQ小窝 -->
+          <div class="fh-group">
+            <button class="fh-group-toggle" type="button" onclick="fhToggleGroup(this)">
+              <span class="fh-caret">▶</span> <span class="fh-text" data-lang-cn="QQ小窝" data-lang-en="QQ Home" data-lang-jp="QQ小窩">QQ小窝</span>
+            </button>
+            <div class="fh-items">
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="资源采集系统" data-lang-en="Resource Gathering System" data-lang-jp="資源採取システム">资源采集系统</span></button>
+              <div class="fh-detail" data-lang-cn="实现砍树、采矿等资源采集玩法，并加入材料自动吸附功能，减少玩家逐个拾取材料的重复操作。针对大量资源对象带来的渲染开销，对材质进行合批处理，在保留采集反馈的同时减少Draw Call，控制运行时渲染负荷。" data-lang-en="Implemented resource-gathering gameplay such as tree chopping and mining, and added an auto-attract pickup so players no longer collect materials one by one. To address the rendering cost of many resource objects, I batched materials, reducing draw calls and keeping the runtime rendering load under control while preserving collection feedback." data-lang-jp="資源を採取するとき、プレイヤーが一つずつ拾うと手間がかかります。そこで、近くの素材を自動で集める機能を実装しました。また、多数の資源オブジェクトによる描画負荷を減らすため、マテリアルをまとめて処理し、ドローコールを削減しました。">实现砍树、采矿等资源采集玩法，并加入材料自动吸附功能，减少玩家逐个拾取材料的重复操作。针对大量资源对象带来的渲染开销，对材质进行合批处理，在保留采集反馈的同时减少Draw Call，控制运行时渲染负荷。</div>
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="派对板" data-lang-en="Party Board" data-lang-jp="パーティーボード">派对板</span></button>
+              <div class="fh-detail" data-lang-cn="派对板需要展示大量持续更新的图片和内容，一次性创建全部界面并加载所有资源，会增加首屏等待时间，内存占用也会随浏览量持续上升。我采用流式数据加载和UI面板复用，只维护当前显示所需的内容；图片通过CDN异步加载，并结合压缩处理控制下载和解码开销，从而缩短内容显示前的等待时间，并抑制大量内容浏览造成的内存增长。" data-lang-en="The party board displays a large volume of continuously updating images and content. Creating the entire UI and loading all assets at once increases the initial wait, and memory use keeps rising with browse volume. I adopted streaming data loading and UI panel reuse, keeping only the content currently displayed; images are loaded asynchronously via CDN and compressed to control download and decode cost — shortening the wait before content appears and curbing the memory growth caused by browsing large amounts of content." data-lang-jp="パーティーボードには多くの画像とデータが表示されます。すべてのUIと画像を同時に読み込むと、待ち時間とメモリ使用量が増えます。そのため、表示中のUIだけを保持して再利用し、画像はCDNから非同期で読み込むようにしました。">派对板需要展示大量持续更新的图片和内容，一次性创建全部界面并加载所有资源，会增加首屏等待时间，内存占用也会随浏览量持续上升。我采用流式数据加载和UI面板复用，只维护当前显示所需的内容；图片通过CDN异步加载，并结合压缩处理控制下载和解码开销，从而缩短内容显示前的等待时间，并抑制大量内容浏览造成的内存增长。</div>
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="大地图与碎化纹理系统" data-lang-en="World Map &amp; Contour-Triangulated Icon Rendering" data-lang-jp="ワールドマップの最適化">大地图与碎化纹理系统</span></button>
+              <div class="fh-detail" data-lang-cn="大地图需要同时展示大量场景对象和不规则图标，直接加载全部内容会增加初始化时间、内存和渲染负荷。我依据LOD策略分级加载地图对象，并实现缩放、拖动等移动端触摸手势。地图图标采用运行时异步加载，同时建立离线处理流水线，对图片进行裁剪、压缩，并根据有效像素轮廓生成三角形网格和碎化纹理数据，减少透明无效像素及Overdraw，控制大量图标带来的下载、纹理内存和渲染开销。" data-lang-en="The world map must display a large number of scene objects and irregularly shaped icons at the same time; loading everything directly increases initialization time, memory, and rendering load. I load map objects in tiers based on an LOD strategy and implemented mobile touch gestures such as pinch-zoom and drag. Map icons are loaded asynchronously at runtime, backed by an offline processing pipeline that crops and compresses the images and generates tight triangle meshes along the valid-pixel contour, reducing transparent, unused pixels and overdraw and keeping the download, texture memory, and rendering cost of large icon counts under control." data-lang-jp="ワールドマップには多くのオブジェクトとアイコンがあります。すべてを同時に読み込むと、ロード時間とメモリ使用量が増えます。そのため、LODと非同期読み込みを使い、必要なデータだけを読み込むようにしました。また、画像の有効な部分に合わせて三角形メッシュを作り、透明な部分とオーバードローを減らしました。">大地图需要同时展示大量场景对象和不规则图标，直接加载全部内容会增加初始化时间、内存和渲染负荷。我依据LOD策略分级加载地图对象，并实现缩放、拖动等移动端触摸手势。地图图标采用运行时异步加载，同时建立离线处理流水线，对图片进行裁剪、压缩，并根据有效像素轮廓生成三角形网格和碎化纹理数据，减少透明无效像素及Overdraw，控制大量图标带来的下载、纹理内存和渲染开销。</div>
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="可复用交互家具系统" data-lang-en="Reusable Interactive Furniture System" data-lang-jp="共通のインタラクティブ家具システム">可复用交互家具系统</span></button>
+              <div class="fh-detail" data-lang-cn="不同家具具有各自的操作流程，但多人环境下都需要处理占用、释放、状态同步、断线恢复和摆放合法性。如果每件家具单独实现，这些共通逻辑容易重复，也会增加后续扩展成本。设计并实现可复用的交互家具框架，统一处理家具占用与解除、地格摆放、复杂交互状态以及断线重连后的状态恢复。在该框架上完成传送器、射箭机、投篮机、抽奖机和陷阱等多种交互家具，使新家具能够复用基础流程，减少重复开发。" data-lang-en="Different furniture pieces have their own interaction flows, yet in multiplayer all must handle occupancy, release, state sync, disconnect recovery, and placement validity. Implementing each one separately duplicates this shared logic and raises extension cost. I designed a reusable interactive-furniture framework that uniformly handles occupy/release, grid placement, complex interaction state, and state restore after reconnect. On top of it I built teleporters, archery machines, basketball machines, gachas, and traps, so new furniture reuses the base flow and avoids redundant work." data-lang-jp="椅子、ゲーム機、テレポーターなどは機能が異なりますが、プレイヤーの使用開始、使用終了、状態同期、切断復帰などは共通しています。私はこれらの共通処理をまとめた家具システムを実装しました。新しい家具を作るときに、同じ処理を何度も作る必要がなくなりました。">不同家具具有各自的操作流程，但多人环境下都需要处理占用、释放、状态同步、断线恢复和摆放合法性。如果每件家具单独实现，这些共通逻辑容易重复，也会增加后续扩展成本。设计并实现可复用的交互家具框架，统一处理家具占用与解除、地格摆放、复杂交互状态以及断线重连后的状态恢复。在该框架上完成传送器、射箭机、投篮机、抽奖机和陷阱等多种交互家具，使新家具能够复用基础流程，减少重复开发。</div>
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="室内地图系统" data-lang-en="Indoor Map System" data-lang-jp="屋内マップシステム">室内地图系统</span></button>
+              <div class="fh-detail" data-lang-cn="为了在地图中同时呈现跨场景房间、家具布局和其他玩家位置，我在运行时加载目标房间及家具，并在独立环境中生成地图画面，将结果保存到本地缓存供后续快速读取。同时同步多名玩家在室内地图中的实时位置，并支持密码房等访问控制功能，在控制加载成本的同时提供必要的室内地图信息。" data-lang-en="To present cross-scene rooms, furniture layout, and other players' positions together on the map, I load the target room and its furniture at runtime, generate the map image in a separate environment, and save the result to a local cache for fast subsequent reads. It also syncs multiple players' real-time positions on the indoor map and supports access control such as password-protected rooms, providing the indoor map information needed while keeping load cost under control." data-lang-jp="部屋や家具の配置、ほかのプレイヤーの位置をマップに表示するため、対象の部屋と家具を実行時に読み込み、別の環境でマップ画像を生成しました。生成した画像はローカルに保存し、次回から素早く表示できるようにしました。また、複数プレイヤーの位置をリアルタイムで同期しました。">为了在地图中同时呈现跨场景房间、家具布局和其他玩家位置，我在运行时加载目标房间及家具，并在独立环境中生成地图画面，将结果保存到本地缓存供后续快速读取。同时同步多名玩家在室内地图中的实时位置，并支持密码房等访问控制功能，在控制加载成本的同时提供必要的室内地图信息。</div>
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="UGC建筑功能" data-lang-en="UGC Building Feature" data-lang-jp="UGC建築機能">UGC建筑功能</span></button>
+              <div class="fh-detail" data-lang-cn="实现面向UGC内容的建筑操作，通过射线检测识别玩家选择的位置和目标，使移动端玩家能够直接在3D场景中完成建筑相关操作。" data-lang-en="Implemented UGC-oriented building operations: ray casting identifies the position and target the player selects, letting mobile players perform building actions directly inside the 3D scene." data-lang-jp="UGC建築では、プレイヤーが3D空間で直接場所を選んで操作できる必要があります。そこで、レイキャストでタップした位置を特定し、モバイルでも直接建築できるようにしました。">实现面向UGC内容的建筑操作，通过射线检测识别玩家选择的位置和目标，使移动端玩家能够直接在3D场景中完成建筑相关操作。</div>
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="留言板系统" data-lang-en="Message Board System" data-lang-jp="メッセージボード">留言板系统</span></button>
+              <div class="fh-detail" data-lang-cn="留言板需要支持触屏输入、留言回复和大量评论展示。由于原有引擎侧触控键盘无法完整满足实际输入流程，我修改了引擎层相关代码，完成留言与回复功能；同时加入评论折叠和UI面板复用，在支持大量评论浏览的同时控制界面内存占用。" data-lang-en="The message board needs to support touch input, replies, and the display of large numbers of comments. Because the engine's built-in on-screen keyboard could not fully satisfy the actual input flow, I modified the engine-layer code to complete posting and replying; I also added comment collapsing and UI panel reuse, keeping UI memory use under control while supporting browsing large volumes of comments." data-lang-jp="既存のタッチキーボードでは、投稿と返信に必要な入力処理を実現できませんでした。そのため、エンジン側のキーボード処理を変更しました。また、コメントUIを再利用し、多くのコメントを表示してもメモリ使用量が増えにくいようにしました。">留言板需要支持触屏输入、留言回复和大量评论展示。由于原有引擎侧触控键盘无法完整满足实际输入流程，我修改了引擎层相关代码，完成留言与回复功能；同时加入评论折叠和UI面板复用，在支持大量评论浏览的同时控制界面内存占用。</div>
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="地格管理系统" data-lang-en="Grid Management System" data-lang-jp="グリッド管理システム">地格管理系统</span></button>
+              <div class="fh-detail" data-lang-cn="家具编辑需要统一判断可放置区域、占用关系和空间冲突，否则不同家具容易出现重叠、越界或非法摆放。实现基础地格管理系统，集中管理地格占用、合法性判断和冲突检测，为家具放置及其他家园编辑功能提供统一的空间规则。" data-lang-en="Furniture editing needs unified rules for placeable areas, occupancy, and spatial conflicts; without them, pieces overlap, go out of bounds, or get placed illegally. I implemented a base grid-management system that centrally handles grid occupancy, validity checks, and conflict detection, giving furniture placement and other home-editing features a single spatial rule set." data-lang-jp="家具を配置するとき、どこに置けるかや重なりを判断するルールがばらばらだと、重複やはみ出しが起きます。そこで、グリッド上の占有状態や「正しく配置できるか」の判定、衝突の検出をまとめて管理する仕組みを実装しました。これで、家具配置やほかの編集機能が同じ空間ルールを使えるようになりました。">家具编辑需要统一判断可放置区域、占用关系和空间冲突，否则不同家具容易出现重叠、越界或非法摆放。实现基础地格管理系统，集中管理地格占用、合法性判断和冲突检测，为家具放置及其他家园编辑功能提供统一的空间规则。</div>
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="插件化启动与首次运行优化" data-lang-en="Plugin-based Startup &amp; First-Run Optimization" data-lang-jp="プラグイン起動とPSO最適化">插件化启动与首次运行优化</span></button>
+              <div class="fh-detail" data-lang-cn="为适应QQ平台的集成方式，我修改了引擎侧项目启动流程，使QQ小窝能够作为Plugin完成初始化与启动。同时建立PSO收集与缓存流程，提前收集常用渲染管线状态，减少首次运行时的实时创建与编译开销，从而缩短首次加载时间，并降低初次进入场景时的卡顿。" data-lang-en="To fit QQ's integration model, I modified the engine-side project startup flow so QQ Home can initialize and launch as a Plugin. I also established a PSO collection and caching flow that gathers commonly used render pipeline states in advance, reducing the real-time creation and compilation cost on first run — shortening first-load time and reducing stutter when entering a scene for the first time." data-lang-jp="QQの中で起動できるように、エンジン側の起動処理を変更しました。また、ゲームで使うPSOを事前に収集してキャッシュしました。これにより、初回ロード時間と、初めてシーンに入るときのカクつきを減らしました。">为适应QQ平台的集成方式，我修改了引擎侧项目启动流程，使QQ小窝能够作为Plugin完成初始化与启动。同时建立PSO收集与缓存流程，提前收集常用渲染管线状态，减少首次运行时的实时创建与编译开销，从而缩短首次加载时间，并降低初次进入场景时的卡顿。</div>
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="多平台与大型场景优化" data-lang-en="Multi-Platform &amp; Large-Scale Scene Optimization" data-lang-jp="マルチプラットフォーム対応と大規模シーンの最適化">多平台与大型场景优化</span></button>
+              <div class="fh-detail" data-lang-cn="QQ小窝需要同时适配Android、iOS和PC环境，并在大型社交场景中展示大量玩家、交互对象和UI内容。我参与多平台兼容联调，并针对不同平台的资源加载、内存限制和输入方式调整实现。对于大规模同屏内容，根据对象的重要性和可见状态控制其表现与更新，减少非必要的逻辑和渲染开销，维持复杂社交场景下的运行稳定性。" data-lang-en="QQ Home has to run on Android, iOS, and PC at the same time, and its large social scenes display many players, interactive objects, and UI elements at once. I took part in cross-platform compatibility testing and adjusted the implementation for each platform's asset loading, memory limits, and input methods. For large amounts of on-screen content, I control presentation and update behavior according to each object's importance and visibility, reducing unnecessary logic and rendering cost and keeping complex social scenes running stably." data-lang-jp="QQ小窩はAndroid・iOS・PCのすべてで動き、大勢のプレイヤーやUIを同時に表示します。私は各プラットフォームのメモリ上限や入力方法に合わせて実装を調整しました。また、画面に多くの物があっても、重要なものだけを優先して更新するようにして、動作を安定させました。">QQ小窝需要同时适配Android、iOS和PC环境，并在大型社交场景中展示大量玩家、交互对象和UI内容。我参与多平台兼容联调，并针对不同平台的资源加载、内存限制和输入方式调整实现。对于大规模同屏内容，根据对象的重要性和可见状态控制其表现与更新，减少非必要的逻辑和渲染开销，维持复杂社交场景下的运行稳定性。</div>
+              <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="场景切换流程管理" data-lang-en="Scene Transition Flow Management" data-lang-jp="シーン切り替えフロー">场景切换流程管理</span></button>
+              <div class="fh-detail" data-lang-cn="场景切换需要协调玩家操作、过渡界面、资源加载和角色初始化等多个环节。我负责设计并实现完整的切换流程，统一管理各阶段状态，并及时释放旧场景资源，减少反复切换产生的内存残留，使各环节能够按照明确顺序执行。" data-lang-en="Scene transitions require coordination across player control, transition UI, resource loading, and character initialization. I designed and implemented the complete transition flow, centralized state management across each stage, and released resources from the previous scene to reduce residual memory after repeated transitions, ensuring that each step executes in a clearly defined order." data-lang-jp="シーンを切り替えるときは、プレイヤー操作、UI、リソース読み込み、キャラクター初期化などを順番に処理する必要があります。私はシーン切り替え全体の流れを実装し、各処理の状態をまとめて管理しました。また、前のシーンのリソースを解放し、何度切り替えても不要なデータがメモリに残りにくいようにしました。">场景切换需要协调玩家操作、过渡界面、资源加载和角色初始化等多个环节。我负责设计并实现完整的切换流程，统一管理各阶段状态，并及时释放旧场景资源，减少反复切换产生的内存残留，使各环节能够按照明确顺序执行。</div>
+            </div>
+          </div>
+
+          <!-- 元梦之星（三级结构） -->
+          <div class="fh-group">
+            <button class="fh-group-toggle" type="button" onclick="fhToggleGroup(this)">
+              <span class="fh-caret">▶</span> <span class="fh-text" data-lang-cn="元梦之星" data-lang-en="FunParty" data-lang-jp="元夢の星">元梦之星</span>
+            </button>
+            <div class="fh-items">
+              <!-- 多人及服务器 -->
+              <div class="fh-subgroup">
+                <button class="fh-sub-toggle" type="button" onclick="fhToggleSub(this)"><span class="fh-caret">▶</span> <span class="fh-text" data-lang-cn="多人及服务器" data-lang-en="Multiplayer &amp; Server" data-lang-jp="マルチプレイヤーとサーバー">多人及服务器</span></button>
+                <div class="fh-sub-items">
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="通用匹配系统" data-lang-en="Generic Matchmaking System" data-lang-jp="汎用マッチングシステム">通用匹配系统</span></button>
+                  <div class="fh-detail" data-lang-cn="实现可供多个场景和模式复用的匹配功能，统一处理匹配发起、状态变化、结果反馈以及进入对局的流程，使新玩法能够在保持自身规则的同时复用基础匹配能力。" data-lang-en="Implemented matchmaking reusable across scenes and modes, uniformly handling match initiation, state changes, result feedback, and entry into the match, so new modes reuse base matchmaking while keeping their own rules." data-lang-jp="対戦や協力など、モードごとにマッチングが必要でした。そこで、開始から結果表示・対局参加までをまとめて処理する共通のマッチング機能を実装しました。これで、新しいモードでも固有のルールを残しつつ、同じ仕組みを使えます。">实现可供多个场景和模式复用的匹配功能，统一处理匹配发起、状态变化、结果反馈以及进入对局的流程，使新玩法能够在保持自身规则的同时复用基础匹配能力。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="移动端多状态断线重连" data-lang-en="Multi-State Reconnection on Mobile" data-lang-jp="モバイル環境の再接続">移动端多状态断线重连</span></button>
+                  <div class="fh-detail" data-lang-cn="针对应用切入后台、短时网络波动和连接中断等情况，分别设计状态判断与恢复流程，并处理玩家重新进入后的数据恢复和表现衔接。通过区分不同连接异常，尽可能让玩家返回原有对局和交互状态，减少移动端网络变化造成的体验中断。" data-lang-en="For cases such as the app moving to the background, brief network fluctuations, and connection loss, I designed separate state-detection and recovery flows, and handled data restoration and presentation continuity after the player rejoins. By distinguishing between different connection failures, players return to their original match and interaction state as far as possible, reducing the experience interruptions caused by mobile network changes." data-lang-jp="モバイルでは、アプリをバックグラウンドにした場合、通信が一時的に不安定な場合、完全に切断した場合で、必要な復帰処理が異なります。私はそれぞれの状態を判定し、プレイヤーを元のゲーム状態に戻す処理を実装しました。">针对应用切入后台、短时网络波动和连接中断等情况，分别设计状态判断与恢复流程，并处理玩家重新进入后的数据恢复和表现衔接。通过区分不同连接异常，尽可能让玩家返回原有对局和交互状态，减少移动端网络变化造成的体验中断。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="基于DS的单人至多人迁移" data-lang-en="Single-to-Multiplayer Migration on Dedicated Server" data-lang-jp="シングルプレイからマルチプレイへの移行">基于DS的单人至多人迁移</span></button>
+                  <div class="fh-detail" data-lang-cn="基于Dedicated Server架构设计单人至多人的迁移流程，在保留玩家数据和当前进度的情况下切换到多人环境。玩家无需重新开始当前内容，同时减少单人游玩阶段不必要的DS资源占用，降低服务器运行成本。" data-lang-en="Designed the single-to-multiplayer migration flow on a Dedicated Server architecture, switching to the multiplayer environment while preserving the player's data and current progress. Players do not need to restart the current content, and unnecessary DS resource usage during the single-player phase is reduced, lowering server running cost." data-lang-jp="最初からDedicated Serverを起動すると、プレイヤーが一人だけでもサーバーコストが発生します。そこで、一人で遊んでいる間はDSを使わず、他のプレイヤーが参加するときにマルチプレイへ移行する仕組みを実装しました。移行するときも、プレイヤーのデータと進行状態を引き継ぎます。">基于Dedicated Server架构设计单人至多人的迁移流程，在保留玩家数据和当前进度的情况下切换到多人环境。玩家无需重新开始当前内容，同时减少单人游玩阶段不必要的DS资源占用，降低服务器运行成本。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="UGC地图数据与多人试玩" data-lang-en="UGC Map Data &amp; Multiplayer Playtest" data-lang-jp="UGCマップとマルチプレイ試遊">UGC地图数据与多人试玩</span></button>
+                  <div class="fh-detail" data-lang-cn="玩家创建的UGC地图需要完成保存、下载、读取和多人运行，任一阶段的数据不一致，都可能造成地图无法还原或玩家进入失败。我实现了UGC地图数据的保存与读取流程，并衔接资源下载、地图恢复及多人试玩；同时管理试玩所需DS的创建与释放，使服务器生命周期与地图准备状态保持一致，让玩家制作的内容能够从编辑状态转换为可发布、可下载和可多人体验的UGC地图。" data-lang-en="A UGC map created by a player must go through saving, downloading, loading, and multiplayer execution; inconsistent data at any stage can leave the map unrestorable or prevent players from entering. I implemented the save and load flow for UGC map data and connected it with asset download, map restoration, and multiplayer playtest. I also manage the creation and release of the DS required for playtests, keeping the server lifecycle aligned with map readiness, so that player-made content can move from an editing state into a UGC map that can be published, downloaded, and experienced by multiple players." data-lang-jp="プレイヤーが作ったマップを遊ぶためには、保存、ダウンロード、読み込み、DS起動が必要です。私はこれらの処理を連携させ、マップの準備ができた後にDSを起動する仕組みを実装しました。試遊が終わった後は、不要になったDSを解放します。">玩家创建的UGC地图需要完成保存、下载、读取和多人运行，任一阶段的数据不一致，都可能造成地图无法还原或玩家进入失败。我实现了UGC地图数据的保存与读取流程，并衔接资源下载、地图恢复及多人试玩；同时管理试玩所需DS的创建与释放，使服务器生命周期与地图准备状态保持一致，让玩家制作的内容能够从编辑状态转换为可发布、可下载和可多人体验的UGC地图。</div>
+                </div>
+              </div>
+              <!-- 通用玩法框架 -->
+              <div class="fh-subgroup">
+                <button class="fh-sub-toggle" type="button" onclick="fhToggleSub(this)"><span class="fh-caret">▶</span> <span class="fh-text" data-lang-cn="通用玩法框架" data-lang-en="Common Gameplay Framework" data-lang-jp="共通ゲームプレイフレームワーク">通用玩法框架</span></button>
+                <div class="fh-sub-items">
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="跨模式交互家具框架" data-lang-en="Cross-Mode Interactive Furniture Framework" data-lang-jp="モード間共通インタラクティブ家具フレームワーク">跨模式交互家具框架</span></button>
+                  <div class="fh-detail" data-lang-cn="设计并实现跨模式复用的交互家具框架，统一管理交互生命周期和多人状态，并为不同业务保留扩展接口。在该框架上实现椅子、舞台和投篮机等家具，减少不同模式和团队重复实现相同基础逻辑的成本。" data-lang-en="Designed and implemented an interactive-furniture framework reused across modes, uniformly managing interaction lifecycle and multiplayer state, with extension interfaces for different modes and use cases. On it I built chairs, stages, and basketball machines, cutting the cost of different modes and teams re-implementing the same base logic." data-lang-jp="椅子やゲーム機など、家具ごとに動きは違いますが、プレイヤーが使い始めるときや終わるときの流れは共通しています。そこで、その共通の流れと状態の同期をまとめて扱う家具フレームワークを実装し、機能を追加できる仕組みも用意しました。これで、新しい家具を作るときに同じ処理を何度も作らなくて済みます。">设计并实现跨模式复用的交互家具框架，统一管理交互生命周期和多人状态，并为不同业务保留扩展接口。在该框架上实现椅子、舞台和投篮机等家具，减少不同模式和团队重复实现相同基础逻辑的成本。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="手持交互物系统" data-lang-en="Handheld Interactive Object System" data-lang-jp="手持ちインタラクティブオブジェクトシステム">手持交互物系统</span></button>
+                  <div class="fh-detail" data-lang-cn="实现手持物的基础功能框架，统一处理使用流程、动画衔接、打击检测和效果表现，使不同类型的手持物能够复用底层逻辑，并根据具体玩法扩展自身行为。" data-lang-en="Implemented a base framework for handheld objects, uniformly handling use flow, animation transitions, hit detection, and effect presentation, so different handheld types reuse the underlying logic and extend their behavior per gameplay." data-lang-jp="持ち物には、使うときの動きやヒット判定など、共通する処理があります。そこで、使用フロー、アニメーション、ヒット判定、エフェクト表示をまとめて扱う基本フレームワークを実装しました。これにより、異なる手持ちアイテムでも共通処理を再利用し、ゲームプレイに合わせて必要な動きを追加できるようになりました。">实现手持物的基础功能框架，统一处理使用流程、动画衔接、打击检测和效果表现，使不同类型的手持物能够复用底层逻辑，并根据具体玩法扩展自身行为。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="无人机自动任务系统" data-lang-en="Autonomous Drone Mission System" data-lang-jp="ドローン自動タスクシステム">无人机自动任务系统</span></button>
+                  <div class="fh-detail" data-lang-cn="无人机需要在不由玩家直接控制的情况下连续执行收割等复杂任务。我设计并实现无人机的整体功能架构，统一管理动画表现、任务队列和皮肤切换，并处理单人转多人时的数据分发及不同网络模式下的状态同步，使任务能够按照明确顺序执行，并在模式切换和断线恢复后保持正确状态。" data-lang-en="The drone has to carry out complex tasks such as harvesting continuously, without being directly controlled by the player. I designed and implemented the drone's overall functional architecture, uniformly managing animation, the mission queue, and skin switching, and handling data distribution during the single-to-multiplayer transition as well as state synchronization across network modes, so missions execute in a clear order and remain in the correct state after mode switches and reconnection." data-lang-jp="ドローンは、プレイヤーが直接動かさなくても、収穫などのタスクを続けて実行する必要があります。そこで、アニメーション、タスクの順番、見た目の切り替えをまとめて管理する仕組みを実装しました。また、シングルプレイとマルチプレイで処理を分け、必要なデータの送信と状態同期を行いました。">无人机需要在不由玩家直接控制的情况下连续执行收割等复杂任务。我设计并实现无人机的整体功能架构，统一管理动画表现、任务队列和皮肤切换，并处理单人转多人时的数据分发及不同网络模式下的状态同步，使任务能够按照明确顺序执行，并在模式切换和断线恢复后保持正确状态。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="NPC与村民系统" data-lang-en="NPC &amp; Villager System" data-lang-jp="NPC・村人システム">NPC与村民系统</span></button>
+                  <div class="fh-detail" data-lang-cn="实现NPC在单人和多人模式下的生命周期管理，并统一处理对话、动作、装备和状态表现。在此基础上完成村民好感、玩家互动和驱逐等玩法，使NPC状态变化能够正确反映到行为与表现中，并减少不同模式分别维护逻辑造成的不一致。" data-lang-en="Implemented NPC lifecycle management in both single-player and multiplayer modes, and unified the handling of dialogue, motion, equipment, and state presentation. On this basis I built gameplay such as villager affinity, player interaction, and eviction, so that changes in NPC state are correctly reflected in their behavior and presentation, while reducing the inconsistencies caused by maintaining logic separately per mode." data-lang-jp="NPCは、シングルプレイとマルチプレイの両方で、正しい状態を保つ必要があります。そこで、対話、動き、装備、見た目の状態をまとめて管理する仕組みを実装しました。これにより、村人との交流や追い出しなどの機能を実現し、モードが変わったときにNPCの状態が合わなくなる問題を減らしました。">实现NPC在单人和多人模式下的生命周期管理，并统一处理对话、动作、装备和状态表现。在此基础上完成村民好感、玩家互动和驱逐等玩法，使NPC状态变化能够正确反映到行为与表现中，并减少不同模式分别维护逻辑造成的不一致。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="农场玩法系统" data-lang-en="Farm Gameplay System" data-lang-jp="農園ゲームプレイシステム">农场玩法系统</span></button>
+                  <div class="fh-detail" data-lang-cn="实现种植、成长、收获和玩家互动等农场玩法，并将好友访问、驱逐和无人机自动收割连接到同一流程。针对手动操作步骤较多的问题，通过无人机任务队列完成批量收割，同时处理单人和多人模式下的任务执行与状态同步，提高重复农场操作的效率。" data-lang-en="Implemented farm gameplay covering planting, growth, harvesting, and player interaction, and connected friend visits, eviction, and automatic drone harvesting into the same flow. Because manual operation involves many repetitive steps, batch harvesting runs through the drone's mission queue, with mission execution and state synchronization handled for both single-player and multiplayer modes, improving the efficiency of repetitive farm operations." data-lang-jp="農園では、種まきから収穫までに多くの操作が必要です。そこで、フレンドの訪問とドローンによる自動収穫を農園の流れに連携させました。また、ドローンのタスクキューを使って一括収穫を実装し、シングルプレイとマルチプレイの両方で正しく動作するようにしました。">实现种植、成长、收获和玩家互动等农场玩法，并将好友访问、驱逐和无人机自动收割连接到同一流程。针对手动操作步骤较多的问题，通过无人机任务队列完成批量收割，同时处理单人和多人模式下的任务执行与状态同步，提高重复农场操作的效率。</div>
+                </div>
+              </div>
+              <!-- UGC及场景编辑 -->
+              <div class="fh-subgroup">
+                <button class="fh-sub-toggle" type="button" onclick="fhToggleSub(this)"><span class="fh-caret">▶</span> <span class="fh-text" data-lang-cn="UGC及场景编辑" data-lang-en="UGC &amp; Scene Editing" data-lang-jp="UGCとシーン編集">UGC及场景编辑</span></button>
+                <div class="fh-sub-items">
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="场景切换系统" data-lang-en="Scene Transition System" data-lang-jp="シーン切り替えシステム">场景切换系统</span></button>
+                  <div class="fh-detail" data-lang-cn="负责从切换开始到玩家恢复操作的完整流程，统一管理场景加载、内存释放、Mode切换和玩家初始化，使各阶段按照明确顺序执行，并减少不同场景状态相互影响的问题。" data-lang-en="Owned the full flow from transition start to player control resume, uniformly managing scene load, memory release, mode switch, and player init, so each stage runs in clear order and scenes' states interfere less." data-lang-jp="シーンを切り替えるとき、読み込みやメモリの解放を順番に行わないと、前の状態が残ります。そこで、シーンの読み込み・メモリ解放・モード切り替え・プレイヤーの初期化をまとめて管理する仕組みを実装しました。これにより、各処理が決めた順番で実行され、切り替え後に別のシーンの状態が残りにくくなりました。">负责从切换开始到玩家恢复操作的完整流程，统一管理场景加载、内存释放、Mode切换和玩家初始化，使各阶段按照明确顺序执行，并减少不同场景状态相互影响的问题。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="场景扩建与缩小" data-lang-en="Scene Expansion &amp; Shrink" data-lang-jp="シーンの拡張と縮小">场景扩建与缩小</span></button>
+                  <div class="fh-detail" data-lang-cn="实现3D场景扩建与缩小功能，通过射线检测确定操作目标，并同步服务器数据及客户端表现，使空间调整结果能够在多人环境中保持一致。" data-lang-en="Implemented 3D scene expansion and shrink: ray casting picks the target, and server data and client presentation are synced so spatial adjustments stay consistent in multiplayer." data-lang-jp="3Dの空間を広げたり狭めたりするには、サーバーと画面の両方を正しく動かす必要があります。そこで、レイキャストでタップした場所を特定し、サーバーのデータとクライアントの表示を同期しました。">实现3D场景扩建与缩小功能，通过射线检测确定操作目标，并同步服务器数据及客户端表现，使空间调整结果能够在多人环境中保持一致。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="地格与家具编辑系统" data-lang-en="Grid &amp; Furniture Editing System" data-lang-jp="グリッドと家具編集システム">地格与家具编辑系统</span></button>
+                  <div class="fh-detail" data-lang-cn="实现统一的地格管理系统，集中处理家具合法放置、占用关系、冲突检测、旋转和换色等编辑状态，为家园配置及UGC编辑功能提供共通的空间规则。" data-lang-en="Implemented a unified grid-management system that centrally handles furniture placement validity, occupancy, conflict detection, rotation, and recolor, providing common spatial rules for home configuration and UGC editing." data-lang-jp="家具を置くとき、どこに置けるかや回転・色替えをばらばらに扱うと編集しにくくなります。そこで、占有状態や衝突判定、「正しく配置できるか」の判定をまとめて管理するグリッドシステムを実装しました。これで、ホームカスタマイズとUGC編集が同じ配置ルールを使えるようになりました。">实现统一的地格管理系统，集中处理家具合法放置、占用关系、冲突检测、旋转和换色等编辑状态，为家园配置及UGC编辑功能提供共通的空间规则。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="UGC发布与交易系统" data-lang-en="UGC Publishing &amp; Trading System" data-lang-jp="UGC公開・取引システム">UGC发布与交易系统</span></button>
+                  <div class="fh-detail" data-lang-cn="实现购买、售卖及UGC地图发布相关功能，将编辑阶段使用的资源与最终发布内容连接起来，使玩家能够完成从内容制作到发布的完整流程。" data-lang-en="Implemented purchase, sale, and UGC map publishing, linking the assets used at edit time with the final published content so players complete the full flow from creation to publishing." data-lang-jp="アイテムの購入・販売と、UGCマップの公開機能を実装しました。編集で使った素材と公開するマップデータを連携させ、プレイヤーがマップ制作から公開までを一つの流れで行えるようにしました。">实现购买、售卖及UGC地图发布相关功能，将编辑阶段使用的资源与最终发布内容连接起来，使玩家能够完成从内容制作到发布的完整流程。</div>
+                  <button class="fh-item" type="button" onclick="fhToggleDetail(this)"><span class="fh-caret">▸</span> <span class="fh-text" data-lang-cn="餐厅经营玩法" data-lang-en="Restaurant Management Gameplay" data-lang-jp="レストラン経営ゲームプレイ">餐厅经营玩法</span></button>
+                  <div class="fh-detail" data-lang-cn="复用已有的发布、地格和场景扩建系统，并结合NPC自动执行流程，完成餐厅玩法中的样板间、仓库和购物车等功能。通过复用已有底层系统，将开发重点集中在餐厅经营流程、物品管理和NPC行为上，也验证了基础框架对新玩法的扩展能力。" data-lang-en="Reusing the existing publishing, grid, and scene-expansion systems and combining them with NPC auto-execution flows, I built features such as show rooms, storage, and the shopping cart within the restaurant gameplay. Reusing existing low-level systems let development focus on the restaurant's management flow, item handling, and NPC behavior, and also validated how well the base framework extends to new gameplay." data-lang-jp="レストランゲームプレイでは、既存の公開システム、グリッドシステム、シーン拡張機能を再利用しました。これらとNPCの自動実行フローを組み合わせ、モデルルーム、倉庫、カートなどの機能を実装しました。既存の基盤を利用することで、レストランの経営フローとNPCの動きに開発を集中できました。">复用已有的发布、地格和场景扩建系统，并结合NPC自动执行流程，完成餐厅玩法中的样板间、仓库和购物车等功能。通过复用已有底层系统，将开发重点集中在餐厅经营流程、物品管理和NPC行为上，也验证了基础框架对新玩法的扩展能力。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        function fhControlled(btn){
+          if(btn.classList.contains('fh-group-toggle')){
+            return btn.closest('.fh-group').querySelector(':scope > .fh-items');
+          }
+          if(btn.classList.contains('fh-sub-toggle')){
+            return btn.closest('.fh-subgroup').querySelector(':scope > .fh-sub-items');
+          }
+          return btn.nextElementSibling; /* fh-item -> fh-detail */
+        }
+        function fhIsOpen(btn){
+          if(btn.classList.contains('fh-group-toggle')) return btn.closest('.fh-group').classList.contains('open');
+          if(btn.classList.contains('fh-sub-toggle')) return btn.closest('.fh-subgroup').classList.contains('open');
+          return btn.classList.contains('open');
+        }
+        function fhSyncAria(btn){
+          var el = fhControlled(btn);
+          if(!el) return;
+          if(!el.id) el.id = 'fh-ctrl-' + Math.random().toString(36).slice(2, 9);
+          btn.setAttribute('aria-controls', el.id);
+          btn.setAttribute('aria-expanded', fhIsOpen(btn) ? 'true' : 'false');
+        }
+        function fhToggleGroup(btn){ btn.closest('.fh-group').classList.toggle('open'); fhSyncAria(btn); }
+        function fhToggleSub(btn){ btn.closest('.fh-subgroup').classList.toggle('open'); fhSyncAria(btn); }
+        function fhToggleDetail(btn){ btn.classList.toggle('open'); fhSyncAria(btn); }
+        document.addEventListener('DOMContentLoaded', function(){
+          document.querySelectorAll('.fh-group-toggle, .fh-sub-toggle, .fh-item').forEach(fhSyncAria);
+        });
+      </script>
+
     </div>
   </section>
   
@@ -1311,7 +1567,7 @@
         
         <p style="font-size:1.05rem;line-height:1.9;color:var(--text);margin:1.5rem 0 0.5rem;text-align:center;" class="fade-in">
           <strong>シニアソフトウェアエンジニア（Unreal Engine）</strong> — 8年のシミュレーション＆ゲーム開発経験。<br>
-          UE4フルスタック開発に特化：アニメーションから物理、サーバーアーキテクチャまで。
+          UE4フルスタック開発に特化：アニメーションから物理、サーバーアーキテクチャ、モバイル最適化まで。
         </p>
         
         <div class="dreamstar-divider">★</div>
@@ -1332,7 +1588,7 @@
           <div class="project-card fade-in">
             <span class="lang-tag">UE4 + CARLA</span>
             <h4>自動運転シミュレーション</h4>
-            <p>CARLAベースのAIシミュレーションプラットフォーム。車両動力学の拡張・Python/C++ APIにとどまらず、中国のAI・自動運転シミュレーション技術の業界標準化を推進。</p>
+            <p>CARLAベースのAIシミュレーションプラットフォーム。車両動力学の拡張・Python/C++ API・大規模シナリオの構築にとどまらず、中国のAI・自動運転シミュレーション技術の業界標準化を推進。</p>
             <div class="stars">🤖 AI研究</div>
             <div class="card-gallery">
               <a class="sim-thumb" href="https://raw.githubusercontent.com/zhangxuhan/zhangxuhan.github.io/main/sim/media/carla.jpg" onclick="openLightbox('https://raw.githubusercontent.com/zhangxuhan/zhangxuhan.github.io/main/sim/media/carla.jpg','CARLA 自動運転シミュレーション');return false;"><img src="https://raw.githubusercontent.com/zhangxuhan/zhangxuhan.github.io/main/sim/media/carla.jpg" alt="CARLA 自動運転シミュレーション" loading="lazy"></a>
@@ -1349,7 +1605,7 @@
           <div class="project-card fade-in">
             <span class="lang-tag">C++</span>
             <h4>生産パイプラインツール</h4>
-            <p>カスタムツールと自動化パイプライン。チーム用に複数の内部プラグインを開発。</p>
+            <p>カスタムツールと自動化パイプライン。チーム用に複数の内部プラグインを開発し、日常の業務を大幅に効率化した。</p>
             <div class="stars">⚡ DevOps</div>
           </div>
         </div>
@@ -1376,12 +1632,12 @@
           <div class="skill-card fade-in">
             <div class="skill-icon">🎮</div>
             <div class="skill-name">Unreal Engine</div>
-            <div class="skill-desc">UE4/UE5, アニメーション, 物理, メモリ, 3C</div>
+            <div class="skill-desc">UE4/UE5, アニメーション, 物理, メモリ, 3C, ネットワーク</div>
           </div>
           <div class="skill-card fade-in">
             <div class="skill-icon">⚙️</div>
             <div class="skill-name">C++ / Blueprints</div>
-            <div class="skill-desc">コアアーキテクチャ, パフォーマンス最適化</div>
+            <div class="skill-desc">コアアーキテクチャ, パフォーマンス最適化, クロスプラットフォーム</div>
           </div>
           <div class="skill-card fade-in">
             <div class="skill-icon">🔌</div>
@@ -1391,12 +1647,12 @@
           <div class="skill-card fade-in">
             <div class="skill-icon">🖥️</div>
             <div class="skill-name">ネットワーク & モバイル</div>
-            <div class="skill-desc">ネットワークアーキテクチャ, ホットアップデート</div>
+            <div class="skill-desc">ネットワークアーキテクチャ, ホットアップデート, モバイル対応</div>
           </div>
           <div class="skill-card fade-in">
             <div class="skill-icon">📡</div>
             <div class="skill-name">AI / 自動運転</div>
-            <div class="skill-desc">CARLAフレームワーク, センサーシミュ</div>
+            <div class="skill-desc">CARLAフレームワーク, センサーシミュレーション</div>
           </div>
           <div class="skill-card fade-in">
             <div class="skill-icon">🌐</div>
@@ -1544,6 +1800,12 @@
       if (titleEl && titleEl.hasAttribute('data-lang-' + lang)) {
         titleEl.textContent = titleEl.getAttribute('data-lang-' + lang);
       }
+
+      // Update feature-highlights (function & technical highlights) trilingual text
+      document.querySelectorAll('.feature-highlights [data-lang-' + lang + ']').forEach(el => {
+        const t = el.getAttribute('data-lang-' + lang);
+        if (t !== null) el.textContent = t;
+      });
 
       // Update sidebar nav labels
       document.querySelectorAll('.sidebar-label[data-lang-' + lang + ']').forEach(label => {

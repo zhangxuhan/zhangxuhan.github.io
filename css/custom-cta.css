@@ -45,7 +45,7 @@
 @media (hover: none), (pointer: coarse) {
   .video-card .proj-link .host-tag {
     opacity: 0.65;
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     margin-left: 2px;
   }
   .video-card .proj-link .ext-icon {
