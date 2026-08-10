@@ -2122,6 +2122,13 @@ function extractEvalJson(content) {
     const parsed = tryParseEvalJson(o);
     if (parsed && looksLikeEval(parsed)) return parsed;
   }
+  // 最终兜底：直接取第一个 { 到最后一个 } 的区间（应对思考链里夹不平衡花括号导致扫描错位的情况）
+  const fb = content.indexOf('{');
+  const lb = content.lastIndexOf('}');
+  if (fb >= 0 && lb > fb) {
+    const parsed = tryParseEvalJson(content.slice(fb, lb + 1));
+    if (parsed && looksLikeEval(parsed)) return parsed;
+  }
   return null;
 }
 
@@ -2164,6 +2171,64 @@ function balanceJson(s) {
   while (k > 0) { pad += ']'; k--; }
   while (b > 0) { pad += '}'; b--; }
   return s + pad;
+}
+
+// 评分专用调用：带重试 + 防推理截断 + 多格式兜底解析
+let _scoreJsonFormatOk = true; // 某些端点不支持 response_format=json_object，首次失败即关闭
+async function callScorer(settings, cvText, jdContext, report) {
+  const userMsg = (extra) => '## 候选人 CV:\n' + cvText + '\n\n## 职位描述 (JD):\n' + jdContext
+    + '\n\n## 已生成的评估报告：\n' + report
+    + '\n\n请仅输出评分 JSON 块（```json ... ```），严格基于 JD 证据、保守打分。' + (extra || '');
+  // 三次尝试：① 优先请求纯 JSON（json_object）；② 普通 Markdown 围栏；③ 强制裸 JSON（无解释/无围栏/无思考）
+  const attempts = [
+    { fmt: _scoreJsonFormatOk, extra: '' },
+    { fmt: false, extra: '' },
+    { fmt: false, extra: ' 必须直接输出合法 JSON：不要任何解释、不要 markdown 代码块围栏、不要思考过程；第一个字符是 {，最后一个字符是 }。' }
+  ];
+  let lastRaw = '';
+  for (const at of attempts) {
+    if (at.fmt && !_scoreJsonFormatOk) continue;
+    let resp;
+    try {
+      resp = await fetch(settings.apiUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + settings.apiKey },
+        body: JSON.stringify({
+          model: settings.model || 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: CAREER_OPS_SCORE_ONLY_PROMPT },
+            { role: 'user', content: userMsg(at.extra) }
+          ],
+          temperature: 0.2,
+          max_tokens: 4000,
+          ...(at.fmt ? { response_format: { type: 'json_object' } } : {})
+        })
+      });
+    } catch (e) { throw new Error('网络/请求错误：' + e.message); }
+    if (!resp.ok) {
+      const err = await resp.text();
+      // response_format 不支持 → 关闭该特性并继续下一轮（不带该参数）
+      if (resp.status === 400 && at.fmt && /response_format|json_object/i.test(err)) {
+        _scoreJsonFormatOk = false;
+        continue;
+      }
+      let msg = 'API ' + resp.status + ': ' + err.slice(0, 200);
+      if (resp.status === 400 && /model|supported API model/i.test(err)) {
+        const m = err.match(/(supported[^"]*|The supported API model names are[^"]*)/i);
+        const supported = m ? m[1].replace(/["\\]/g, '').trim() : '';
+        msg = 'API 400：模型名「' + (settings.model || '(空)') + '」不被该端点支持。'
+            + (supported ? ' 支持的模型：' + supported + '。' : '')
+            + ' 请在设置里把「模型」改成支持的模型名（如 deepseek-v4-flash），或重新选择 DeepSeek 预设后保存。';
+      }
+      throw new Error(msg);
+    }
+    const d = await resp.json();
+    const content = (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content) || '';
+    lastRaw = content;
+    const obj = extractEvalJson(content);
+    if (obj) return { evalObj: obj, raw: content };
+  }
+  return { evalObj: null, raw: lastRaw };
 }
 
 async function runSingleEval() {
@@ -2211,44 +2276,20 @@ async function runSingleEval() {
     const aData = await analysisResp.json();
     const report = (aData.choices&&aData.choices[0]&&aData.choices[0].message&&aData.choices[0].message.content) || '';
 
-    // ---- 第二步：基于 JD + CV + 报告，只输出评分 JSON（输出很短，绝不截断）----
+    // ---- 第二步：基于 JD + CV + 报告，只输出评分 JSON（带重试 + 防推理截断）----
     document.getElementById('evalResult').innerHTML = '<div class="ai-loading"><div class="spinner"></div><span>AI 正在评分（基于分析报告）...</span></div>';
-    const scoreResp = await fetch(settings.apiUrl, {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
-      body: JSON.stringify({
-        model: settings.model || 'gpt-4o-mini',
-        messages:[
-          { role:'system', content: CAREER_OPS_SCORE_ONLY_PROMPT },
-          { role:'user', content: '## 候选人 CV:\n' + cvText + '\n\n## 职位描述 (JD):\n' + jd
-            + '\n\n## 已生成的评估报告：\n' + report
-            + '\n\n请仅输出评分 JSON 块（```json ... ```），严格基于 JD 证据、保守打分。' }
-        ],
-        temperature:0.2,
-        max_tokens:1500
-      })
-    });
-    if (!scoreResp.ok) {
-      const err = await scoreResp.text();
-      let msg = 'API ' + scoreResp.status + ': ' + err.slice(0,200);
-      if (scoreResp.status === 400 && /model|supported API model/i.test(err)) {
-        const m = err.match(/(supported[^"]*|The supported API model names are[^"]*)/i);
-        const supported = m ? m[1].replace(/["\\]/g,'').trim() : '';
-        msg = 'API 400：模型名「' + (settings.model || '(空)') + '」不被该端点支持。'
-            + (supported ? ' 支持的模型：' + supported + '。' : '')
-            + ' 请在设置里把「模型」改成支持的模型名（如 deepseek-v4-flash），或重新选择 DeepSeek 预设后保存。';
-      }
-      throw new Error(msg);
-    }
-    const sData = await scoreResp.json();
-    const scoreContent = (sData.choices&&sData.choices[0]&&sData.choices[0].message&&sData.choices[0].message.content) || '';
-    const evalObj = extractEvalJson(scoreContent);
+    const scoreResult = await callScorer(settings, cvText, jd, report);
+    const evalObj = scoreResult.evalObj;
+    const scoreRaw = scoreResult.raw;
 
     // Render result (report is the analysis; no JSON block inside it)
     const reportHtml = typeof marked !== 'undefined' ? marked.parse(stripJsonBlock(report)) : '<pre>' + escapeHtml(stripJsonBlock(report)) + '</pre>';
     let html = reportHtml;
     if (!evalObj) {
       html += '<div class="ai-warn" style="margin-top:12px;">⚠ 评分 JSON 解析失败（模型未按要求输出 JSON 块）。报告已显示，但评分需手动填写：点击下方「手动评分」区域逐项打分，或重新运行评估。</div>';
+      if (scoreRaw) {
+        html += '<details style="margin-top:10px;"><summary style="cursor:pointer;color:#9aa;font-size:13px;">调试：查看模型原始返回</summary><pre style="white-space:pre-wrap;max-height:220px;overflow:auto;background:#16162a;padding:10px;border-radius:6px;color:#cdd;font-size:12px;">' + escapeHtml(scoreRaw.slice(0, 3000)) + '</pre></details>';
+      }
     }
     document.getElementById('evalResult').innerHTML = html;
     if (evalObj) {
@@ -2399,30 +2440,14 @@ async function runBatchEval() {
       if (!response.ok) throw new Error('API ' + response.status);
       const data = await response.json();
       const report = (data.choices&&data.choices[0]&&data.choices[0].message&&data.choices[0].message.content)||'';
-      // 第二步：评分（短输出，可靠）
-      let evalObj = null;
+      // 第二步：评分（带重试 + 防推理截断）
+      let evalObj = null, scoreError = null;
       try {
-        const r2 = await fetch(settings.apiUrl, {
-          method:'POST',
-          headers:{'Content-Type':'application/json','Authorization':'Bearer '+settings.apiKey},
-          body: JSON.stringify({
-            model: settings.model || 'gpt-4o-mini',
-            messages:[
-              { role:'system', content: CAREER_OPS_SCORE_ONLY_PROMPT },
-              { role:'user', content: '## 候选人 CV:\n' + cvText + '\n\n## 职位描述 (JD):\n' + (r.companyIntro||'') + '\n公司: ' + r.companyName + '\n职位: ' + r.position
-                + '\n\n## 已生成的评估报告：\n' + report + '\n\n请仅输出评分 JSON 块（```json ... ```），严格基于 JD 证据、保守打分。' }
-            ],
-            temperature:0.2,
-            max_tokens:1500
-          })
-        });
-        if (r2.ok) {
-          const d2 = await r2.json();
-          const c2 = (d2.choices&&d2.choices[0]&&d2.choices[0].message&&d2.choices[0].message.content)||'';
-          evalObj = extractEvalJson(c2);
-        }
-      } catch(e2) { /* 评分失败则仅保存报告 */ }
-      results.push({ recordId:r.id, report:report, evalObj });
+        const sr = await callScorer(settings, cvText, (r.companyIntro || '') + '\n公司: ' + r.companyName + '\n职位: ' + r.position, report);
+        evalObj = sr.evalObj;
+        if (!evalObj) scoreError = '评分 JSON 解析失败';
+      } catch (e2) { scoreError = e2.message; }
+      results.push({ recordId: r.id, report: report, evalObj, scoreError });
     } catch(err) {
       results.push({ recordId:r.id, error:err.message });
     }
@@ -2445,6 +2470,7 @@ async function runBatchEval() {
     } else if (res.report) {
       records[idx].evaluation = records[idx].evaluation || {};
       records[idx].evaluation.report = res.report;
+      if (res.scoreError) records[idx].evaluation.error = res.scoreError;
     }
   });
   saveData();
