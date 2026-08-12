@@ -1047,10 +1047,54 @@
   @keyframes fxGlitchB{0%{clip-path:inset(60% 0 10% 0)}50%{clip-path:inset(20% 0 50% 0)}100%{clip-path:inset(70% 0 0 0)}}
   /* 光标猫光环 (仅增强现有 #cursor-cat, 不新增元素) */
   #cursor-cat{filter:drop-shadow(0 0 12px rgba(126,200,227,.6));}
+  /* 流光渐变标题 (02 → 代表作品) */
+  .fx-flow{
+    background:linear-gradient(90deg,var(--fx-a),#fff,var(--fx-b),var(--fx-a));
+    background-size:250% 100%;
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;
+    animation:fxFlow 4s linear infinite;}
+  @keyframes fxFlow{to{background-position:250% 0}}
+
+  /* 霓虹闪烁标题 (05 → 负责功能与技术亮点) */
+  .fx-neon{
+    text-shadow:0 0 6px var(--fx-a),0 0 14px var(--fx-a),0 0 26px var(--fx-a);
+    animation:fxNeon 3.4s infinite;}
+  @keyframes fxNeon{
+    0%,16%,20%,24%,55%,59%,100%{opacity:1;text-shadow:0 0 6px var(--fx-a),0 0 14px var(--fx-a),0 0 26px var(--fx-a)}
+    18%,22%,57%{opacity:.45;text-shadow:0 0 3px var(--fx-a)}}
+
+  /* 描边绘字标题 (07 → 代表项目) */
+  .fx-stroke{color:transparent;-webkit-text-stroke:1.5px var(--fx-a);
+    transition:color .9s ease .25s;}
+  .fx-stroke.in{color:var(--fx-a)}
+
+  /* 打字机标题 (03 → 技术栈) */
+  .fx-type{font-family:"SFMono-Regular",Consolas,Menlo,monospace;}
+  .fx-type .fx-caret{display:inline-block;width:.55ch;height:1em;background:var(--fx-a);
+    margin-left:2px;vertical-align:-2px;animation:fxBlink 1s steps(1) infinite;}
+  @keyframes fxBlink{50%{opacity:0}}
+
+  /* 折叠三角提示动效 (功能亮点区 → 提示可点击) */
+  .feature-highlights .fh-group-toggle .fh-caret,
+  .feature-highlights .fh-sub-toggle .fh-caret{
+    color:var(--fx-a);animation:fxCaretGlow 2.2s ease-in-out infinite;}
+  @keyframes fxCaretGlow{
+    0%,100%{text-shadow:0 0 0 rgba(126,200,227,0);opacity:.8}
+    50%{text-shadow:0 0 9px rgba(126,200,227,.95);opacity:1}}
+  .feature-highlights .fh-group-toggle:hover .fh-caret,
+  .feature-highlights .fh-sub-toggle:hover .fh-caret{color:var(--fx-b);}
+  .feature-highlights .fh-item:hover .fh-caret{color:var(--fx-b);}
+
   /* 减弱动效降级 */
   @media (prefers-reduced-motion: reduce){
     .fx-aurora,.fx-grain::after{animation:none;}
     .fx-glitch:hover::before,.fx-glitch:hover::after{animation:none;opacity:0;}
+    .fx-flow,.fx-neon,
+    .feature-highlights .fh-group-toggle .fh-caret,
+    .feature-highlights .fh-sub-toggle .fh-caret{animation:none;}
+    .fx-stroke{color:var(--fx-a);-webkit-text-stroke-width:1.5px;}
+    .fx-type .fx-caret{display:none;}
   }
   </style>
 </head>
@@ -1110,7 +1154,7 @@
   <!-- Video Section -->
   <section class="video-section" id="video">
     <div class="container">
-      <h2 class="section-title fade-in fx-glitch" data-text="Featured Work" data-lang-jp="注目の作品" data-lang-en="Featured Work" data-lang-cn="代表作品">Featured Work</h2>
+      <h2 class="section-title fade-in fx-flow" data-text="Featured Work" data-lang-jp="注目の作品" data-lang-en="Featured Work" data-lang-cn="代表作品">Featured Work</h2>
       
       <!-- ENGLISH VERSION -->
       <div class="lang-content" id="video-en">
@@ -1186,7 +1230,7 @@
 
       <!-- FUNCTION HIGHLIGHTS -->
       <div class="feature-highlights" id="feature-highlights">
-        <p class="fh-label" data-lang-cn="负责功能与技术亮点" data-lang-en="Key Contributions &amp; Technical Highlights" data-lang-jp="担当機能・技術的な工夫">负责功能与技术亮点</p>
+        <p class="fh-label fx-neon" data-lang-cn="负责功能与技术亮点" data-lang-en="Key Contributions &amp; Technical Highlights" data-lang-jp="担当機能・技術的な工夫">负责功能与技术亮点</p>
         <div class="fh-grid">
           <!-- QQ小窝 -->
           <div class="fh-group">
@@ -1325,7 +1369,7 @@
         
         <div class="dreamstar-divider">★</div>
         
-        <div class="section-title" id="projects-en"><i class="fa fa-folder-open"></i> Key Projects</div>
+        <div class="section-title" id="projects-en"><i class="fa fa-folder-open"></i> <span class="fx-type" data-text="Key Projects">Key Projects</span></div>
         <div class="projects-grid">
           <div class="project-card fade-in">
             <span class="lang-tag">UE4 + C++</span>
@@ -1380,7 +1424,7 @@
         
         <div class="dreamstar-divider">★</div>
         
-        <div class="section-title" id="skills-en"><i class="fa fa-tools"></i> Technical Skills</div>
+        <div class="section-title" id="skills-en"><i class="fa fa-tools"></i> <span class="fx-type" data-text="Technical Skills">Technical Skills</span></div>
         <div class="skills-grid">
           <div class="skill-card fade-in">
             <div class="skill-icon">🎮</div>
@@ -1471,7 +1515,7 @@
         
         <div class="dreamstar-divider">★</div>
         
-        <div class="section-title" id="projects-cn"><i class="fa fa-folder-open"></i> 代表项目</div>
+        <div class="section-title" id="projects-cn"><i class="fa fa-folder-open"></i> <span class="fx-type" data-text="代表项目">代表项目</span></div>
         <div class="projects-grid">
           <div class="project-card fade-in">
             <span class="lang-tag">UE4 + C++</span>
@@ -1526,7 +1570,7 @@
         
         <div class="dreamstar-divider">★</div>
         
-        <div class="section-title" id="skills-cn"><i class="fa fa-tools"></i> 技术栈</div>
+        <div class="section-title" id="skills-cn"><i class="fa fa-tools"></i> <span class="fx-type" data-text="技术栈">技术栈</span></div>
         <div class="skills-grid">
           <div class="skill-card fade-in">
             <div class="skill-icon">🎮</div>
@@ -1617,7 +1661,7 @@
         
         <div class="dreamstar-divider">★</div>
         
-        <div class="section-title" id="projects-jp"><i class="fa fa-folder-open"></i> 主要プロジェクト</div>
+        <div class="section-title" id="projects-jp"><i class="fa fa-folder-open"></i> <span class="fx-type" data-text="主要プロジェクト">主要プロジェクト</span></div>
         <div class="projects-grid">
           <div class="project-card fade-in">
             <span class="lang-tag">UE4 + C++</span>
@@ -1672,7 +1716,7 @@
         
         <div class="dreamstar-divider">★</div>
         
-        <div class="section-title" id="skills-jp"><i class="fa fa-tools"></i> 技術スキル</div>
+        <div class="section-title" id="skills-jp"><i class="fa fa-tools"></i> <span class="fx-type" data-text="技術スキル">技術スキル</span></div>
         <div class="skills-grid">
           <div class="skill-card fade-in">
             <div class="skill-icon">🎮</div>
@@ -2089,6 +2133,37 @@
       else bar.style.transform='scaleX('+p+')';}
       window.addEventListener('scroll',upd,{passive:true});
       window.addEventListener('resize',upd);upd();}
+  })();
+  (function(){
+    var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var strokes=document.querySelectorAll('.fx-stroke');
+    var types=document.querySelectorAll('.fx-type');
+    types.forEach(function(el){
+      var txt=el.getAttribute('data-text')||el.textContent;
+      el.textContent='';
+      var caret=document.createElement('span');caret.className='fx-caret';caret.innerHTML='&nbsp;';
+      el._txt=txt;el._caret=caret;el.appendChild(caret);
+    });
+    function typeOne(el){
+      var txt=el._txt,i=0,caret=el._caret;
+      el.textContent='';el.appendChild(caret);
+      (function tick(){ if(i<=txt.length){el.textContent=txt.slice(0,i);el.appendChild(caret);i++;setTimeout(tick,70);} })();
+    }
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting){
+          var el=e.target;
+          if(el.classList.contains('fx-stroke')) el.classList.add('in');
+          if(el.classList.contains('fx-type')){ if(reduce) el.textContent=el._txt; else typeOne(el); }
+          io.unobserve(el);
+        }});
+      },{threshold:.35});
+      strokes.forEach(function(s){io.observe(s);});
+      types.forEach(function(t){io.observe(t);});
+    } else {
+      strokes.forEach(function(s){s.classList.add('in');});
+      types.forEach(function(t){ if(reduce) t.textContent=t._txt; else typeOne(t); });
+    }
   })();
   </script>
 </body>
