@@ -1012,11 +1012,56 @@
       #cursor-cat { display: none !important; }
     }
   </style>
+  <style id="fx-addon">
+  /* ===== 加法特效层 (不影响任何现有选择器) ===== */
+  :root{ --fx-a:#7ec8e3; --fx-b:#b388ff; }
+  /* 极光背景层 (与 particles 同层, 不挡内容) */
+  .fx-aurora{position:fixed;inset:-20%;z-index:-1;pointer-events:none;opacity:.5;
+    background:
+      radial-gradient(40% 40% at 18% 28%, rgba(126,200,227,.18), transparent 60%),
+      radial-gradient(34% 34% at 82% 22%, rgba(179,136,255,.16), transparent 60%),
+      radial-gradient(46% 46% at 60% 82%, rgba(122,255,200,.10), transparent 60%);
+    filter:blur(50px);animation:fxAurora 20s ease-in-out infinite alternate;}
+  @keyframes fxAurora{0%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(2%,-2%,0) scale(1.08)}100%{transform:translate3d(-2%,2%,0) scale(1.04)}}
+  /* 胶片颗粒 + 扫描线 (全屏最上层, 不挡交互) */
+  .fx-grain{position:fixed;inset:0;z-index:60;pointer-events:none;opacity:.32;mix-blend-mode:overlay;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, transparent 1px 3px);}
+  .fx-grain::after{content:'';position:absolute;inset:0;opacity:.4;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/></svg>");
+    animation:fxGrain .5s steps(2) infinite;}
+  @keyframes fxGrain{0%{transform:translate(0,0)}50%{transform:translate(-3%,2%)}100%{transform:translate(2%,-2%)}}
+  /* HUD 顶部滚动进度条 */
+  .fx-progress{position:fixed;top:0;left:0;height:3px;width:100%;z-index:1200;pointer-events:none;
+    transform:scaleX(0);transform-origin:0 50%;
+    background:linear-gradient(90deg,var(--fx-a),var(--fx-b));
+    box-shadow:0 0 10px rgba(126,200,227,.7),0 0 20px rgba(179,136,255,.5);}
+  /* 故障文字 Glitch (hover 触发, 点缀式) */
+  .fx-glitch{position:relative;}
+  .fx-glitch::before,.fx-glitch::after{content:attr(data-text);position:absolute;left:0;top:0;
+    width:100%;height:100%;opacity:0;pointer-events:none;}
+  .fx-glitch:hover::before{opacity:.9;color:var(--fx-a);text-shadow:2px 0 var(--fx-a);
+    transform:translate(-2px,0);animation:fxGlitchA .4s steps(2) infinite;}
+  .fx-glitch:hover::after{opacity:.9;color:var(--fx-b);text-shadow:-2px 0 var(--fx-b);
+    transform:translate(2px,0);animation:fxGlitchB .4s steps(2) infinite;}
+  @keyframes fxGlitchA{0%{clip-path:inset(0 0 70% 0)}50%{clip-path:inset(40% 0 20% 0)}100%{clip-path:inset(10% 0 60% 0)}}
+  @keyframes fxGlitchB{0%{clip-path:inset(60% 0 10% 0)}50%{clip-path:inset(20% 0 50% 0)}100%{clip-path:inset(70% 0 0 0)}}
+  /* 光标猫光环 (仅增强现有 #cursor-cat, 不新增元素) */
+  #cursor-cat{filter:drop-shadow(0 0 12px rgba(126,200,227,.6));}
+  /* 减弱动效降级 */
+  @media (prefers-reduced-motion: reduce){
+    .fx-aurora,.fx-grain::after{animation:none;}
+    .fx-glitch:hover::before,.fx-glitch:hover::after{animation:none;opacity:0;}
+  }
+  </style>
 </head>
 <body>
   <!-- Animated Background -->
   <div class="bg-animation"></div>
   <div class="particles" id="particles"></div>
+  <div class="fx-aurora"></div>
+  <div class="fx-grain"></div>
+  <div class="fx-progress" id="fxProgress"></div>
+
   
   <!-- Language Switcher - Top of Page -->
   <div class="lang-switcher-fixed">
@@ -1029,7 +1074,7 @@
   <nav>
     <div class="nav-left">
       <img class="nav-avatar" src="/img/zxh_avatar_144.png" alt="avatar">
-      <a href="#" class="nav-brand"
+      <a href="#" class="nav-brand fx-glitch" data-text="Xuhan Zhang"
          data-lang-jp="チョウ キョクカン"
          data-lang-en="Xuhan Zhang"
          data-lang-cn="张旭瀚">Xuhan Zhang</a>
@@ -1065,7 +1110,7 @@
   <!-- Video Section -->
   <section class="video-section" id="video">
     <div class="container">
-      <h2 class="section-title fade-in" data-lang-jp="注目の作品" data-lang-en="Featured Work" data-lang-cn="代表作品">Featured Work</h2>
+      <h2 class="section-title fade-in fx-glitch" data-text="Featured Work" data-lang-jp="注目の作品" data-lang-en="Featured Work" data-lang-cn="代表作品">Featured Work</h2>
       
       <!-- ENGLISH VERSION -->
       <div class="lang-content" id="video-en">
@@ -2033,6 +2078,18 @@
       if (e.target.id === 'lightbox') closeLightbox();
     });
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeLightbox(); });
+  </script>
+  <script id="fx-addon">
+  (function(){
+    var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var bar=document.getElementById('fxProgress');
+    if(bar){function upd(){var d=document.documentElement,max=d.scrollHeight-d.clientHeight;
+      var p=max>0?Math.min(1,Math.max(0,d.scrollTop/max)):0;
+      if(reduce){bar.style.transform='scaleX(1)';bar.style.width=(p*100)+'%';}
+      else bar.style.transform='scaleX('+p+')';}
+      window.addEventListener('scroll',upd,{passive:true});
+      window.addEventListener('resize',upd);upd();}
+  })();
   </script>
 </body>
 </html>
