@@ -1186,7 +1186,7 @@ function renderRecords() {
   }
   list.innerHTML = filtered.map(r => {
     const st = STATUS_MAP[r.status] || STATUS_MAP.tobesent;
-    const website = r.companyWebsite ? '<a href="' + escapeHtml(r.companyWebsite) + '" target="_blank" rel="noopener">' + escapeHtml(r.companyName) + '</a>' : escapeHtml(r.companyName);
+    const website = r.companyWebsite ? '<a href="' + escapeHtml(r.companyWebsite) + '" target="_blank" rel="noopener" draggable="false">' + escapeHtml(r.companyName) + '</a>' : escapeHtml(r.companyName);
     const evalData = r.evaluation && r.evaluation.scores;
     const globalScore = evalData && evalData.global ? evalData.global : 0;
     let meta = [];
@@ -1212,14 +1212,14 @@ function renderRecords() {
       });
       dotsHtml += '</div>';
     }
-    return '<div class="record-card" data-id="' + r.id + '" data-status="' + r.status + '" onclick="if(window.__justDragged)return;viewRecord(' + r.id + ')" ondragover="onDragOver(event)" ondrop="onDrop(event)">' +
-      '<div class="drag-handle" draggable="true" data-id="' + r.id + '" title="拖动调整顺序" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">⠿</div>' +
+    return '<div class="record-card" data-id="' + r.id + '" data-status="' + r.status + '" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" onclick="if(window.__justDragged)return;viewRecord(' + r.id + ')" ondragover="onDragOver(event)" ondrop="onDrop(event)">' +
+      '<div class="drag-handle" title="拖动调整顺序">⠿</div>' +
       '<div class="card-header"><div><div style="display:flex;align-items:center;gap:8px;"><div class="card-company">' + website + '</div>' + scoreHtml + '</div><div class="card-position">' + escapeHtml(r.position||'') + '</div></div>' +
       '<span class="badge ' + st.class + '">' + st.label + '</span></div>' +
       (meta.length ? '<div class="card-meta">' + meta.join('') + '</div>' : '') +
       (evalData ? dotsHtml : '') +
       (r.companyIntro ? '<div class="card-intro">' + escapeHtml(r.companyIntro) + '</div>' : '') +
-      '<div class="card-actions" onclick="event.stopPropagation()"><button class="btn btn-icon" onclick="openRecordModal(' + r.id + ')">编辑</button><button class="btn btn-icon btn-danger" onclick="confirmDelete(' + r.id + ')">删除</button></div></div>';
+      '<div class="card-actions" onclick="event.stopPropagation()"><button class="btn btn-icon" draggable="false" onclick="openRecordModal(' + r.id + ')">编辑</button><button class="btn btn-icon btn-danger" draggable="false" onclick="confirmDelete(' + r.id + ')">删除</button></div></div>';
   }).join('');
 }
 
