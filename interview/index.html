@@ -556,9 +556,8 @@ body {
       <option value="low">&lt;3.5 不推荐</option>
       <option value="unevaluated">未评估</option>
     </select>
-    <select class="select" id="sortBy" onchange="renderRecords()">
+    <select class="select" id="sortBy" onchange="onSortChange()">
       <option value="updatedAt-desc">最近更新</option>
-      <option value="manual">手动排序（可拖动）</option>
       <option value="score-desc">评分 (高-低)</option>
       <option value="score-asc">评分 (低-高)</option>
       <option value="applyDate-desc">投递日期 (新-旧)</option>
@@ -1143,8 +1142,8 @@ function getFilteredRecords() {
     }
     return true;
   });
-  // 手动排序：保持 records 数组的当前顺序，不做任何重排
-  if (sortBy === 'manual') return filtered;
+  // 手动顺序（拖动后锁定，内部标志）：保持 records 数组当前顺序，不重排
+  if (manualOrder) return filtered;
   const [key, dir] = sortBy.split('-');
   filtered.sort((a, b) => {
     if (key === 'score') {
@@ -1181,7 +1180,6 @@ function getScoreColor(score) {
 function renderRecords() {
   const list = document.getElementById('recordsList');
   const filtered = getFilteredRecords();
-  const isManual = document.getElementById('sortBy').value === 'manual';
   if (filtered.length === 0) {
     list.innerHTML = '<div class="empty-state"><h3>' + (records.length===0?'还没有投递记录':'没有匹配的记录') + '</h3><p>' + (records.length===0?'点击"添加记录"开始追踪你的求职进度':'试试调整搜索或筛选条件') + '</p>' + (records.length===0?'<button class="btn btn-primary" onclick="openRecordModal()">+ 添加第一条记录</button>':'') + '</div>';
     return;
@@ -1215,7 +1213,7 @@ function renderRecords() {
       dotsHtml += '</div>';
     }
     return '<div class="record-card" data-id="' + r.id + '" data-status="' + r.status + '" onclick="if(window.__justDragged)return;viewRecord(' + r.id + ')" ondragover="onDragOver(event)" ondrop="onDrop(event)">' +
-      '<div class="drag-handle" draggable="' + isManual + '" data-id="' + r.id + '" title="' + (isManual ? '拖动调整顺序' : '点击切换到「手动排序」后可拖动') + '" onclick="enableManualSort(event)" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">⠿</div>' +
+      '<div class="drag-handle" draggable="true" data-id="' + r.id + '" title="拖动调整顺序" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">⠿</div>' +
       '<div class="card-header"><div><div style="display:flex;align-items:center;gap:8px;"><div class="card-company">' + website + '</div>' + scoreHtml + '</div><div class="card-position">' + escapeHtml(r.position||'') + '</div></div>' +
       '<span class="badge ' + st.class + '">' + st.label + '</span></div>' +
       (meta.length ? '<div class="card-meta">' + meta.join('') + '</div>' : '') +
@@ -1225,18 +1223,16 @@ function renderRecords() {
   }).join('');
 }
 
-// ========== 拖拽排序（手动排序模式） ==========
+// ========== 拖拽排序 ==========
 let dragSrcId = null;
 window.__justDragged = false;
+// 手动顺序标志：拖动后锁定为手动顺序（持久化，不依赖下拉选项）；改排序下拉时解锁
+let manualOrder = (localStorage.getItem('interview_manual_order') === '1');
 
-function enableManualSort(e) {
-  e.stopPropagation();
-  const sel = document.getElementById('sortBy');
-  if (sel.value !== 'manual') {
-    sel.value = 'manual';
-    renderRecords();
-    showToast('已切换到「手动排序」，现在可拖动卡片左侧手柄调整顺序');
-  }
+function onSortChange() {
+  manualOrder = false;
+  try { localStorage.setItem('interview_manual_order', '0'); } catch (e) {}
+  renderRecords();
 }
 function onDragStart(e) {
   dragSrcId = e.currentTarget.dataset.id;
@@ -1263,7 +1259,11 @@ function onDrop(e) {
   const after = (e.clientY - rect.top) > rect.height / 2;
   window.__justDragged = true;
   setTimeout(function () { window.__justDragged = false; }, 60);
+  // 先锁定手动顺序，确保 reorderRecords() 内部的 renderRecords() 按手动顺序渲染（不被当前排序覆盖）
+  manualOrder = true;
+  try { localStorage.setItem('interview_manual_order', '1'); } catch (e) {}
   reorderRecords(dragSrcId, targetId, after);
+  showToast('已按拖动顺序保存（更改上方排序可恢复自动排序）');
   cleanupDrag();
 }
 function cleanupDrag() {
