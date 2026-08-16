@@ -591,7 +591,7 @@ body {
           <div class="form-group"><label>公司网址</label><input type="url" id="fWebsite" placeholder="https://..."></div>
           <div class="form-group"><label>工作地点</label><input type="text" id="fLocation" placeholder="例: 东京"></div>
           <div class="form-group"><label>薪资范围</label><input type="text" id="fSalary" placeholder="例: 500-800万日元"></div>
-          <div class="form-group"><label>排序优先级</label><input type="number" id="fSortOrder" placeholder="数字越大越靠前" min="0" step="1" title="在「自定义顺序」排序下生效：数字越大排得越靠前"></div>
+          <div class="form-group"><label>排序优先级</label><input type="number" id="fSortOrder" placeholder="数字越大越靠前" step="1" title="数值越大越靠前（支持 0 与负数把卡片压到后面；留空/1 为默认）"></div>
           <div class="form-group">
             <label>状态</label>
             <select id="fStatus">
@@ -1140,11 +1140,12 @@ function getFilteredRecords() {
     return true;
   });
   const [key, dir] = sortBy.split('-');
-  // 自定义顺序：sortOrder 越大越靠前；并列时按原有顺序保持稳定
+  // 自定义顺序：sortOrder 越大越靠前；并列时按原有顺序保持稳定。未设置视作默认 1，显式 0/负数保留真实值
   if (key === 'priority') {
     const idxMap = new Map(records.map((r, i) => [r.id, i]));
+    const ord = r => (r.sortOrder == null ? 1 : r.sortOrder);
     filtered.sort((a, b) => {
-      const sa = a.sortOrder || 1, sb = b.sortOrder || 1;
+      const sa = ord(a), sb = ord(b);
       if (sb !== sa) return sb - sa;
       return (idxMap.get(a.id) || 0) - (idxMap.get(b.id) || 0);
     });
@@ -1164,8 +1165,8 @@ function getFilteredRecords() {
     let va = a[key] || 0;
     let vb = b[key] || 0;
     if (key === 'updatedAt') {
-      // 排序优先级（数值越大越靠前）优先；并列时按更新时间降序
-      const pa = a.sortOrder || 1, pb = b.sortOrder || 1;
+      // 排序优先级（数值越大越靠前）优先；并列时按更新时间降序。未设置视作默认 1，但显式 0/负数保留真实值
+      const pa = (a.sortOrder == null ? 1 : a.sortOrder), pb = (b.sortOrder == null ? 1 : b.sortOrder);
       if (pb !== pa) return pb - pa;
       va = a.updatedAt || 0; vb = b.updatedAt || 0;
     }
