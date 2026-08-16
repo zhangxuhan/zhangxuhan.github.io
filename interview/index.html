@@ -125,14 +125,9 @@ body {
 .records { display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:16px; }
 .record-card {
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-  padding:20px 20px 20px 38px; transition:var(--transition); position:relative;
+  padding:20px; transition:var(--transition); position:relative;
   display:flex; flex-direction:column; gap:10px;
 }
-.drag-handle { position:absolute; left:8px; top:50%; transform:translateY(-50%); cursor:grab; color:var(--text-tertiary); font-size:18px; line-height:1; padding:6px 4px; border-radius:6px; user-select:none; z-index:2; }
-.drag-handle:hover { color:var(--primary); background:var(--surface-2, #20203a); }
-.drag-handle:active { cursor:grabbing; }
-.record-card.drag-over { border-color:var(--primary); box-shadow:0 0 0 2px var(--primary); }
-.record-card.dragging { opacity:0.4; }
 .record-card:hover { box-shadow:var(--shadow-lg); border-color:var(--border-strong); transform:translateY(-2px); }
 .record-card::before { content:''; position:absolute; left:0; top:16px; bottom:16px; width:3px; border-radius:0 3px 3px 0; }
 .record-card[data-status="pending"]::before { background:var(--status-pending); }
@@ -571,7 +566,7 @@ body {
     <button class="btn btn-primary" onclick="openRecordModal()">+ 添加记录</button>
   </section>
 
-  <section class="records" id="recordsList" ondragover="onListDragOver(event)" ondrop="onListDrop(event)"></section>
+  <section class="records" id="recordsList"></section>
 </div>
 
 <!-- Record Modal -->
@@ -1144,14 +1139,12 @@ function getFilteredRecords() {
     }
     return true;
   });
-  // 手动顺序（拖动后锁定，内部标志）：保持 records 数组当前顺序，不重排
-  if (manualOrder) return filtered;
   const [key, dir] = sortBy.split('-');
   // 自定义顺序：sortOrder 越大越靠前；并列时按原有顺序保持稳定
   if (key === 'priority') {
     const idxMap = new Map(records.map((r, i) => [r.id, i]));
     filtered.sort((a, b) => {
-      const sa = a.sortOrder || 0, sb = b.sortOrder || 0;
+      const sa = a.sortOrder || 1, sb = b.sortOrder || 1;
       if (sb !== sa) return sb - sa;
       return (idxMap.get(a.id) || 0) - (idxMap.get(b.id) || 0);
     });
@@ -1170,7 +1163,12 @@ function getFilteredRecords() {
     }
     let va = a[key] || 0;
     let vb = b[key] || 0;
-    if (key === 'updatedAt') { va = a.updatedAt || 0; vb = b.updatedAt || 0; }
+    if (key === 'updatedAt') {
+      // 排序优先级（数值越大越靠前）优先；并列时按更新时间降序
+      const pa = a.sortOrder || 1, pb = b.sortOrder || 1;
+      if (pb !== pa) return pb - pa;
+      va = a.updatedAt || 0; vb = b.updatedAt || 0;
+    }
     return dir === 'asc' ? (va < vb ? -1 : 1) : (va > vb ? -1 : 1);
   });
   return filtered;
@@ -1202,7 +1200,7 @@ function renderRecords() {
     const evalData = r.evaluation && r.evaluation.scores;
     const globalScore = evalData && evalData.global ? evalData.global : 0;
     let meta = [];
-    if (r.sortOrder) meta.push('<span class="card-meta-item">序 ' + escapeHtml(String(r.sortOrder)) + '</span>');
+    if (r.sortOrder != null && r.sortOrder !== 1) meta.push('<span class="card-meta-item">序 ' + escapeHtml(String(r.sortOrder)) + '</span>');
     if (r.applyDate) meta.push('<span class="card-meta-item">投递: ' + escapeHtml(r.applyDate) + '</span>');
     if (r.interviewDate) meta.push('<span class="card-meta-item">面试: ' + escapeHtml(r.interviewDate) + '</span>');
     if (r.location) meta.push('<span class="card-meta-item">' + escapeHtml(r.location) + '</span>');
@@ -1225,8 +1223,7 @@ function renderRecords() {
       });
       dotsHtml += '</div>';
     }
-    return '<div class="record-card" data-id="' + r.id + '" data-status="' + r.status + '" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondragenter="onCardDragEnter(event)" onclick="if(window.__justDragged)return;viewRecord(' + r.id + ')" title="拖动调整顺序">' +
-      '<div class="drag-handle" title="拖动调整顺序">⠿</div>' +
+    return '<div class="record-card" data-id="' + r.id + '" data-status="' + r.status + '" onclick="viewRecord(' + r.id + ')">' +
       '<div class="card-header"><div><div style="display:flex;align-items:center;gap:8px;"><div class="card-company">' + website + '</div>' + scoreHtml + '</div><div class="card-position">' + escapeHtml(r.position||'') + '</div></div>' +
       '<span class="badge ' + st.class + '">' + st.label + '</span></div>' +
       (meta.length ? '<div class="card-meta">' + meta.join('') + '</div>' : '') +
@@ -1236,90 +1233,8 @@ function renderRecords() {
   }).join('');
 }
 
-// ========== 拖拽排序 ==========
-let dragSrcId = null;
-let dragOverTargetId = null;
-window.__justDragged = false;
-// 手动顺序标志：拖动后锁定为手动顺序（持久化，不依赖下拉选项）；改排序下拉时解锁
-let manualOrder = (localStorage.getItem('interview_manual_order') === '1');
-
+// ========== 排序切换 ==========
 function onSortChange() {
-  manualOrder = false;
-  try { localStorage.setItem('interview_manual_order', '0'); } catch (e) {}
-  renderRecords();
-}
-function onDragStart(e) {
-  dragSrcId = e.currentTarget.dataset.id;
-  dragOverTargetId = null;
-  e.dataTransfer.effectAllowed = 'move';
-  try { e.dataTransfer.setData('text/plain', dragSrcId); } catch (err) {}
-  e.stopPropagation();
-  e.currentTarget.classList.add('dragging');
-}
-function onDragEnd(e) {
-  cleanupDrag();
-}
-// 鼠标经过某张卡片时，记录它为目标（用 dragenter 记录，drop 时据此重排，避免间隙/子元素导致 drop 丢失）
-function onCardDragEnter(e) {
-  if (!dragSrcId) return;
-  const id = e.currentTarget.dataset.id;
-  if (id === dragSrcId) return;
-  dragOverTargetId = id;
-  document.querySelectorAll('.record-card.drag-over').forEach(c => { if (c.dataset.id !== id) c.classList.remove('drag-over'); });
-  e.currentTarget.classList.add('drag-over');
-}
-// 容器级 dragover：始终 preventDefault，保证整个列表区域都能接收 drop（不会因卡片间隙/子元素丢 drop）
-function onListDragOver(e) {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-}
-// 容器级 drop：用最近记录的 dragOverTargetId 作为目标
-function onListDrop(e) {
-  if (!dragSrcId) { cleanupDrag(); return; }
-  e.preventDefault();
-  const targetId = dragOverTargetId;
-  if (!targetId || targetId === dragSrcId) { cleanupDrag(); return; }
-  const card = document.querySelector('.record-card[data-id="' + targetId + '"]');
-  const rect = card ? card.getBoundingClientRect() : null;
-  const after = rect ? ((e.clientY - rect.top) > rect.height / 2) : true;
-  window.__justDragged = true;
-  setTimeout(function () { window.__justDragged = false; }, 60);
-  // 先锁定手动顺序，确保 reorderRecords() 内部的 renderRecords() 按手动顺序渲染（不被当前排序覆盖）
-  manualOrder = true;
-  try { localStorage.setItem('interview_manual_order', '1'); } catch (e2) {}
-  reorderRecords(dragSrcId, targetId, after ? 'after' : 'before');
-  showToast('已按拖动顺序保存（更改上方排序可恢复自动排序）');
-  cleanupDrag();
-}
-function cleanupDrag() {
-  document.querySelectorAll('.record-card.drag-over').forEach(c => c.classList.remove('drag-over'));
-  document.querySelectorAll('.record-card.dragging').forEach(c => c.classList.remove('dragging'));
-  dragSrcId = null;
-  dragOverTargetId = null;
-}
-function reorderRecords(dragId, targetId, pos) {
-  // 当前可见（已筛选）顺序
-  const visible = getFilteredRecords().map(r => r.id);
-  const ids = visible.slice();
-  const fromIdx = ids.indexOf(dragId);
-  const toIdx = ids.indexOf(targetId);
-  if (fromIdx < 0 || toIdx < 0) return;
-  ids.splice(fromIdx, 1);
-  const postTo = (fromIdx < toIdx) ? toIdx - 1 : toIdx; // 移除源元素后目标的新位置
-  const insertAt = (pos === 'after') ? postTo + 1 : postTo;
-  ids.splice(insertAt, 0, dragId);
-  // 把新可见顺序写回 records：可见卡片按 ids 重排，被筛掉的卡片保持原位
-  const visibleSet = new Set(ids);
-  const hiddenItems = records.filter(r => !visibleSet.has(r.id));
-  const slots = records.map(r => visibleSet.has(r.id));
-  const newRecords = [];
-  let vi = 0, hi = 0;
-  for (let i = 0; i < records.length; i++) {
-    if (slots[i]) { newRecords.push(records.find(r => r.id === ids[vi])); vi++; }
-    else { newRecords.push(hiddenItems[hi++]); }
-  }
-  records = newRecords;
-  saveData();
   renderRecords();
 }
 
@@ -1358,7 +1273,7 @@ function openRecordModal(id) {
     document.getElementById('fInterviewDate').value = r.interviewDate || '';
     document.getElementById('fIntro').value = r.companyIntro || '';
     document.getElementById('fNotes').value = r.notes || '';
-    document.getElementById('fSortOrder').value = (r.sortOrder != null && r.sortOrder !== 0) ? r.sortOrder : '';
+    document.getElementById('fSortOrder').value = (r.sortOrder != null) ? r.sortOrder : 1;
     // Load saved JD
     document.getElementById('evalJDInput').value = r.jd || '';
     // Load existing eval if any
@@ -1385,7 +1300,7 @@ function openRecordModal(id) {
     document.getElementById('fInterviewDate').value = '';
     document.getElementById('fIntro').value = '';
     document.getElementById('fNotes').value = '';
-    document.getElementById('fSortOrder').value = '';
+    document.getElementById('fSortOrder').value = '1';
     clearAllDocs();
     // Clear interview Q&A
     const io = document.getElementById('docInterviewOutput'); if (io) { io.innerHTML=''; io.style.display='none'; io.dataset.generated=''; }
@@ -1458,7 +1373,7 @@ function saveRecord() {
     evaluation: currentEvalData
   };
   const sortVal = parseInt(document.getElementById('fSortOrder').value, 10);
-  data.sortOrder = isNaN(sortVal) ? 0 : sortVal;
+  data.sortOrder = isNaN(sortVal) ? 1 : sortVal;
   if (editingId) {
     saveDocContents(editingId);
     saveCompanyResearch(editingId);
@@ -1487,13 +1402,6 @@ function saveRecord() {
     data.createdAt = Date.now();
     records.push(data);
     showToast('记录已添加');
-  }
-  // 若设置了排序优先级，自动切到「自定义顺序」并解锁手动顺序，输入即生效
-  if (data.sortOrder !== 0) {
-    const sb = document.getElementById('sortBy');
-    if (sb) sb.value = 'priority-desc';
-    manualOrder = false;
-    try { localStorage.setItem('interview_manual_order', '0'); } catch (e) {}
   }
   saveData();
   renderAll();
