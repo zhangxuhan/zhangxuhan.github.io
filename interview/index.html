@@ -570,7 +570,7 @@ body {
     <button class="btn btn-primary" onclick="openRecordModal()">+ 添加记录</button>
   </section>
 
-  <section class="records" id="recordsList"></section>
+  <section class="records" id="recordsList" ondragover="onListDragOver(event)" ondrop="onListDrop(event)"></section>
 </div>
 
 <!-- Record Modal -->
@@ -1212,7 +1212,7 @@ function renderRecords() {
       });
       dotsHtml += '</div>';
     }
-    return '<div class="record-card" data-id="' + r.id + '" data-status="' + r.status + '" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" onclick="if(window.__justDragged)return;viewRecord(' + r.id + ')" ondragover="onDragOver(event)" ondrop="onDrop(event)">' +
+    return '<div class="record-card" data-id="' + r.id + '" data-status="' + r.status + '" draggable="true" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)" ondragenter="onCardDragEnter(event)" onclick="if(window.__justDragged)return;viewRecord(' + r.id + ')" title="拖动调整顺序">' +
       '<div class="drag-handle" title="拖动调整顺序">⠿</div>' +
       '<div class="card-header"><div><div style="display:flex;align-items:center;gap:8px;"><div class="card-company">' + website + '</div>' + scoreHtml + '</div><div class="card-position">' + escapeHtml(r.position||'') + '</div></div>' +
       '<span class="badge ' + st.class + '">' + st.label + '</span></div>' +
@@ -1225,6 +1225,7 @@ function renderRecords() {
 
 // ========== 拖拽排序 ==========
 let dragSrcId = null;
+let dragOverTargetId = null;
 window.__justDragged = false;
 // 手动顺序标志：拖动后锁定为手动顺序（持久化，不依赖下拉选项）；改排序下拉时解锁
 let manualOrder = (localStorage.getItem('interview_manual_order') === '1');
@@ -1236,6 +1237,7 @@ function onSortChange() {
 }
 function onDragStart(e) {
   dragSrcId = e.currentTarget.dataset.id;
+  dragOverTargetId = null;
   e.dataTransfer.effectAllowed = 'move';
   try { e.dataTransfer.setData('text/plain', dragSrcId); } catch (err) {}
   e.stopPropagation();
@@ -1244,25 +1246,35 @@ function onDragStart(e) {
 function onDragEnd(e) {
   cleanupDrag();
 }
-function onDragOver(e) {
+// 鼠标经过某张卡片时，记录它为目标（用 dragenter 记录，drop 时据此重排，避免间隙/子元素导致 drop 丢失）
+function onCardDragEnter(e) {
   if (!dragSrcId) return;
+  const id = e.currentTarget.dataset.id;
+  if (id === dragSrcId) return;
+  dragOverTargetId = id;
+  document.querySelectorAll('.record-card.drag-over').forEach(c => { if (c.dataset.id !== id) c.classList.remove('drag-over'); });
+  e.currentTarget.classList.add('drag-over');
+}
+// 容器级 dragover：始终 preventDefault，保证整个列表区域都能接收 drop（不会因卡片间隙/子元素丢 drop）
+function onListDragOver(e) {
   e.preventDefault();
   e.dataTransfer.dropEffect = 'move';
-  const card = e.currentTarget;
-  if (card.dataset.id !== dragSrcId) card.classList.add('drag-over');
 }
-function onDrop(e) {
+// 容器级 drop：用最近记录的 dragOverTargetId 作为目标
+function onListDrop(e) {
+  if (!dragSrcId) { cleanupDrag(); return; }
   e.preventDefault();
-  const targetId = e.currentTarget.dataset.id;
-  if (!dragSrcId || !targetId || dragSrcId === targetId) { cleanupDrag(); return; }
-  const rect = e.currentTarget.getBoundingClientRect();
-  const after = (e.clientY - rect.top) > rect.height / 2;
+  const targetId = dragOverTargetId;
+  if (!targetId || targetId === dragSrcId) { cleanupDrag(); return; }
+  const card = document.querySelector('.record-card[data-id="' + targetId + '"]');
+  const rect = card ? card.getBoundingClientRect() : null;
+  const after = rect ? ((e.clientY - rect.top) > rect.height / 2) : true;
   window.__justDragged = true;
   setTimeout(function () { window.__justDragged = false; }, 60);
   // 先锁定手动顺序，确保 reorderRecords() 内部的 renderRecords() 按手动顺序渲染（不被当前排序覆盖）
   manualOrder = true;
-  try { localStorage.setItem('interview_manual_order', '1'); } catch (e) {}
-  reorderRecords(dragSrcId, targetId, after);
+  try { localStorage.setItem('interview_manual_order', '1'); } catch (e2) {}
+  reorderRecords(dragSrcId, targetId, after ? 'after' : 'before');
   showToast('已按拖动顺序保存（更改上方排序可恢复自动排序）');
   cleanupDrag();
 }
@@ -1270,8 +1282,9 @@ function cleanupDrag() {
   document.querySelectorAll('.record-card.drag-over').forEach(c => c.classList.remove('drag-over'));
   document.querySelectorAll('.record-card.dragging').forEach(c => c.classList.remove('dragging'));
   dragSrcId = null;
+  dragOverTargetId = null;
 }
-function reorderRecords(dragId, targetId, after) {
+function reorderRecords(dragId, targetId, pos) {
   // 当前可见（已筛选）顺序
   const visible = getFilteredRecords().map(r => r.id);
   const ids = visible.slice();
@@ -1280,7 +1293,7 @@ function reorderRecords(dragId, targetId, after) {
   if (fromIdx < 0 || toIdx < 0) return;
   ids.splice(fromIdx, 1);
   const postTo = (fromIdx < toIdx) ? toIdx - 1 : toIdx; // 移除源元素后目标的新位置
-  const insertAt = after ? postTo + 1 : postTo;
+  const insertAt = (pos === 'after') ? postTo + 1 : postTo;
   ids.splice(insertAt, 0, dragId);
   // 把新可见顺序写回 records：可见卡片按 ids 重排，被筛掉的卡片保持原位
   const visibleSet = new Set(ids);
