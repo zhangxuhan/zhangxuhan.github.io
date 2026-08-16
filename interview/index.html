@@ -125,9 +125,14 @@ body {
 .records { display:grid; grid-template-columns:repeat(auto-fill,minmax(360px,1fr)); gap:16px; }
 .record-card {
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
-  padding:20px; transition:var(--transition); position:relative;
+  padding:20px 20px 20px 38px; transition:var(--transition); position:relative;
   display:flex; flex-direction:column; gap:10px;
 }
+.drag-handle { position:absolute; left:8px; top:50%; transform:translateY(-50%); cursor:grab; color:var(--text-tertiary); font-size:18px; line-height:1; padding:6px 4px; border-radius:6px; user-select:none; z-index:2; }
+.drag-handle:hover { color:var(--primary); background:var(--surface-2, #20203a); }
+.drag-handle:active { cursor:grabbing; }
+.record-card.drag-over { border-color:var(--primary); box-shadow:0 0 0 2px var(--primary); }
+.record-card.dragging { opacity:0.4; }
 .record-card:hover { box-shadow:var(--shadow-lg); border-color:var(--border-strong); transform:translateY(-2px); }
 .record-card::before { content:''; position:absolute; left:0; top:16px; bottom:16px; width:3px; border-radius:0 3px 3px 0; }
 .record-card[data-status="pending"]::before { background:var(--status-pending); }
@@ -553,6 +558,7 @@ body {
     </select>
     <select class="select" id="sortBy" onchange="renderRecords()">
       <option value="updatedAt-desc">最近更新</option>
+      <option value="manual">手动排序（可拖动）</option>
       <option value="score-desc">评分 (高-低)</option>
       <option value="score-asc">评分 (低-高)</option>
       <option value="applyDate-desc">投递日期 (新-旧)</option>
@@ -1137,6 +1143,8 @@ function getFilteredRecords() {
     }
     return true;
   });
+  // 手动排序：保持 records 数组的当前顺序，不做任何重排
+  if (sortBy === 'manual') return filtered;
   const [key, dir] = sortBy.split('-');
   filtered.sort((a, b) => {
     if (key === 'score') {
@@ -1173,6 +1181,7 @@ function getScoreColor(score) {
 function renderRecords() {
   const list = document.getElementById('recordsList');
   const filtered = getFilteredRecords();
+  const isManual = document.getElementById('sortBy').value === 'manual';
   if (filtered.length === 0) {
     list.innerHTML = '<div class="empty-state"><h3>' + (records.length===0?'还没有投递记录':'没有匹配的记录') + '</h3><p>' + (records.length===0?'点击"添加记录"开始追踪你的求职进度':'试试调整搜索或筛选条件') + '</p>' + (records.length===0?'<button class="btn btn-primary" onclick="openRecordModal()">+ 添加第一条记录</button>':'') + '</div>';
     return;
@@ -1205,7 +1214,8 @@ function renderRecords() {
       });
       dotsHtml += '</div>';
     }
-    return '<div class="record-card" data-status="' + r.status + '" onclick="viewRecord(' + r.id + ')">' +
+    return '<div class="record-card" data-id="' + r.id + '" data-status="' + r.status + '" onclick="if(window.__justDragged)return;viewRecord(' + r.id + ')" ondragover="onDragOver(event)" ondrop="onDrop(event)">' +
+      '<div class="drag-handle" draggable="' + isManual + '" data-id="' + r.id + '" title="' + (isManual ? '拖动调整顺序' : '点击切换到「手动排序」后可拖动') + '" onclick="enableManualSort(event)" ondragstart="onDragStart(event)" ondragend="onDragEnd(event)">⠿</div>' +
       '<div class="card-header"><div><div style="display:flex;align-items:center;gap:8px;"><div class="card-company">' + website + '</div>' + scoreHtml + '</div><div class="card-position">' + escapeHtml(r.position||'') + '</div></div>' +
       '<span class="badge ' + st.class + '">' + st.label + '</span></div>' +
       (meta.length ? '<div class="card-meta">' + meta.join('') + '</div>' : '') +
@@ -1213,6 +1223,78 @@ function renderRecords() {
       (r.companyIntro ? '<div class="card-intro">' + escapeHtml(r.companyIntro) + '</div>' : '') +
       '<div class="card-actions" onclick="event.stopPropagation()"><button class="btn btn-icon" onclick="openRecordModal(' + r.id + ')">编辑</button><button class="btn btn-icon btn-danger" onclick="confirmDelete(' + r.id + ')">删除</button></div></div>';
   }).join('');
+}
+
+// ========== 拖拽排序（手动排序模式） ==========
+let dragSrcId = null;
+window.__justDragged = false;
+
+function enableManualSort(e) {
+  e.stopPropagation();
+  const sel = document.getElementById('sortBy');
+  if (sel.value !== 'manual') {
+    sel.value = 'manual';
+    renderRecords();
+    showToast('已切换到「手动排序」，现在可拖动卡片左侧手柄调整顺序');
+  }
+}
+function onDragStart(e) {
+  dragSrcId = e.currentTarget.dataset.id;
+  e.dataTransfer.effectAllowed = 'move';
+  try { e.dataTransfer.setData('text/plain', dragSrcId); } catch (err) {}
+  e.stopPropagation();
+  e.currentTarget.classList.add('dragging');
+}
+function onDragEnd(e) {
+  cleanupDrag();
+}
+function onDragOver(e) {
+  if (!dragSrcId) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  const card = e.currentTarget;
+  if (card.dataset.id !== dragSrcId) card.classList.add('drag-over');
+}
+function onDrop(e) {
+  e.preventDefault();
+  const targetId = e.currentTarget.dataset.id;
+  if (!dragSrcId || !targetId || dragSrcId === targetId) { cleanupDrag(); return; }
+  const rect = e.currentTarget.getBoundingClientRect();
+  const after = (e.clientY - rect.top) > rect.height / 2;
+  window.__justDragged = true;
+  setTimeout(function () { window.__justDragged = false; }, 60);
+  reorderRecords(dragSrcId, targetId, after);
+  cleanupDrag();
+}
+function cleanupDrag() {
+  document.querySelectorAll('.record-card.drag-over').forEach(c => c.classList.remove('drag-over'));
+  document.querySelectorAll('.record-card.dragging').forEach(c => c.classList.remove('dragging'));
+  dragSrcId = null;
+}
+function reorderRecords(dragId, targetId, after) {
+  // 当前可见（已筛选）顺序
+  const visible = getFilteredRecords().map(r => r.id);
+  const ids = visible.slice();
+  const fromIdx = ids.indexOf(dragId);
+  const toIdx = ids.indexOf(targetId);
+  if (fromIdx < 0 || toIdx < 0) return;
+  ids.splice(fromIdx, 1);
+  const postTo = (fromIdx < toIdx) ? toIdx - 1 : toIdx; // 移除源元素后目标的新位置
+  const insertAt = after ? postTo + 1 : postTo;
+  ids.splice(insertAt, 0, dragId);
+  // 把新可见顺序写回 records：可见卡片按 ids 重排，被筛掉的卡片保持原位
+  const visibleSet = new Set(ids);
+  const hiddenItems = records.filter(r => !visibleSet.has(r.id));
+  const slots = records.map(r => visibleSet.has(r.id));
+  const newRecords = [];
+  let vi = 0, hi = 0;
+  for (let i = 0; i < records.length; i++) {
+    if (slots[i]) { newRecords.push(records.find(r => r.id === ids[vi])); vi++; }
+    else { newRecords.push(hiddenItems[hi++]); }
+  }
+  records = newRecords;
+  saveData();
+  renderRecords();
 }
 
 // ========== MODALS ==========
