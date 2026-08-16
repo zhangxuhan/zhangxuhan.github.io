@@ -1118,6 +1118,12 @@ function renderStats() {
     '<div class="stat-card"><span class="stat-value score-high">' + evaluated + '</span><span class="stat-label">已评估</span></div>';
 }
 
+// 有效排序值：状态为「未通过」(rejected) 一律视为 0，沉到最底；其余未设置默认 1，显式 0/负数保留真实值
+function effOrder(r) {
+  if (r.status === 'rejected') return 0;
+  return (r.sortOrder == null ? 1 : r.sortOrder);
+}
+
 function getFilteredRecords() {
   const search = document.getElementById('searchInput').value.toLowerCase().trim();
   const status = document.getElementById('filterStatus').value;
@@ -1143,9 +1149,8 @@ function getFilteredRecords() {
   // 自定义顺序：sortOrder 越大越靠前；并列时按原有顺序保持稳定。未设置视作默认 1，显式 0/负数保留真实值
   if (key === 'priority') {
     const idxMap = new Map(records.map((r, i) => [r.id, i]));
-    const ord = r => (r.sortOrder == null ? 1 : r.sortOrder);
     filtered.sort((a, b) => {
-      const sa = ord(a), sb = ord(b);
+      const sa = effOrder(a), sb = effOrder(b);
       if (sb !== sa) return sb - sa;
       return (idxMap.get(a.id) || 0) - (idxMap.get(b.id) || 0);
     });
@@ -1165,8 +1170,8 @@ function getFilteredRecords() {
     let va = a[key] || 0;
     let vb = b[key] || 0;
     if (key === 'updatedAt') {
-      // 排序优先级（数值越大越靠前）优先；并列时按更新时间降序。未设置视作默认 1，但显式 0/负数保留真实值
-      const pa = (a.sortOrder == null ? 1 : a.sortOrder), pb = (b.sortOrder == null ? 1 : b.sortOrder);
+      // 排序优先级（数值越大越靠前）优先；「未通过」一律沉底（视为 0）；并列时按更新时间降序
+      const pa = effOrder(a), pb = effOrder(b);
       if (pb !== pa) return pb - pa;
       va = a.updatedAt || 0; vb = b.updatedAt || 0;
     }
@@ -1201,7 +1206,8 @@ function renderRecords() {
     const evalData = r.evaluation && r.evaluation.scores;
     const globalScore = evalData && evalData.global ? evalData.global : 0;
     let meta = [];
-    if (r.sortOrder != null && r.sortOrder !== 1) meta.push('<span class="card-meta-item">序 ' + escapeHtml(String(r.sortOrder)) + '</span>');
+    const eff = effOrder(r);
+    if (eff !== 1) meta.push('<span class="card-meta-item">序 ' + escapeHtml(String(eff)) + '</span>');
     if (r.applyDate) meta.push('<span class="card-meta-item">投递: ' + escapeHtml(r.applyDate) + '</span>');
     if (r.interviewDate) meta.push('<span class="card-meta-item">面试: ' + escapeHtml(r.interviewDate) + '</span>');
     if (r.location) meta.push('<span class="card-meta-item">' + escapeHtml(r.location) + '</span>');
