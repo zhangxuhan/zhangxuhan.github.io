@@ -563,6 +563,7 @@ body {
       <option value="applyDate-desc">投递日期 (新-旧)</option>
       <option value="applyDate-asc">投递日期 (旧-新)</option>
       <option value="companyName-asc">公司名称</option>
+      <option value="priority-desc">自定义顺序（数字大在前）</option>
     </select>
     <div class="toolbar-spacer"></div>
     <button class="btn btn-ai" onclick="openGeneralInterview()">通用面试问题</button>
@@ -595,6 +596,7 @@ body {
           <div class="form-group"><label>公司网址</label><input type="url" id="fWebsite" placeholder="https://..."></div>
           <div class="form-group"><label>工作地点</label><input type="text" id="fLocation" placeholder="例: 东京"></div>
           <div class="form-group"><label>薪资范围</label><input type="text" id="fSalary" placeholder="例: 500-800万日元"></div>
+          <div class="form-group"><label>排序优先级</label><input type="number" id="fSortOrder" placeholder="数字越大越靠前" min="0" step="1" title="在「自定义顺序」排序下生效：数字越大排得越靠前"></div>
           <div class="form-group">
             <label>状态</label>
             <select id="fStatus">
@@ -1145,6 +1147,16 @@ function getFilteredRecords() {
   // 手动顺序（拖动后锁定，内部标志）：保持 records 数组当前顺序，不重排
   if (manualOrder) return filtered;
   const [key, dir] = sortBy.split('-');
+  // 自定义顺序：sortOrder 越大越靠前；并列时按原有顺序保持稳定
+  if (key === 'priority') {
+    const idxMap = new Map(records.map((r, i) => [r.id, i]));
+    filtered.sort((a, b) => {
+      const sa = a.sortOrder || 0, sb = b.sortOrder || 0;
+      if (sb !== sa) return sb - sa;
+      return (idxMap.get(a.id) || 0) - (idxMap.get(b.id) || 0);
+    });
+    return filtered;
+  }
   filtered.sort((a, b) => {
     if (key === 'score') {
       const sa = (a.evaluation && a.evaluation.scores ? a.evaluation.scores.global : 0) || 0;
@@ -1190,6 +1202,7 @@ function renderRecords() {
     const evalData = r.evaluation && r.evaluation.scores;
     const globalScore = evalData && evalData.global ? evalData.global : 0;
     let meta = [];
+    if (r.sortOrder) meta.push('<span class="card-meta-item">序 ' + escapeHtml(String(r.sortOrder)) + '</span>');
     if (r.applyDate) meta.push('<span class="card-meta-item">投递: ' + escapeHtml(r.applyDate) + '</span>');
     if (r.interviewDate) meta.push('<span class="card-meta-item">面试: ' + escapeHtml(r.interviewDate) + '</span>');
     if (r.location) meta.push('<span class="card-meta-item">' + escapeHtml(r.location) + '</span>');
@@ -1345,6 +1358,7 @@ function openRecordModal(id) {
     document.getElementById('fInterviewDate').value = r.interviewDate || '';
     document.getElementById('fIntro').value = r.companyIntro || '';
     document.getElementById('fNotes').value = r.notes || '';
+    document.getElementById('fSortOrder').value = (r.sortOrder != null && r.sortOrder !== 0) ? r.sortOrder : '';
     // Load saved JD
     document.getElementById('evalJDInput').value = r.jd || '';
     // Load existing eval if any
@@ -1371,6 +1385,7 @@ function openRecordModal(id) {
     document.getElementById('fInterviewDate').value = '';
     document.getElementById('fIntro').value = '';
     document.getElementById('fNotes').value = '';
+    document.getElementById('fSortOrder').value = '';
     clearAllDocs();
     // Clear interview Q&A
     const io = document.getElementById('docInterviewOutput'); if (io) { io.innerHTML=''; io.style.display='none'; io.dataset.generated=''; }
@@ -1442,6 +1457,8 @@ function saveRecord() {
     updatedAt: Date.now(),
     evaluation: currentEvalData
   };
+  const sortVal = parseInt(document.getElementById('fSortOrder').value, 10);
+  data.sortOrder = isNaN(sortVal) ? 0 : sortVal;
   if (editingId) {
     saveDocContents(editingId);
     saveCompanyResearch(editingId);
@@ -1470,6 +1487,13 @@ function saveRecord() {
     data.createdAt = Date.now();
     records.push(data);
     showToast('记录已添加');
+  }
+  // 若设置了排序优先级，自动切到「自定义顺序」并解锁手动顺序，输入即生效
+  if (data.sortOrder !== 0) {
+    const sb = document.getElementById('sortBy');
+    if (sb) sb.value = 'priority-desc';
+    manualOrder = false;
+    try { localStorage.setItem('interview_manual_order', '0'); } catch (e) {}
   }
   saveData();
   renderAll();
