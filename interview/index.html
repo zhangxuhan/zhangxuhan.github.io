@@ -2187,7 +2187,38 @@ function tryParseEvalJson(txt) {
 // 从展示用文本中移除所有 ```json 评分块（json 标签专用于评分块，不会误删报告里的其它代码块）
 function stripJsonBlock(content) {
   if (!content) return content;
-  return content.replace(/```json\s*[\s\S]*?```/gi, '').trim();
+  // 删除所有围栏代码块（```json / ```JSON / 裸 ```）。Career-Ops 报告为纯 Markdown 表格+文本，不含代码块，安全。
+  return content.replace(/```[a-zA-Z]*\s*[\s\S]*?```/gi, '').trim();
+}
+
+// 规范化评分对象：分数强转 1-5 整数（global 保留 1 位小数），recommendation/legitimacy 归一到枚举。
+// 防止推理模型输出字符串/浮点/超范围值导致按钮不高亮、颜色异常或推荐档位显示原始串。
+function normalizeEvalObj(obj) {
+  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return obj;
+  const clampInt = v => {
+    let n = typeof v === 'number' ? v : parseInt(v, 10);
+    if (isNaN(n)) return 0;
+    return Math.max(1, Math.min(5, Math.round(n)));
+  };
+  const out = Object.assign({}, obj);
+  const s = Object.assign({}, out.scores || {});
+  ['match','alignment','comp','culture','redFlags'].forEach(k => { s[k] = clampInt(s[k]); });
+  let g = typeof s.global === 'number' ? s.global : parseFloat(s.global);
+  if (isNaN(g)) g = 0;
+  else g = Math.max(1, Math.min(5, Math.round(g * 10) / 10));
+  s.global = g;
+  out.scores = s;
+  const recs = ['立即申请','值得申请','谨慎考虑','不建议申请'];
+  if (!recs.includes(out.recommendation)) {
+    if (g >= 4.5) out.recommendation = '立即申请';
+    else if (g >= 4.0) out.recommendation = '值得申请';
+    else if (g >= 3.5) out.recommendation = '谨慎考虑';
+    else out.recommendation = '不建议申请';
+  }
+  const legs = ['High Confidence','Proceed with Caution','Suspicious'];
+  if (!legs.includes(out.legitimacy)) out.legitimacy = '';
+  if (typeof out.archetype !== 'string') out.archetype = String(out.archetype || '');
+  return out;
 }
 
 function balanceJson(s) {
@@ -2327,11 +2358,12 @@ async function runSingleEval() {
     }
     document.getElementById('evalResult').innerHTML = html;
     if (evalObj) {
+      const ne = normalizeEvalObj(evalObj);
       currentEvalData = {
-        archetype: evalObj.archetype || '',
-        scores: evalObj.scores || {},
-        recommendation: evalObj.recommendation || '',
-        legitimacy: evalObj.legitimacy || '',
+        archetype: ne.archetype || '',
+        scores: ne.scores || {},
+        recommendation: ne.recommendation || '',
+        legitimacy: ne.legitimacy || '',
         report: report
       };
       document.getElementById('manualEvalSection').style.display = 'block';
@@ -2494,11 +2526,12 @@ async function runBatchEval() {
       records[idx].evaluation = records[idx].evaluation || {};
       records[idx].evaluation.error = res.error;
     } else if (res.evalObj) {
+      const ne = normalizeEvalObj(res.evalObj);
       records[idx].evaluation = {
-        archetype: res.evalObj.archetype || '',
-        scores: res.evalObj.scores || {},
-        recommendation: res.evalObj.recommendation || '',
-        legitimacy: res.evalObj.legitimacy || '',
+        archetype: ne.archetype || '',
+        scores: ne.scores || {},
+        recommendation: ne.recommendation || '',
+        legitimacy: ne.legitimacy || '',
         report: res.report || ''
       };
     } else if (res.report) {
