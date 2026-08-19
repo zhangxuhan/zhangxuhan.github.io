@@ -27,22 +27,32 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Prepare static site
+        shell: bash
+        run: |
+          SITE_DIR="${RUNNER_TEMP}/site"
+          mkdir -p "$SITE_DIR"
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='node_modules/' \
+            --exclude='package*.json' \
+            --exclude='run-hexo.bat' \
+            --exclude='start-server.js' \
+            --exclude='_config.yml' \
+            --exclude='task-summary*.md' \
+            --exclude='.workbuddy/' \
+            ./ "$SITE_DIR/"
+
+          test -f "$SITE_DIR/index.html"
+          test -f "$SITE_DIR/sim/index.html"
+          test -f "$SITE_DIR/sim/neural/index.html"
+          echo "Verified sim/neural/index.html in Pages artifact"
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # 部署整个仓库根目录（含 sim/ 等所有静态站点资源）
-          path: '.'
-          # 排除不应进入站点的本地开发产物，缩小体积、避免泄漏
-          exclude: |
-            node_modules/**
-            .git/**
-            package*.json
-            package-lock.json
-            run-hexo.bat
-            start-server.js
-            _config.yml
-            task-summary*.md
-            .workbuddy/**
+          path: ${{ runner.temp }}/site
 
       - name: Deploy to GitHub Pages
         id: deployment
