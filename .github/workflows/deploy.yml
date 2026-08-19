@@ -46,8 +46,8 @@ jobs:
 
           test -f "$SITE_DIR/index.html"
           test -f "$SITE_DIR/sim/index.html"
-          test -f "$SITE_DIR/sim/neural/index.html"
-          echo "Verified sim/neural/index.html in Pages artifact"
+          test -f "$SITE_DIR/neural/index.html"
+          echo "Verified neural/index.html in Pages artifact"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -57,3 +57,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
