@@ -47,9 +47,10 @@ jobs:
           test -f "$SITE_DIR/index.html"
           test -f "$SITE_DIR/sim/index.html"
           test -f "$SITE_DIR/neural/index.html"
-          test ! -e "$SITE_DIR/robot/index.html"
+          test -f "$SITE_DIR/robot/index.html"
+          grep -Fq 'Real-Time C++ Engineer — Simulation & AI Systems' "$SITE_DIR/robot/index.html"
           printf '%s\n' "$GITHUB_SHA" > "$SITE_DIR/deployment-version.txt"
-          echo "Verified temporary removal of robot/index.html"
+          echo "Verified robot/index.html and deployment version in Pages artifact"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
