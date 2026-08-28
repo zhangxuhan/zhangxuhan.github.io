@@ -1,0 +1,1224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xuhan Zhang — Real-Time C++ · Simulation & AI Systems</title>
+<style>
+  :root{
+    --bg:#05080f; --bg2:#080d18; --panel:rgba(140,180,220,0.035);
+    --ink:#e9eef6; --sub:#8fa2bd; --faint:#5d6e88;
+    --cyan:#5fd6df; --blue:#6aa9ff; --cyan-dim:rgba(95,214,223,0.5);
+    --violet:#9b8cff; --violet-dim:rgba(155,140,255,0.45);
+    --orange:#ff9a52; --orange-dim:rgba(255,154,82,0.4);
+    --acc:#9b8cff;
+    --line:rgba(120,170,210,0.13); --line2:rgba(120,170,210,0.07);
+    --mono:"SFMono-Regular",ui-monospace,"JetBrains Mono","Consolas",monospace;
+    --sans:"Inter","Segoe UI",system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:rgba(155,140,255,0.22)}
+  a{color:var(--cyan);text-decoration:none}
+  .ai{color:var(--violet)}
+
+  /* ---------- NAV ---------- */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;
+    padding:16px 32px;background:rgba(5,8,15,0.55);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line2);font-size:13px;letter-spacing:.04em}
+  nav .brand{font-weight:600;letter-spacing:.06em;color:var(--ink);display:flex;align-items:center;gap:10px}
+  nav .brand .dot{width:7px;height:7px;border-radius:50%;background:var(--violet);box-shadow:0 0 8px var(--violet-dim)}
+  nav .nav-right{display:flex;align-items:center;gap:22px}
+  nav .links{display:flex;gap:18px}
+  nav .links a{color:var(--sub);transition:color .25s;white-space:nowrap}
+  nav .links a:hover{color:var(--ink)}
+
+  /* ---------- LANGUAGE SWITCH ---------- */
+  .lang-switch{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--violet-dim);border-radius:999px;
+    padding:4px 6px 4px 11px;background:rgba(155,140,255,0.10);backdrop-filter:blur(6px);flex:none;
+    box-shadow:0 0 0 1px rgba(155,140,255,0.08),0 0 16px rgba(155,140,255,0.12)}
+  .lang-ico{color:var(--violet);opacity:.9;flex:none;margin-right:5px;width:15px;height:15px}
+  .lang-opt{font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--sub);background:none;
+    border:none;cursor:pointer;padding:6px 12px;border-radius:999px;transition:all .22s;line-height:1;white-space:nowrap}
+  .lang-opt:hover{color:var(--ink)}
+  .lang-opt.active{background:var(--violet);color:#0b0820;font-weight:700;box-shadow:0 0 12px var(--violet-dim)}
+
+  @media(max-width:1200px){nav .links{display:none}}
+  @media(max-width:520px){nav{padding:12px 16px}.lang-opt{padding:5px 11px}}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;height:100vh;min-height:620px;overflow:hidden;background:var(--bg);color:var(--ink)}
+  .hero-video-wrap{position:absolute;inset:0;z-index:0;display:flex;align-items:center;justify-content:center;
+    opacity:0;transform:scale(1.05);animation:heroVideoIn 1.8s cubic-bezier(.16,1,.3,1) forwards;
+    -webkit-mask-image:radial-gradient(ellipse at center,#000 38%,rgba(0,0,0,.9) 58%,transparent 88%);
+    mask-image:radial-gradient(ellipse at center,#000 38%,rgba(0,0,0,.9) 58%,transparent 88%)}
+  .hero-video{width:100%;height:100%;display:block;object-fit:cover;opacity:.62;
+    filter:grayscale(1) brightness(.78) contrast(.92)}
+  .hero-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:
+    linear-gradient(to top,#05080f 0%,rgba(5,8,15,.88) 24%,rgba(5,8,15,.16) 58%,transparent 76%),
+    linear-gradient(90deg,rgba(5,8,15,.76) 0%,rgba(5,8,15,.2) 42%,transparent 68%),
+    radial-gradient(120% 105% at 50% 45%,transparent 48%,rgba(5,8,15,.68) 100%)}
+  .hero-grain{position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.04;
+    background-image:repeating-conic-gradient(#fff 0 0.0006deg,transparent 0.0006deg 0.5deg)}
+  .hero-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;
+    padding:0 8vw 8vh;pointer-events:none;z-index:3;opacity:0;transform:translateY(20px);
+    animation:heroContentIn 1s .5s cubic-bezier(.16,1,.3,1) forwards}
+  .hero-kicker{font-family:var(--mono);font-size:12.5px;letter-spacing:.32em;color:rgba(255,255,255,.62);
+    text-transform:uppercase;margin-bottom:18px;opacity:0;animation:rise 1s .2s forwards}
+  .hero h1{font-size:clamp(32px,5.6vw,60px);font-weight:600;line-height:1.06;letter-spacing:-.01em;
+    max-width:18ch;opacity:0;animation:rise 1s .35s forwards}
+  .hero h1 .thin{font-weight:300;color:rgba(255,255,255,.62)}
+  .hero .sub{margin-top:22px;font-size:clamp(14px,1.8vw,18px);color:rgba(233,238,246,.72);max-width:52ch;
+    opacity:0;animation:rise 1s .55s forwards}
+  .hero .sub b{color:var(--ink);font-weight:500}
+  .hero-tags{display:flex;gap:10px;flex-wrap:wrap;margin-top:30px;opacity:0;animation:rise 1s .75s forwards}
+  .hero-tags span{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;color:rgba(233,238,246,.76);
+    border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:6px 13px;background:rgba(5,8,15,.56);
+    backdrop-filter:blur(8px)}
+  @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes heroVideoIn{to{opacity:1;transform:scale(1)}}
+  @keyframes heroContentIn{to{opacity:1;transform:none}}
+
+  .scroll-hint{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:4;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.22em;color:rgba(255,255,255,.42);text-transform:uppercase;
+    display:flex;flex-direction:column;align-items:center;gap:8px;opacity:0;animation:rise 1s 1.1s forwards}
+  .scroll-hint .bar{width:1px;height:34px;background:linear-gradient(rgba(255,255,255,.7),transparent);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+  /* ---------- HERO HUD FRAME ---------- */
+  .hero-frame{position:absolute;inset:22px;z-index:2;pointer-events:none}
+  .hero-frame .corner{position:absolute;width:26px;height:26px;border:1px solid rgba(255,255,255,.34);opacity:.8}
+  .hero-frame .corner.tl{top:0;left:0;border-right:none;border-bottom:none}
+  .hero-frame .corner.tr{top:0;right:0;border-left:none;border-bottom:none}
+  .hero-frame .corner.bl{bottom:0;left:0;border-right:none;border-top:none}
+  .hero-frame .corner.br{bottom:0;right:0;border-left:none;border-top:none}
+  .hud{position:absolute;font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;line-height:1.75;
+    color:rgba(255,255,255,.5);text-transform:uppercase}
+  .hud .k{color:#fff;opacity:.68}
+  .hud-tl{top:64px;left:26px}
+  .hud-br{bottom:26px;right:26px;text-align:right}
+  .hud .live{display:inline-block;width:6px;height:6px;border-radius:50%;background:#fff;
+    margin-right:6px;vertical-align:middle;animation:blink 1.6s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+  .scan{position:absolute;left:10px;right:10px;height:1px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);animation:scan 7.5s ease-in-out infinite}
+  @keyframes scan{0%{top:5%}50%{top:95%}100%{top:5%}}
+  @media(max-width:767px){
+    .hero-video-wrap{inset:10%;width:80%;height:80%}
+    .hero-overlay{padding:0 20px 8vh}
+    .hero-vignette{background:
+      linear-gradient(to top,#05080f 0%,rgba(5,8,15,.92) 34%,transparent 72%),
+      radial-gradient(120% 100% at 50% 45%,transparent 46%,rgba(5,8,15,.7) 100%)}
+    .hud{display:none}.hero-frame .corner{width:18px;height:18px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .hero-video-wrap,.hero-overlay{animation:none;opacity:1;transform:none}
+  }
+
+  /* ---------- ABOUT STRIP ---------- */
+  .about{max-width:1080px;margin:0 auto;padding:120px 32px 30px;text-align:center}
+  .about .role{font-family:var(--mono);font-size:12px;letter-spacing:.28em;color:var(--violet);
+    text-transform:uppercase;margin-bottom:20px}
+  .about h2{font-size:clamp(22px,3.4vw,34px);font-weight:400;line-height:1.4;color:var(--ink)}
+  .about h2 b{font-weight:600;color:#fff}
+  .about p{margin:24px auto 0;max-width:64ch;color:var(--sub);font-size:15.5px}
+
+  /* ---------- GENERIC SECTION ---------- */
+  .sys{max-width:1180px;margin:0 auto;padding:84px 32px;border-top:1px solid var(--line2)}
+  .sys .sec-num{font-family:var(--mono);font-size:13px;color:var(--cyan);letter-spacing:.1em}
+  .sys .stitle{font-size:clamp(21px,2.6vw,28px);font-weight:500;margin-top:8px;letter-spacing:-.01em;line-height:1.2}
+  .sys .ssub{color:var(--sub);font-size:14.5px;margin-top:14px;max-width:64ch;text-wrap:pretty}
+  #sdk .ssub + .bullets{margin-top:22px}
+  .sys .lead{margin-top:22px;font-size:15px;color:var(--ink);max-width:74ch;line-height:1.7;text-wrap:pretty}
+  .nowrap{white-space:nowrap}
+  .about p{text-wrap:pretty}
+  .sys .lead b{font-weight:600;color:#fff}
+  .sys .note{margin-top:30px;border:1px solid var(--line);border-left:3px solid var(--orange);border-radius:10px;
+    padding:20px 24px;background:var(--panel)}
+  .sys .note h4{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);margin-bottom:12px}
+  .sys .note p{font-size:13.5px;color:var(--sub);line-height:1.65;margin-top:10px}
+  .sys .note p:first-of-type{margin-top:0}
+
+  .sys.split{display:flex;gap:46px;align-items:stretch}
+  .sys.split.media-left{flex-direction:row-reverse}
+  .sys.split.media-right{flex-direction:row}
+  .sys.split .sec-text,.sys.split .sec-media{flex:1 1 0;min-width:0;display:flex;flex-direction:column}
+  .sys.split .sec-media .gallery{flex:1;width:100%;display:grid;gap:14px;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;align-content:stretch}
+  .sys.split .sec-media .shot{display:flex;height:100%}
+  .sys.split .sec-media .shot img{flex:1;width:100%;height:100%;object-fit:cover;display:block}
+  /* 06 single-media: tight image card, no oversized bounding box */
+  .sys.split.single-media .sec-media{flex:0 0 auto;align-items:flex-start;max-width:240px}
+  .sys.split.single-media .sec-media .gallery{flex:0 0 auto;grid-template-columns:minmax(0,240px);grid-template-rows:auto;align-content:start;justify-content:center}
+  .sys.split.single-media .sec-media .gallery.cols-1 .shot{aspect-ratio:auto;height:auto;max-width:240px;margin:0 auto;border-radius:8px}
+  .sys.split.single-media .sec-media .gallery.cols-1 .shot img{height:auto}
+
+  .sys.stacked .sec-media{margin-top:44px}
+
+  .bullets{display:grid;grid-template-columns:1fr;gap:11px 30px;list-style:none}
+  .sys.split .bullets{grid-template-columns:repeat(2,1fr)}
+  .sys.stacked .bullets{grid-template-columns:repeat(3,1fr)}
+  .sys.no-media .bullets{grid-template-columns:repeat(2,1fr)}
+  .bullets li{position:relative;padding-left:20px;font-size:14px;color:var(--sub);line-height:1.5;min-width:0;overflow-wrap:break-word}
+  .bullets li::before{content:"";position:absolute;left:2px;top:9px;width:6px;height:6px;border-radius:50%;
+    background:var(--cyan);box-shadow:0 0 6px var(--cyan-dim)}
+  .bullets li b{color:var(--ink);font-weight:500}
+
+  .sec-media{margin-top:0}
+  .gallery{display:grid;gap:14px}
+  .sys.split .gallery{grid-template-columns:repeat(2,1fr)}
+  .sys.stacked .gallery{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+  .sys.stacked .gallery.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .sys.stacked .gallery.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sys.stacked .gallery.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .shot{position:relative;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0a0f1a;aspect-ratio:4/3}
+  .shot img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.92) contrast(1.02);transition:transform .6s ease,filter .4s}
+  .shot:hover img{transform:scale(1.04)}
+  .shot .ov{position:absolute;inset:0;background:rgba(5,8,15,0);transition:background .3s;pointer-events:none}
+  .shot figcaption{position:absolute;left:0;right:0;bottom:0;padding:10px 12px;font-size:11.5px;color:var(--ink);
+    background:linear-gradient(transparent,rgba(4,7,13,0.86));font-family:var(--sans)}
+  .shot figcaption b{display:block;color:#fff;font-weight:500;font-size:12px}
+  .shot figcaption .cap-no{color:var(--acc,#9b8cff);font-weight:700;font-size:11px;letter-spacing:.03em}
+  .shot{cursor:zoom-in}
+  .shot .zoom{position:absolute;top:9px;right:9px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(8,12,20,.5);backdrop-filter:blur(4px);border:1px solid var(--line);color:#cdd6e6;opacity:0;transform:scale(.85);transition:opacity .25s,transform .25s;pointer-events:none;font-size:14px}
+  .shot:hover .zoom{opacity:1;transform:scale(1)}
+  .lightbox{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(3,5,10,.92);backdrop-filter:blur(6px);padding:4vh 4vw;cursor:zoom-out}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:92vw;max-height:84vh;width:auto;height:auto;object-fit:contain;border-radius:10px;box-shadow:0 24px 80px rgba(0,0,0,.6);background:#0a0f1a}
+  .lightbox .lb-cap{position:absolute;left:50%;bottom:3.4vh;transform:translateX(-50%);width:fit-content;max-width:90vw;padding:9px 16px;border-radius:10px;background:rgba(10,14,22,.82);border:1px solid var(--line);color:#e6ecf6;font-size:13px;font-family:var(--sans);text-align:center}
+  .lightbox .lb-close{position:absolute;top:18px;right:22px;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(10,14,22,.7);border:1px solid var(--line);color:#e6ecf6;font-size:20px;cursor:pointer}
+
+  /* ---------- CALL-CHAIN DIAGRAM ---------- */
+  .callchain{margin:26px 0 0;display:flex;flex-direction:column;align-items:stretch;gap:0;max-width:560px}
+  .cc-node{border:1px solid var(--violet-dim);background:rgba(155,140,255,0.08);border-radius:10px;
+    padding:13px 16px;font-family:var(--mono);font-size:13px;color:var(--ink);text-align:center;letter-spacing:.02em}
+  .cc-node b{color:var(--violet);font-weight:700}
+  .cc-arrow{text-align:center;color:var(--cyan);font-size:15px;line-height:1.5;opacity:.7}
+  .cc-cap{margin-top:14px;font-size:12.5px;color:var(--sub);font-family:var(--mono);letter-spacing:.04em;text-align:center}
+
+  /* ---------- PUBLIC EVIDENCE ---------- */
+  .evi-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:26px;max-width:820px}
+  .evi-list a{border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:var(--panel);
+    display:flex;flex-direction:column;gap:5px;transition:border-color .25s,transform .25s}
+  .evi-list a:hover{border-color:var(--violet-dim);transform:translateY(-2px)}
+  .evi-list .t{font-size:15px;color:var(--ink);font-weight:500}
+  .evi-list .u{font-family:var(--mono);font-size:11.5px;color:var(--cyan);word-break:break-all}
+  .evi-list .d{font-size:12.5px;color:var(--sub);margin-top:2px}
+  @media(max-width:680px){.evi-list{grid-template-columns:1fr}}
+
+  @media(max-width:860px){
+    .sys.split{flex-direction:column;gap:28px}
+    .sys.split.media-left{flex-direction:column}
+    .sys.split.media-right{flex-direction:column}
+    .sys.split .sec-text,.sys.split .sec-media{flex:1 1 auto;width:100%}
+    .sys.split .sec-media .gallery{grid-template-columns:repeat(2,1fr);grid-template-rows:auto}
+    .sys.split .sec-media .shot{height:auto;aspect-ratio:4/3}
+    .sys.stacked .gallery.cols-4,.sys.stacked .gallery.cols-3{grid-template-columns:repeat(2,1fr)}
+    .sys.stacked .bullets{grid-template-columns:repeat(2,1fr)}
+    .sys.no-media .bullets{grid-template-columns:repeat(2,1fr)}
+  }
+  @media(max-width:520px){.gallery,.sys.stacked .gallery.cols-4,.sys.stacked .gallery.cols-3,.sys.stacked .gallery.cols-2,.sys.no-media .bullets{grid-template-columns:1fr}.sys.stacked .bullets{grid-template-columns:1fr}}
+
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- INDUSTRIAL / ROBOT EFFECTS (additive) ---------- */
+  /* global faint scanline texture */
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:40;
+    background:repeating-linear-gradient(0deg, rgba(95,214,223,0.022) 0 1px, transparent 1px 3px);
+    mix-blend-mode:overlay;opacity:.6}
+  /* top HUD scroll progress bar */
+  .topbar{position:fixed;top:0;left:0;height:2px;width:100%;z-index:60;transform-origin:left center;
+    transform:scaleX(0);background:linear-gradient(90deg,var(--cyan),var(--violet));
+    box-shadow:0 0 8px var(--cyan-dim);transition:transform .08s linear}
+  /* industrial corner brackets on sections */
+  .sys{position:relative}
+  .sys .ind-corner{position:absolute;width:14px;height:14px;border:1px solid var(--cyan-dim);opacity:.5;pointer-events:none}
+  .sys .ind-corner.tl{top:-1px;left:-1px;border-right:none;border-bottom:none}
+  .sys .ind-corner.tr{top:-1px;right:-1px;border-left:none;border-bottom:none}
+  .sys .ind-corner.bl{bottom:-1px;left:-1px;border-right:none;border-top:none}
+  .sys .ind-corner.br{bottom:-1px;right:-1px;border-left:none;border-top:none}
+  /* machined plate around section number */
+  .sys .sec-num{position:relative;display:inline-block;padding:5px 12px;margin-bottom:2px;
+    border:1px solid var(--cyan-dim);border-radius:3px;background:rgba(95,214,223,0.06);
+    box-shadow:inset 0 0 12px rgba(95,214,223,0.08),0 0 10px rgba(95,214,223,0.06);
+    color:var(--cyan);font-family:var(--mono);font-size:13px;letter-spacing:.12em}
+  .sys .sec-num::before{content:"";position:absolute;left:-6px;top:50%;width:5px;height:1px;
+    background:var(--cyan);box-shadow:0 0 6px var(--cyan);transform:translateY(-50%)}
+  /* section title hover glitch */
+  .sys .stitle{position:relative}
+  .sys .stitle:hover{text-shadow:1px 0 rgba(255,90,90,.3),-1px 0 rgba(90,200,255,.3);animation:stglitch .4s steps(2,end) 1}
+  @keyframes stglitch{0%{transform:translateX(0)}30%{transform:translateX(-1.5px)}60%{transform:translateX(1.5px)}100%{transform:translateX(0)}}
+  /* section reveal scan sweep */
+  .sys.reveal::after{content:"";position:absolute;top:0;left:-40%;width:35%;height:100%;pointer-events:none;
+    background:linear-gradient(105deg,transparent,rgba(95,214,223,0.14),transparent);transform:skewX(-12deg);opacity:0}
+  .sys.reveal.in::after{animation:syssweep 1.1s ease-out forwards}
+  @keyframes syssweep{0%{left:-40%;opacity:0}12%{opacity:1}100%{left:130%;opacity:0}}
+  /* call-chain animated flow + data bus */
+  .cc-arrow{position:relative;animation:ccpulse 1.7s ease-in-out infinite}
+  @keyframes ccpulse{0%,100%{opacity:.45;transform:translateY(0)}50%{opacity:1;transform:translateY(2px)}}
+  .callchain{position:relative}
+  .callchain::before{content:"";position:absolute;left:50%;top:0;width:2px;height:100%;
+    background:linear-gradient(180deg,transparent,rgba(95,214,223,0.12),transparent);transform:translateX(-50%);pointer-events:none}
+  @media (prefers-reduced-motion: reduce){
+    body::after{display:none}
+    .topbar{transition:none}
+    .sys.reveal::after,.cc-arrow,.sys .stitle:hover{animation:none}
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{border-top:1px solid var(--line2);padding:70px 32px 60px;text-align:center;
+    background:linear-gradient(180deg,transparent,rgba(8,13,24,0.5))}
+  footer .name{font-size:20px;font-weight:500;letter-spacing:.02em}
+  footer .tag{font-family:var(--mono);font-size:12px;color:var(--violet);letter-spacing:.18em;margin-top:10px;text-transform:uppercase}
+  footer .meta{margin-top:18px;color:var(--faint);font-size:12.5px;font-family:var(--mono);line-height:2}
+  footer .disc{margin-top:26px;color:var(--faint);font-size:11px;max-width:62ch;margin-left:auto;margin-right:auto;line-height:1.7}
+
+  /* ---------- BOOT / OPENING ANIMATION ---------- */
+  .boot{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(120% 100% at 50% 40%,#0b1424 0%,#070b15 50%,#05080f 100%);
+    overflow:hidden;transition:transform .9s cubic-bezier(.76,0,.24,1)}
+  .boot.gone{transform:translateY(-100%)}
+  .boot-scene{display:flex;flex-direction:column;align-items:center;gap:22px}
+  .boot-core{width:120px;height:120px;filter:drop-shadow(0 0 18px rgba(95,214,223,.4))}
+  .boot-core .bc-ring{fill:none;stroke:rgba(155,140,255,.35);stroke-width:2;stroke-dasharray:6 10;
+    transform-origin:60px 60px;animation:bcspin 6s linear infinite}
+  .boot-core .bc-ring2{fill:none;stroke:rgba(95,214,223,.5);stroke-width:2;stroke-dasharray:3 8;
+    transform-origin:60px 60px;animation:bcspin 4s linear infinite reverse}
+  .boot-core .bc-eye{fill:rgba(95,214,223,.9);filter:drop-shadow(0 0 10px rgba(95,214,223,.8));
+    transform-origin:60px 60px;animation:bcbreathe 1.5s ease-in-out infinite}
+  @keyframes bcspin{to{transform:rotate(360deg)}}
+  @keyframes bcbreathe{0%,100%{opacity:.55;transform:scale(.86)}50%{opacity:1;transform:scale(1.06)}}
+  .boot-log{font-family:var(--mono);font-size:13px;line-height:1.95;color:var(--sub);text-align:center;letter-spacing:.04em}
+  .boot-log div{opacity:0;animation:bootIn .35s ease forwards}
+  .boot-log div:nth-child(1){animation-delay:.04s}
+  .boot-log div:nth-child(2){animation-delay:.18s}
+  .boot-log div:nth-child(3){animation-delay:.32s}
+  .boot-log div:nth-child(4){animation-delay:.46s;color:var(--cyan);font-weight:600}
+  .boot-log .ok{color:var(--violet)}
+  .boot-log .on{color:var(--cyan)}
+  @keyframes bootIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .boot-bar{width:240px;height:3px;border-radius:3px;background:rgba(120,170,210,.12);overflow:hidden}
+  .boot-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan));
+    box-shadow:0 0 12px var(--cyan);animation:fill .45s ease .05s forwards}
+  @keyframes fill{to{width:100%}}
+  .boot-enter{font-family:var(--mono);font-size:11.5px;letter-spacing:.22em;color:var(--faint);
+    background:none;border:1px solid var(--line);padding:7px 16px;border-radius:4px;cursor:pointer;
+    opacity:0;animation:bootIn .4s ease .55s forwards;transition:color .2s,border-color .2s}
+  .boot-enter:hover{color:var(--cyan);border-color:var(--cyan-dim)}
+  @media (prefers-reduced-motion: reduce){
+    .boot{display:none}
+    .boot-core .bc-ring,.boot-core .bc-ring2,.boot-core .bc-eye{animation:none}
+    .boot-log div,.boot-bar i,.boot-enter{animation:none;opacity:1}
+  }
+</style>
+</head>
+<body>
+
+<div class="boot" id="boot" aria-hidden="true">
+  <div class="boot-scene">
+    <svg class="boot-core" viewBox="0 0 120 120" aria-hidden="true">
+      <circle class="bc-ring" cx="60" cy="60" r="46"/>
+      <circle class="bc-ring2" cx="60" cy="60" r="32"/>
+      <circle class="bc-eye" cx="60" cy="60" r="13"/>
+    </svg>
+    <div class="boot-log">
+      <div>&gt; BOOT SEQUENCE INITIATED</div>
+      <div>&gt; MOUNTING NEURAL CORE ...... <span class="ok">OK</span></div>
+      <div>&gt; CALIBRATING SENSORS ....... <span class="ok">OK</span></div>
+      <div>&gt; REAL-TIME ENGINE <span class="on">ONLINE</span></div>
+    </div>
+    <div class="boot-bar"><i></i></div>
+    <button class="boot-enter" id="bootEnter" type="button">[ ENTER SYSTEM ]</button>
+  </div>
+</div>
+
+<div class="topbar" id="topbar"></div>
+
+<nav>
+  <div class="brand"><span class="dot"></span>XUHAN ZHANG</div>
+  <div class="nav-right">
+    <div class="links">
+      <a href="#about" data-i18n="nav_about">About</a>
+      <a href="#sdk" data-i18n="nav_sdk">CARLA &amp; Simulation Interfaces</a>
+      <a href="#tools" data-i18n="nav_tools">Developer Tools</a>
+      <a href="#sys" data-i18n="nav_sys">Real-Time Systems</a>
+      <a href="#sim" data-i18n="nav_sim">Simulation &amp; Integration</a>
+      <a href="#lead" data-i18n="nav_lead">Engineering Delivery</a>
+      <a href="#proj" data-i18n="nav_proj">Projects</a>
+    </div>
+    <div class="lang-switch" role="tablist" aria-label="Language / 语言 / 言語">
+      <svg class="lang-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M3 12h18"></path>
+        <path d="M12 3c2.8 3 2.8 15 0 18M12 3c-2.8 3-2.8 15 0 18"></path>
+      </svg>
+      <button type="button" class="lang-opt active" data-lang="en" role="tab" aria-selected="true">EN</button>
+      <button type="button" class="lang-opt" data-lang="zh" role="tab" aria-selected="false">中</button>
+      <button type="button" class="lang-opt" data-lang="ja" role="tab" aria-selected="false">日本語</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="hero-video-wrap" aria-hidden="true">
+    <video class="hero-video" autoplay muted loop playsinline preload="metadata">
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260508_215831_c6a8989c-d716-4d8d-8745-e972a2eec711.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-vignette"></div>
+  <div class="hero-grain"></div>
+
+  <div class="hero-frame">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <div class="hud hud-tl">
+      <div><span class="live"></span>C++ · ONLINE</div>
+      <div><span class="k">APIS</span> Python · C++</div>
+      <div><span class="k">BIND</span> Boost.Python</div>
+      <div><span class="k">SYSTEMS</span> Linux / Docker</div>
+    </div>
+    <div class="hud hud-br">
+      <div><span class="k">LANGS</span> C++ · Python · Lua</div>
+      <div><span class="k">SYNC</span> RPC / UDP</div>
+      <div><span class="k">DEPLOY</span> PC · Android · iOS</div>
+      <div><span class="k">MODE</span> <span id="hudMode">REALTIME</span></div>
+    </div>
+    <div class="scan"></div>
+  </div>
+
+  <div class="hero-overlay">
+    <div class="hero-kicker" data-i18n="hero_kicker">C++ · Real-Time Simulation · AI Systems</div>
+    <h1 data-i18n="hero_h1">Real-Time C++ Engineer — Simulation & AI Systems</h1>
+    <p class="sub" data-i18n="hero_sub">I develop performance-sensitive C++ software for real-time simulation, networked systems, tools, and cross-system integration. My experience includes Unreal Engine, CARLA, Python/C++ interfaces, distributed communication, and production optimization.</p>
+    <div class="hero-tags">
+      <span>C++ · API Design</span><span>Boost.Python</span><span>Unreal Engine</span>
+      <span>CARLA</span><span>Linux</span><span>Docker</span><span>DDS / UDP</span><span>Android/iOS/PC</span>
+    </div>
+  </div>
+  <div class="scroll-hint">Scroll<span class="bar"></span></div>
+</header>
+
+<!-- ============ ABOUT ============ -->
+<section class="about reveal" id="about">
+  <div class="role" data-i18n="about_role">Senior C++ Engineer · Simulation & Systems</div>
+  <h2 data-i18n="about_h2">I build the <b class="ai">reusable layer</b> that turns real-time simulation and engine internals into <b>stable, documented tools and interfaces.</b></h2>
+  <p data-i18n="about_p">My scope is the C++ / simulation / systems stack: extending engine internals and exposing them through Python/C++ interfaces, building cross-platform plugins and tooling, shipping large-scale real-time systems, and integrating simulation with real hardware and data.</p>
+</section>
+
+<!-- ============ 01 · CARLA EXTENSION & PYTHON/C++ INTERFACES ============ -->
+<section class="sys stacked reveal" id="sdk">
+  <div class="sec-text">
+  <div class="sec-num">01</div>
+  <h3 class="stitle" data-i18n="sdk_stitle">CARLA Extension &amp; Python/C++ Interfaces</h3>
+  <p class="ssub" data-i18n="sdk_ssub">Extended CARLA in Unreal Engine 4 and built Python, C++ and Blueprint interfaces for simulation control, sensor configuration, scenario generation and data collection.</p>
+  <ul class="bullets">
+    <li data-i18n="sdk_b1">Extended CARLA C++ client (LibCarla)</li>
+    <li data-i18n="sdk_b2">Dozens of Python APIs via Boost.Python</li>
+    <li data-i18n="sdk_b3">Vehicle control / simulated sensors</li>
+    <li data-i18n="sdk_b4">Scenario generation &amp; data collection</li>
+    <li data-i18n="sdk_b5">API documentation &amp; examples</li>
+    <li data-i18n="sdk_b6">Interface testing &amp; validation</li>
+    <li data-i18n="sdk_b7">Linux / Docker deployment</li>
+  </ul>
+
+  <div class="callchain reveal">
+    <div class="cc-node">Python API</div>
+    <div class="cc-arrow">↓</div>
+    <div class="cc-node">Boost.Python Binding</div>
+    <div class="cc-arrow">↓</div>
+    <div class="cc-node">C++ Client / LibCarla</div>
+    <div class="cc-arrow">↓</div>
+    <div class="cc-node">RPC</div>
+    <div class="cc-arrow">↓</div>
+    <div class="cc-node">Unreal Engine Simulation</div>
+    <div class="cc-cap" data-i18n="sdk_diag">Python → Boost.Python → C++ → RPC → Unreal call chain</div>
+  </div>
+  </div>
+  <div class="sec-media">
+    <div class="gallery cols-4 reveal">
+      <figure class="shot"><img src="media/carla.jpg" alt="CARLA simulation environments" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">1.1</span> <span data-i18n="sdk_im1"><b>CARLA Simulation</b>Environments</span></figcaption></figure>
+      <figure class="shot"><img src="media/点云.jpg" alt="Virtual LiDAR point cloud" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">1.2</span> <span data-i18n="sdk_im2"><b>Virtual LiDAR</b>Point cloud</span></figcaption></figure>
+      <figure class="shot"><img src="media/carla_战场仿真.jpg" alt="Simulation scenario configuration" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">1.3</span> <span data-i18n="sim_im7"><b>Scenario Config</b>Simulation</span></figcaption></figure>
+      <figure class="shot"><img src="media/carla_战场仿真2.jpg" alt="Simulation scenario configuration" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">1.4</span> <span data-i18n="sim_im8"><b>Scenario Config</b>Simulation</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 · CROSS-PLATFORM PLUGINS & DEVELOPER TOOLS ============ -->
+<section class="sys stacked reveal" id="tools">
+  <div class="sec-text">
+  <div class="sec-num">02</div>
+  <h3 class="stitle" data-i18n="tools_stitle">Cross-platform Tools &amp; Automation at Tencent</h3>
+  <p class="ssub" data-i18n="tools_ssub">Designed internal plugins and tools used by programmers, designers and artists across Android, iOS and PC.</p>
+  <ul class="bullets">
+    <li data-i18n="tools_b1">Designed internal plugins from scratch</li>
+    <li data-i18n="tools_b2">Automated thumbnail generation</li>
+    <li data-i18n="tools_b3">Data-generation tools</li>
+    <li data-i18n="tools_b4">Lua hot-update support</li>
+    <li data-i18n="tools_b5">Android · iOS · PC</li>
+    <li data-i18n="tools_b6">Public API &amp; module boundaries</li>
+    <li data-i18n="tools_b7">Version compatibility &amp; docs</li>
+    <li data-i18n="tools_b8">Performance &amp; stability analysis</li>
+  </ul>
+
+  <div class="callchain reveal">
+    <div class="cc-node" data-i18n="tools_f1">Programmers / Designers / Artists</div>
+    <div class="cc-arrow">↓</div>
+    <div class="cc-node" data-i18n="tools_f2">Internal Plugin APIs</div>
+    <div class="cc-arrow">↓</div>
+    <div class="cc-node" data-i18n="tools_f3">Thumbnail / Data Gen / Hot Update</div>
+    <div class="cc-arrow">↓</div>
+    <div class="cc-node" data-i18n="tools_f4">Android / iOS / PC</div>
+    <div class="cc-cap" data-i18n="tools_fcap">Internal plugin APIs serve programmers, designers and artists across platforms</div>
+  </div>
+  </div>
+</section>
+
+<!-- ============ 03 · PRODUCTION REAL-TIME SYSTEMS ============ -->
+<section class="sys no-media reveal" id="sys">
+  <div class="sec-num">03</div>
+  <h3 class="stitle" data-i18n="sys_stitle">Production Real-Time Systems</h3>
+  <p class="ssub" data-i18n="sys_ssub">Built and optimized production real-time systems for large-scale cross-platform online products.</p>
+  <p class="lead" data-i18n="sys_lead">My work covered multiplayer networking, dedicated servers, RPC, performance and memory optimization, multi-threading, Android/iOS/PC deployment, crash analysis and regression testing, and cross-team module integration.</p>
+  <ul class="bullets">
+    <li data-i18n="sys_b1">Real-time multiplayer networking &amp; sync</li>
+    <li data-i18n="sys_b2">Dedicated Server &amp; RPC / UDP</li>
+    <li data-i18n="sys_b3">Performance &amp; memory optimization</li>
+    <li data-i18n="sys_b4">Multi-threading</li>
+    <li data-i18n="sys_b5">Android · iOS · PC deployment</li>
+    <li data-i18n="sys_b6">Crash analysis &amp; regression testing</li>
+    <li data-i18n="sys_b7">Cross-team module integration</li>
+    <li data-i18n="sys_b8">Cross-platform toolchains &amp; pipelines</li>
+  </ul>
+  <div class="note">
+    <h4 data-i18n="sys_ctx_h">Project context</h4>
+    <p data-i18n="sys_ctx_p1">Fun Party reached 129M+ users within three months of launch. This is a product-level public figure; my responsibilities covered specific systems and modules.</p>
+    <p data-i18n="sys_ctx_p2">QQHome integrated Unreal-engine interactive experiences into the QQ platform (500M+ MAU ecosystem).</p>
+  </div>
+  <div class="note">
+    <h4 data-i18n="sys_note_h">Note</h4>
+    <p data-i18n="sys_note_p1">These are team-built products; I owned specific modules rather than the whole product.</p>
+    <p data-i18n="sys_note_p2">Long-term user of Unreal Engine and C++, with core expertise spanning real-time systems, multiplayer synchronization, network communication, memory and multi-threading optimization, and cross-platform toolchains; plus rendering, animation, physics, character 3C, network protocols, UI, materials, Dedicated Servers, multi-platform adaptation, hot-update, production pipelines, engine modification, AI-assisted development, and multi-module integration and debugging.</p>
+  </div>
+</section>
+
+<!-- ============ 04 · REAL-TIME SIMULATION & SYSTEMS INTEGRATION ============ -->
+<section class="sys stacked reveal" id="sim">
+  <div class="sec-text">
+  <div class="sec-num">04</div>
+  <h3 class="stitle" data-i18n="sim_stitle">Real-Time Simulation &amp; Systems Integration</h3>
+  <p class="ssub" data-i18n="sim_ssub">Integrated simulation with real hardware and data through co-simulation, real-time buses and virtual sensors.</p>
+  <ul class="bullets">
+    <li data-i18n="sim_b1">Unreal / AMESim / MATLAB co-simulation</li>
+    <li data-i18n="sim_b2">UDP / DDS communication</li>
+    <li data-i18n="sim_b3">Linux-based tooling</li>
+    <li data-i18n="sim_b4">Virtual sensors — Camera / LiDAR / IMU</li>
+    <li data-i18n="sim_b5">Distributed &amp; multi-node simulation</li>
+    <li data-i18n="sim_b6">Physical–digital data exchange &amp; validation</li>
+  </ul>
+  </div>
+  <div class="sec-media">
+    <div class="gallery cols-4 reveal">
+      <figure class="shot"><img src="media/仿真系统.jpg" alt="Simulation system and toolchain" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">4.1</span> <span data-i18n="sdk_im3"><b>Simulation System</b>Toolchain</span></figcaption></figure>
+      <figure class="shot"><img src="media/World Machine构建真实世界地形.jpg" alt="Procedural terrain generation" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">4.2</span> <span data-i18n="sim_im6"><b>Procedural Terrain</b>World Machine</span></figcaption></figure>
+      <figure class="shot"><img src="media/大世界流送关卡.jpg" alt="Large-world streaming level" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">4.3</span> <span data-i18n="sim_im13"><b>Large-World Level</b>Unreal Engine</span></figcaption></figure>
+      <figure class="shot"><img src="media/Amesim+UE仿真_模型.jpg" alt="AMESim–Unreal co-simulation model" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">4.4</span> <span data-i18n="sim_im1"><b>AMESim–Unreal</b>Co-sim model</span></figcaption></figure>
+      <figure class="shot"><img src="media/Matlab+UE联合仿真2.jpg" alt="MATLAB–Unreal co-simulation" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">4.5</span> <span data-i18n="sim_im4"><b>MATLAB–Unreal</b>Co-Simulation</span></figcaption></figure>
+      <figure class="shot"><img src="media/Amesim+UE仿真_多模型协同仿真.jpg" alt="Multi-model co-simulation" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">4.6</span> <span data-i18n="sim_im5"><b>Multi-model</b>Co-Simulation</span></figcaption></figure>
+      <figure class="shot"><img src="media/Amesim+UE仿真_多节点蜂群.jpg" alt="Distributed multi-node simulation" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">4.7</span> <span data-i18n="sim_im9"><b>Distributed Sim</b>Multi-node</span></figcaption></figure>
+      <figure class="shot"><img src="media/嵌入式+linux仪表.jpg" alt="Linux-based instrumentation interface" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">4.8</span> <span data-i18n="sim_im12"><b>Linux Instrumentation</b>Interface</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 05 · TECHNICAL LEADERSHIP ============ -->
+<section class="sys no-media reveal" id="lead">
+  <div class="sec-num">05</div>
+  <h3 class="stitle" data-i18n="lead_stitle">Technical Leadership &amp; Engineering Delivery</h3>
+  <p class="ssub" data-i18n="lead_ssub">Combined hands-on C++ development with small-team technical leadership and delivery.</p>
+  <ul class="bullets">
+    <li data-i18n="lead_b1">Architecture, task breakdown &amp; estimation</li>
+    <li data-i18n="lead_b2">Code reviews, coding standards, delivery tracking</li>
+    <li data-i18n="lead_b6">API docs, tests, versioning &amp; user support</li>
+  </ul>
+  <div class="note">
+    <h4 data-i18n="lead_note_h">Scope by role</h4>
+    <p data-i18n="lead_note_p1">First company — Led a three-engineer team and managed technical delivery.</p>
+    <p data-i18n="lead_note_p2">Chinese Academy of Sciences — served as the primary simulation engineer and participated in technical interviews, team formation, task allocation and training.</p>
+    <p data-i18n="lead_note_p3">Tencent — Senior individual contributor; delivered internal technical talks.</p>
+  </div>
+</section>
+
+<!-- ============ 06 · SIDE PROJECTS / PERSONAL INTERESTS ============ -->
+<section class="sys split media-right single-media reveal" id="proj">
+  <div class="sec-text">
+    <div class="sec-num">06</div>
+    <h3 class="stitle" data-i18n="proj_stitle">Side Projects</h3>
+    <p class="ssub" data-i18n="proj_ssub">Personal explorations in AI, embedded hardware and real-time dialogue.</p>
+    <p class="lead" data-i18n="proj_lead">A pocket-sized embedded device running custom firmware and a small on-device dialogue UI. Combines embedded C/C++ with an AI dialogue loop for low-power, responsive real-time interaction.</p>
+    <ul class="bullets">
+      <li data-i18n="proj_b1">AI dialogue on custom firmware device</li>
+      <li data-i18n="proj_b2">Custom embedded hardware / firmware platform</li>
+      <li data-i18n="proj_b3">Real-time conversational UI &amp; UX</li>
+      <li data-i18n="proj_b4">C/C++ on bare metal, low-power &amp; responsive</li>
+    </ul>
+  </div>
+  <div class="sec-media">
+    <div class="gallery cols-1 reveal">
+      <figure class="shot"><img src="media/personal-device.jpg" alt="Personal embedded AI dialogue device" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">6.1</span> <span data-i18n="proj_im1"><b>Embedded AI Device</b>Personal side project</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+
+<footer>
+  <div class="name">Xuhan Zhang</div>
+  <div class="tag" data-i18n="foot_tag">Real-Time C++ / Simulation & Systems Engineer</div>
+  <div class="meta">
+    C++ · Boost.Python · Unreal Engine · Python · CARLA · Linux · Docker · DDS/UDP<br>
+    <span data-i18n="foot_chain">CARLA → Interfaces → Simulation → Systems → Deployment</span>
+  </div>
+  <p class="disc" data-i18n="foot_disc">Selected captures show real work within the C++ / simulation / systems scope. Client names, sensitive scenarios and company IP are not disclosed.</p>
+</footer>
+
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image preview">
+  <div class="lb-close" id="lbClose" title="关闭">×</div>
+  <img id="lbImg" alt="">
+  <div class="lb-cap" id="lbCap"></div>
+</div>
+
+<script>
+/* ============ HERO — robot motif, no radar ring ============ */
+(function(){
+  const cv=document.getElementById('heroCanvas');
+  if(!cv) return;
+  const ctx=cv.getContext('2d');
+  let W,H,pts=[];
+  function resize(){
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    W=cv.clientWidth; H=cv.clientHeight;
+    cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    pts=[];
+    for(let i=0;i<70;i++){
+      pts.push({a:Math.random()*6.28, r:0.30+Math.random()*0.55,
+                sp:0.12+Math.random()*0.4, ph:Math.random()*6.28});
+    }
+  }
+  window.addEventListener('resize',resize); resize();
+  const elMode=document.getElementById('hudMode');
+
+  /* cursor-driven look direction (robot eyes track pointer) */
+  let mNX=0, mNY=0;
+  window.addEventListener('mousemove', function(e){
+    const r=cv.getBoundingClientRect();
+    if(!r.width) return;
+    mNX=Math.max(-1,Math.min(1,(e.clientX-(r.left+r.width/2))/(r.width/2)));
+    mNY=Math.max(-1,Math.min(1,(e.clientY-(r.top+r.height/2))/(r.height/2)));
+  });
+
+  function rr(x,y,w,h,r){
+    ctx.beginPath();
+    if(ctx.roundRect){ ctx.roundRect(x,y,w,h,r); }
+    else{
+      ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r); ctx.arcTo(x+w,y+h,x,y+h,r);
+      ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath();
+    }
+  }
+
+  function draw(now){
+    const t=now/1000;
+    ctx.fillStyle='#05080f'; ctx.fillRect(0,0,W,H);
+
+    const hy=H*0.72;
+    const cx=W*0.5, cy=H*0.46;
+    const s=Math.min(W,H)/760;            // robot scale
+
+    /* perspective grid floor */
+    ctx.strokeStyle='rgba(120,170,210,0.06)'; ctx.lineWidth=1;
+    for(let i=-12;i<=12;i++){
+      const x=W/2+i*(W*0.045);
+      ctx.beginPath(); ctx.moveTo(W/2,hy); ctx.lineTo(x+i*(W*0.10),H); ctx.stroke();
+    }
+    for(let i=1;i<=8;i++){
+      const d=i/8; const y=hy+(H-hy)*Math.pow(d,1.7);
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke();
+    }
+
+    /* orbiting sensor blips around the robot */
+    const orb=Math.min(W,H);
+    for(const p of pts){
+      const ang=p.a+t*p.sp;
+      const rad=(0.16+p.r*0.20)*orb;
+      const x=cx+Math.cos(ang)*rad;
+      const y=cy+Math.sin(ang)*rad*0.55;
+      const a=0.22+0.26*Math.abs(Math.sin(t*1.5+p.ph));
+      ctx.fillStyle='rgba(95,214,223,'+a.toFixed(3)+')';
+      ctx.beginPath(); ctx.arc(x,y,1.8,0,7); ctx.fill();
+    }
+
+    /* ===== ROBOT (front-view schematic) ===== */
+    const glow=0.5+0.5*Math.sin(t*2.2);
+    ctx.save();
+    ctx.translate(cx,cy);
+
+    /* ===== INDUSTRIAL RETICLE (behind robot) ===== */
+    ctx.save();
+    ctx.rotate(t*0.22);
+    ctx.strokeStyle='rgba(95,214,223,0.16)'; ctx.lineWidth=1; ctx.setLineDash([6,10]);
+    ctx.beginPath(); ctx.arc(0,8*s,112*s,0,7); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.rotate(-t*0.44);
+    ctx.strokeStyle='rgba(155,140,255,0.14)'; ctx.setLineDash([3,7]);
+    ctx.beginPath(); ctx.arc(0,8*s,90*s,0,7); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+    /* crosshair */
+    ctx.strokeStyle='rgba(95,214,223,0.08)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(-132*s,8*s); ctx.lineTo(132*s,8*s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,-82*s); ctx.lineTo(0,112*s); ctx.stroke();
+
+    /* base platform */
+    ctx.fillStyle='rgba(95,214,223,0.10)';
+    ctx.beginPath(); ctx.ellipse(0,92*s,60*s,16*s,0,0,7); ctx.fill();
+    ctx.strokeStyle='rgba(95,214,223,0.35)'; ctx.lineWidth=1.4;
+    ctx.beginPath(); ctx.ellipse(0,92*s,60*s,16*s,0,0,7); ctx.stroke();
+    /* turntable ticks (rotating) */
+    (function(){
+      const N=40, rx=60*s, ry=16*s;
+      for(let i=0;i<N;i++){
+        const a=t*0.35 + i/N*6.283;
+        const px=Math.cos(a)*rx, py=Math.sin(a)*ry;
+        const long=(i%4===0);
+        const len=(long?5:2.5)*s;
+        const k1=(rx+len)/rx, k2=(ry+len)/ry;
+        ctx.strokeStyle='rgba(95,214,223,'+(long?0.4:0.18).toFixed(3)+')';
+        ctx.lineWidth=long?1.4:1;
+        ctx.beginPath(); ctx.moveTo(px,92*s+py); ctx.lineTo(px*k1,92*s+py*k2); ctx.stroke();
+      }
+    })();
+
+    /* ===== BODY (metallic mech plating) ===== */
+    const bg=ctx.createLinearGradient(-34*s,-10*s,34*s,68*s);
+    bg.addColorStop(0,'rgba(150,200,235,0.18)');
+    bg.addColorStop(0.5,'rgba(120,150,190,0.06)');
+    bg.addColorStop(1,'rgba(95,80,150,0.16)');
+    ctx.fillStyle=bg;
+    ctx.strokeStyle='rgba(155,140,255,0.7)'; ctx.lineWidth=2;
+    rr(-34*s,-10*s,68*s,78*s,12*s); ctx.fill(); ctx.stroke();
+    /* panel seams */
+    ctx.strokeStyle='rgba(95,214,223,0.18)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(-30*s,16*s); ctx.lineTo(30*s,16*s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,-6*s); ctx.lineTo(0,58*s); ctx.stroke();
+    /* left cyan / right purple rim light (depth) */
+    ctx.strokeStyle='rgba(95,214,223,0.85)'; ctx.lineWidth=2.4;
+    ctx.beginPath(); ctx.moveTo(-34*s+2,-8*s); ctx.lineTo(-34*s+2,58*s); ctx.stroke();
+    ctx.strokeStyle='rgba(155,140,255,0.8)';
+    ctx.beginPath(); ctx.moveTo(34*s-2,-8*s); ctx.lineTo(34*s-2,58*s); ctx.stroke();
+    /* chest core + expanding energy rings */
+    for(let k=0;k<2;k++){
+      const ph=((t*0.6)+k*0.5)%1;
+      ctx.strokeStyle='rgba(155,140,255,'+(0.45*(1-ph)).toFixed(3)+')';
+      ctx.lineWidth=1.4; ctx.beginPath(); ctx.arc(0,26*s,10*s+ph*24*s,0,7); ctx.stroke();
+    }
+    const cg=ctx.createRadialGradient(0,26*s,1,0,26*s,10*s);
+    cg.addColorStop(0,'rgba(220,210,255,0.95)');
+    cg.addColorStop(1,'rgba(155,140,255,'+(0.5+0.4*glow).toFixed(3)+')');
+    ctx.fillStyle=cg; ctx.beginPath(); ctx.arc(0,26*s,10*s,0,7); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.6)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(0,26*s,10*s,0,7); ctx.stroke();
+    /* chest ventilation grille */
+    ctx.strokeStyle='rgba(95,214,223,0.20)'; ctx.lineWidth=1;
+    for(let i=0;i<5;i++){ const yy=44*s+i*5*s; ctx.beginPath(); ctx.moveTo(-18*s,yy); ctx.lineTo(18*s,yy); ctx.stroke(); }
+
+    /* arms (mechanical plating + joints + claw hand, gentle sway) */
+    const sw=Math.sin(t*1.4)*7*s;
+    ctx.lineCap='round'; ctx.lineJoin='round';
+    function arm(sx,sy,ex,ey,hx,hy){
+      /* limb base (dark metal tube) */
+      ctx.strokeStyle='rgba(130,165,205,0.30)'; ctx.lineWidth=9*s;
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.lineTo(hx,hy); ctx.stroke();
+      /* cyan highlight along the limb */
+      ctx.strokeStyle='rgba(95,214,223,0.6)'; ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(ex,ey); ctx.lineTo(hx,hy); ctx.stroke();
+      /* shoulder + elbow joints */
+      ctx.fillStyle='rgba(95,214,223,0.55)';
+      ctx.beginPath(); ctx.arc(sx,sy,4*s,0,7); ctx.fill();
+      ctx.beginPath(); ctx.arc(ex,ey,3.4*s,0,7); ctx.fill();
+      /* hand: palm plate + 3 fingers */
+      ctx.fillStyle='rgba(130,165,205,0.32)';
+      rr(hx-5*s,hy-1*s,10*s,9*s,3*s); ctx.fill();
+      ctx.strokeStyle='rgba(95,214,223,0.6)'; ctx.lineWidth=1.4;
+      rr(hx-5*s,hy-1*s,10*s,9*s,3*s); ctx.stroke();
+      ctx.lineWidth=1.6;
+      for(let f=-1;f<=1;f++){ const fx=hx+f*3.4*s; ctx.beginPath(); ctx.moveTo(fx,hy+8*s); ctx.lineTo(fx,hy+13*s+(f===0?0:1.5*s)); ctx.stroke(); }
+    }
+    arm(-32*s,4*s, -50*s,40*s+sw, -45*s,70*s);
+    arm(32*s,4*s, 50*s,40*s-sw, 45*s,70*s);
+    ctx.lineCap='butt'; ctx.lineJoin='miter';
+
+    /* neck */
+    ctx.strokeStyle='rgba(95,214,223,0.5)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(0,-10*s); ctx.lineTo(0,-22*s); ctx.stroke();
+
+    /* ===== HEAD HOLO-HUD ring (behind head) ===== */
+    ctx.save();
+    ctx.translate(0,-43*s); ctx.rotate(t*0.5);
+    ctx.strokeStyle='rgba(95,214,223,0.20)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.arc(0,0,40*s,0,7); ctx.stroke();
+    for(let i=0;i<12;i++){
+      const a=i/12*6.283, long=(i%3===0), r1=40*s, r2=(long?34:37)*s;
+      ctx.strokeStyle='rgba(95,214,223,'+(long?0.5:0.22).toFixed(3)+')';
+      ctx.beginPath(); ctx.moveTo(Math.cos(a)*r1,Math.sin(a)*r1); ctx.lineTo(Math.cos(a)*r2,Math.sin(a)*r2); ctx.stroke();
+    }
+    const sa=t*1.2, sweep=0.6;
+    ctx.strokeStyle='rgba(155,140,255,0.75)'; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.arc(0,0,40*s,sa,sa+sweep); ctx.stroke();
+    ctx.restore();
+
+    /* head */
+    const hg=ctx.createLinearGradient(-28*s,-64*s,28*s,-22*s);
+    hg.addColorStop(0,'rgba(150,200,235,0.20)');
+    hg.addColorStop(1,'rgba(95,80,150,0.15)');
+    ctx.fillStyle=hg;
+    ctx.strokeStyle='rgba(95,214,223,0.8)'; ctx.lineWidth=2;
+    rr(-28*s,-64*s,56*s,42*s,10*s); ctx.fill(); ctx.stroke();
+    /* brow seam */
+    ctx.strokeStyle='rgba(95,214,223,0.22)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(-22*s,-46*s); ctx.lineTo(22*s,-46*s); ctx.stroke();
+    /* head rim light */
+    ctx.strokeStyle='rgba(95,214,223,0.85)'; ctx.lineWidth=2.2;
+    ctx.beginPath(); ctx.moveTo(-28*s+2,-58*s); ctx.lineTo(-28*s+2,-28*s); ctx.stroke();
+    ctx.strokeStyle='rgba(155,140,255,0.8)';
+    ctx.beginPath(); ctx.moveTo(28*s-2,-58*s); ctx.lineTo(28*s-2,-28*s); ctx.stroke();
+    /* visor */
+    ctx.fillStyle='rgba(8,14,22,0.88)';
+    rr(-23*s,-56*s,46*s,22*s,6*s); ctx.fill();
+    /* eyes (blink + look toward cursor) */
+    const blink=(Math.sin(t*1.1)>0.96)?0.15:1;
+    const ex=mNX*4*s, ey=mNY*3*s;
+    ctx.fillStyle='rgba(95,214,223,'+(0.9*blink).toFixed(3)+')';
+    ctx.shadowColor='rgba(95,214,223,0.8)'; ctx.shadowBlur=10*blink;
+    rr(-18*s+ex,-50*s+ey,13*s,9*s,3*s); ctx.fill();
+    rr(5*s+ex,-50*s+ey,13*s,9*s,3*s); ctx.fill();
+    ctx.shadowBlur=0;
+    /* antenna */
+    ctx.strokeStyle='rgba(95,214,223,0.7)'; ctx.lineWidth=1.6;
+    ctx.beginPath(); ctx.moveTo(0,-64*s); ctx.lineTo(0,-78*s); ctx.stroke();
+    ctx.fillStyle='rgba(155,140,255,'+(0.5+0.5*glow).toFixed(3)+')';
+    ctx.beginPath(); ctx.arc(0,-82*s,3.2*s,0,7); ctx.fill();
+
+    /* scan sweep over chassis */
+    const syy=(-64+((t*0.5)%1)*120)*s;
+    const sg2=ctx.createLinearGradient(0,syy-9*s,0,syy+9*s);
+    sg2.addColorStop(0,'rgba(95,214,223,0)');
+    sg2.addColorStop(0.5,'rgba(95,214,223,0.22)');
+    sg2.addColorStop(1,'rgba(95,214,223,0)');
+    ctx.fillStyle=sg2; ctx.fillRect(-44*s,syy-9*s,88*s,18*s);
+
+    ctx.restore();
+
+    if(elMode) elMode.textContent = (Math.sin(t*0.8)>0)?'REALTIME':'ONLINE';
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+
+/* ============ reveal ============ */
+const rio=new IntersectionObserver((ents)=>{
+  ents.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('in');rio.unobserve(e.target);} });
+},{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>rio.observe(el));
+
+/* ============ i18n ============ */
+const I18N = {
+  en: {
+    nav_about:'About', nav_sdk:'CARLA & Simulation Interfaces', nav_tools:'Developer Tools', nav_sys:'Real-Time Systems', nav_sim:'Simulation & Integration', nav_lead:'Engineering Delivery',
+    hero_kicker:'C++ · Real-Time Simulation · AI Systems',
+    hero_h1:'Real-Time C++ Engineer — Simulation & AI Systems',
+    hero_sub:'I develop performance-sensitive C++ software for real-time simulation, networked systems, tools, and cross-system integration. My experience includes Unreal Engine, CARLA, Python/C++ interfaces, distributed communication, and production optimization.',
+    about_role:'Senior C++ Engineer · Simulation & Systems',
+    about_h2:'I build the <b class="ai">reusable layer</b> that turns real-time simulation and engine internals into <b>stable, documented tools and interfaces.</b>',
+    about_p:'My scope is the C++ / simulation / systems stack: extending engine internals and exposing them through Python/C++ interfaces, building cross-platform plugins and tooling, shipping large-scale real-time systems, and integrating simulation with real hardware and data.',
+    sdk_stitle:'CARLA Extension & Python/C++ Interfaces',
+    sdk_ssub:'Extended CARLA in Unreal Engine 4 and built Python, C++ and Blueprint interfaces for simulation control, sensor configuration, scenario generation and data collection.',
+    sdk_b1:'Extended CARLA C++ client (LibCarla)',
+    sdk_b2:'Dozens of Python APIs via Boost.Python',
+    sdk_b3:'Vehicle control / simulated sensors',
+    sdk_b4:'Scenario generation & data collection',
+    sdk_b5:'API documentation & examples',
+    sdk_b6:'Interface testing & validation',
+    sdk_b7:'Linux / Docker deployment',
+    sdk_diag:'Python → Boost.Python → C++ → RPC → Unreal call chain',
+    sdk_im1:'<b>CARLA Simulation</b>Environments',
+    sdk_im2:'<b>Virtual LiDAR</b>Point cloud',
+    sdk_im3:'<b>Simulation System</b>Toolchain',
+    tools_stitle:'Cross-platform Tools & Automation at Tencent',
+    tools_ssub:'Designed internal plugins and tools used by programmers, designers and artists across Android, iOS and PC.',
+    tools_b1:'Designed internal plugins from scratch',
+    tools_b2:'Automated thumbnail generation',
+    tools_b3:'Data-generation tools',
+    tools_b4:'Lua hot-update support',
+    tools_b5:'Android · iOS · PC',
+    tools_b6:'Public API & module boundaries',
+    tools_b7:'Version compatibility & docs',
+    tools_b8:'Performance & stability analysis',
+    tools_f1:'Programmers / Designers / Artists',
+    tools_f2:'Internal Plugin APIs',
+    tools_f3:'Thumbnail / Data Gen / Hot Update',
+    tools_f4:'Android / iOS / PC',
+    tools_fcap:'Internal plugin APIs serve programmers, designers and artists across platforms',
+    sys_stitle:'Production Real-Time Systems',
+    sys_ssub:'Built and optimized production real-time systems for large-scale cross-platform online products.',
+    sys_lead:'My work covered multiplayer networking, dedicated servers, RPC, performance and memory optimization, multi-threading, Android/iOS/PC deployment, crash analysis and regression testing, and cross-team module integration.',
+    sys_b1:'Real-time multiplayer networking & sync',
+    sys_b2:'Dedicated Server & RPC / UDP',
+    sys_b3:'Performance & memory optimization',
+    sys_b4:'Multi-threading',
+    sys_b5:'Android · iOS · PC deployment',
+    sys_b6:'Crash analysis & regression testing',
+    sys_b7:'Cross-team module integration',
+    sys_b8:'Cross-platform toolchains & pipelines',
+    sys_ctx_h:'Project context',
+    sys_ctx_p1:'Fun Party reached 129M+ users within three months of launch. This is a product-level public figure; my responsibilities covered specific systems and modules.',
+    sys_ctx_p2:'QQHome integrated Unreal-engine interactive experiences into the QQ platform (500M+ MAU ecosystem).',
+    sys_note_h:'Note',
+    sys_note_p1:'These are team-built products; I owned specific modules rather than the whole product.',
+    sys_note_p2:'Long-term user of Unreal Engine and C++, with core expertise spanning real-time systems, multiplayer synchronization, network communication, memory and multi-threading optimization, and cross-platform toolchains; plus rendering, animation, physics, character 3C, network protocols, UI, materials, Dedicated Servers, multi-platform adaptation, hot-update, production pipelines, engine modification, AI-assisted development, and multi-module integration and debugging.',
+    sim_stitle:'Real-Time Simulation & Systems Integration',
+    sim_ssub:'Integrated simulation with real hardware and data through co-simulation, real-time buses and virtual sensors.',
+    sim_b1:'Unreal / AMESim / MATLAB co-simulation',
+    sim_b2:'UDP / DDS communication',
+    sim_b3:'Linux-based tooling',
+    sim_b4:'Virtual sensors — Camera / LiDAR / IMU',
+    sim_b5:'Distributed & multi-node simulation',
+    sim_b6:'Physical–digital data exchange & validation',
+    sim_im1:'<b>AMESim–Unreal</b>Co-sim model',
+    sim_im4:'<b>MATLAB–Unreal</b>Co-simulation',
+    sim_im5:'<b>Multi-model</b>Co-simulation',
+    sim_im6:'<b>Procedural Terrain</b>World Machine',
+    sim_im7:'<b>Scenario Config</b>Simulation',
+    sim_im8:'<b>Scenario Config</b>Simulation',
+    sim_im9:'<b>Distributed Sim</b>Multi-node',
+    sim_im12:'<b>Linux Instrumentation</b>Interface',
+    sim_im13:'<b>Large-World Level</b>Unreal Engine',
+    lead_stitle:'Technical Leadership & Engineering Delivery',
+    lead_ssub:'Combined hands-on C++ development with small-team technical leadership and delivery.',
+    lead_b1:'Architecture, task breakdown & estimation',
+    lead_b2:'Code reviews, coding standards, delivery tracking',
+    lead_b6:'API docs, tests, versioning & user support',
+    lead_note_h:'Scope by role',
+    lead_note_p1:'First company — Led a three-engineer team and managed technical delivery.',
+    lead_note_p2:'Chinese Academy of Sciences — served as the primary simulation engineer and participated in technical interviews, team formation, task allocation and training.',
+    lead_note_p3:'Tencent — Senior individual contributor; delivered internal technical talks.',
+    foot_tag:'Real-Time C++ / Simulation & Systems Engineer',
+    foot_chain:'CARLA → Interfaces → Simulation → Systems → Deployment',
+    foot_disc:'Selected captures show real work within the C++ / simulation / systems scope. Client names, sensitive scenarios and company IP are not disclosed.',
+      nav_proj:'Projects',
+    proj_stitle:'Side Projects',
+    proj_ssub:'Personal explorations in AI, embedded hardware and real-time dialogue.',
+    proj_lead:'A pocket-sized embedded device running custom firmware and a small on-device dialogue UI. Combines embedded C/C++ with an AI dialogue loop for low-power, responsive real-time interaction.',
+    proj_b1:'AI dialogue on custom firmware device',
+    proj_b2:'Custom embedded hardware / firmware platform',
+    proj_b3:'Real-time conversational UI & UX',
+    proj_b4:'C/C++ on bare metal, low-power & responsive',
+    proj_im1:'<b>Embedded AI Device</b>Personal side project',
+},
+  ja: {
+    nav_about:'概要', nav_sdk:'CARLA とシミュレーション・インターフェース', nav_tools:'デベロッパー・ツール', nav_sys:'リアルタイム・システム', nav_sim:'シミュレーション＆統合', nav_lead:'エンジニアリング・デリバリー',
+    hero_kicker:'C++ · リアルタイムシミュレーション · AIシステム',
+    hero_h1:'リアルタイムC++エンジニア — シミュレーション・AIシステム',
+    hero_sub:'リアルタイム・シミュレーション、ネットワーク・システム、ツール、クロスシステム統合に向けた、性能を重視した C++ ソフトウェアを開発しています。経験には Unreal Engine、CARLA、Python/C++ インターフェース、分散通信、本番最適化が含まれます。',
+    about_role:'シニア C++ エンジニア · シミュレーション＆システムズ',
+    about_h2:'<b class="ai">再利用可能な層</b>を構築し、リアルタイムシミュレーションとエンジン内部の機能を、<b>安定性が高くドキュメントが整備された ツールとインターフェース</b>として提供します。',
+    about_p:'担当領域は C++ / シミュレーション／システム技術スタック。エンジン内部の拡張と Python/C++ インターフェースによる公開、クロスプラットフォームのプラグインとツールの構築、大規模リアルタイム・システムの提供、そしてシミュレーションと実機・データの統合。',
+    sdk_stitle:'CARLA 拡張と Python/C++ インターフェース',
+    sdk_ssub:'Unreal Engine 4 上で CARLA を拡張し、車両ダイナミクス、シミュレーション制御、センサ設定、シナリオ生成、データ収集向けに Python、C++、Blueprint のインターフェースを構築しました。',
+    sdk_b1:'CARLA C++ クライアント（LibCarla）の拡張',
+    sdk_b2:'Boost.Python による数十の Python API',
+    sdk_b3:'車両制御 / 模擬センサ',
+    sdk_b4:'シナリオ生成とデータ収集',
+    sdk_b5:'API ドキュメントとサンプル',
+    sdk_b6:'インターフェースのテストと検証',
+    sdk_b7:'Linux / Docker デプロイ',
+    sdk_diag:'Python → Boost.Python → C++ → RPC → Unreal 呼び出し連鎖',
+    sdk_im1:'<b>CARLA シミュレーション</b>環境',
+    sdk_im2:'<b>仮想 LiDAR</b>点群',
+    sdk_im3:'<b>シミュレーション・システム</b>ツール群',
+    tools_stitle:'Tencent のクロスプラットフォーム・ツールと自動化',
+    tools_ssub:'プログラマー、デザイナー、アーティストが Android、iOS、PC で利用する内部プラグインとツールを設計。',
+    tools_b1:'内部プラグインをゼロから設計',
+    tools_b2:'自動サムネイル生成',
+    tools_b3:'データ生成ツール',
+    tools_b4:'Lua ホットアップデート支援',
+    tools_b5:'Android · iOS · PC',
+    tools_b6:'公開 API とモジュール境界',
+    tools_b7:'バージョン互換とドキュメント',
+    tools_b8:'パフォーマンスと安定性の分析',
+    tools_f1:'プログラマー / デザイナー / アーティスト',
+    tools_f2:'内部プラグイン API',
+    tools_f3:'サムネイル / データ生成 / ホットアップデート',
+    tools_f4:'Android / iOS / PC',
+    tools_fcap:'内部プラグイン API を通じて、プログラマー、デザイナー、アーティストにクロスプラットフォーム機能を提供',
+    sys_stitle:'本番リアルタイム・システム',
+    sys_ssub:'大規模クロスプラットフォーム・オンライン製品の本番リアルタイム・システムを構築・最適化。',
+    sys_lead:'マルチプレイヤー通信、専用サーバー、RPC、性能・メモリ最適化、マルチスレッド、Android/iOS/PC への展開、クラッシュ解析、リグレッションテスト、クロスチームでのモジュール統合を担当。',
+    sys_b1:'リアルタイムマルチプレイヤー通信と同期',
+    sys_b2:'専用サーバと RPC / UDP',
+    sys_b3:'性能とメモリ最適化',
+    sys_b4:'マルチスレッド',
+    sys_b5:'Android · iOS · PC 展開',
+    sys_b6:'クラッシュ解析とリグレッションテスト',
+    sys_b7:'クロスチームのモジュール統合',
+    sys_b8:'クロスプラットフォーム・ツールチェーン',
+    sys_ctx_h:'プロジェクト背景',
+    sys_ctx_p1:'Fun Party はリリース後3か月で1.29億人以上のユーザーに到達しました。これは製品全体の公開数値であり、私は特定のシステムとモジュールを担当しました。',
+    sys_ctx_p2:'QQHome は Unreal Engine ベースの体験を QQ プラットフォームへ統合（月間 5 億超エコシステム）。',
+    sys_note_h:'備考',
+    sys_note_p1:'これらはチームで構築した製品。私は特定モジュールを担い、製品全体ではない。',
+    sys_note_p2:'長年 Unreal Engine と C++ を使用。中核の専門はリアルタイムシステム、マルチプレイヤー同期、ネットワーク通信、メモリ・マルチスレッド最適化、クロスプラットフォーム・ツールチェーン。さらにレンダリング、アニメーション、物理、キャラクター 3C、ネットワークプロトコル、UI、マテリアル、DS、マルチプラットフォーム対応、ホットアップデート、制作パイプライン、エンジン改修、AI 活用開発、マルチモジュール統合とデバッグ。',
+    sim_stitle:'リアルタイム・シミュレーションとシステム統合',
+    sim_ssub:'協調シミュレーション、リアルタイム・バス、仮想センサにより、シミュレーションを実機・データと統合。',
+    sim_b1:'Unreal / AMESim / MATLAB 協調シミュレーション',
+    sim_b2:'UDP / DDS 通信',
+    sim_b3:'Linux ベースのツール',
+    sim_b4:'仮想センサ——Camera / LiDAR / IMU',
+    sim_b5:'分散・マルチノード・シミュレーション',
+    sim_b6:'実機とシミュレーション間のデータ交換・検証',
+    sim_im1:'<b>AMESim–Unreal</b>協調シミュレーションモデル',
+    sim_im4:'<b>MATLAB–Unreal</b>協調シミュレーション',
+    sim_im5:'<b>マルチモデル</b>協調シミュレーション',
+    sim_im6:'<b>手続き型地形</b>World Machine',
+    sim_im7:'<b>シナリオ設定</b>シミュレーション',
+    sim_im8:'<b>シナリオ設定</b>シミュレーション',
+    sim_im9:'<b>分散シミュレーション</b>マルチノード',
+    sim_im12:'<b>Linux 計測</b>インターフェース',
+    sim_im13:'<b>大規模ワールド</b>Unreal Engine',
+    lead_stitle:'技術リーダーシップとエンジニアリング・デリバリー',
+    lead_ssub:'実装を伴う C++ 開発と、小規模チームの技術リーダーシップ、デリバリーを両立。',
+    lead_b1:'アーキテクチャ・タスク分割・工期見積もり',
+    lead_b2:'コードレビュー、コーディング規約、進捗・デリバリー管理',
+    lead_b6:'API ドキュメント、テスト、バージョン互換、利用者支援',
+    lead_note_h:'役割ごとの範囲',
+    lead_note_p1:'1社目——3人のエンジニアチームを率い、技術面とデリバリーを担当。',
+    lead_note_p2:'中国科学院——シミュレーションの主担当として開発し、技術面接、チーム組成、タスク割当、研修に参加。',
+    lead_note_p3:'Tencent——シニアエンジニア（IC）として、社内技術講座で発表。',
+    foot_tag:'リアルタイム C++ / シミュレーション＆システムズ・エンジニア',
+    foot_chain:'CARLA → Interfaces → Simulation → Systems → Deployment',
+    foot_disc:'掲載したキャプチャは C++ / シミュレーション／システム領域の実際の成果。顧客名、機微シナリオ、企業知財は開示しない。',
+      nav_proj:'個人プロジェクト',
+    proj_stitle:'個人プロジェクト',
+    proj_ssub:'AI・組込みハードウェア・リアルタイム対話の個人探索。',
+    proj_lead:'ポケットサイズの組込みデバイスに独自ファームウェアとオンデバイス対話 UI を搭載。組込み C/C++ と AI 対話ループを融合し、低消費電力でリアルタイム応答を実現。',
+    proj_b1:'独自ファームウェア端末での AI 対話',
+    proj_b2:'独自の組込みハードウェア / ファームウェア・プラットフォーム',
+    proj_b3:'リアルタイム対話 UI / UX',
+    proj_b4:'ベアメタル C/C++、低消費電力かつ応答性重視',
+    proj_im1:'<b>組込み AI デバイス</b>個人プロジェクト',
+},
+  zh: {
+    nav_about:'关于', nav_sdk:'CARLA 与仿真接口', nav_tools:'开发者工具', nav_sys:'实时系统', nav_sim:'仿真与集成', nav_lead:'工程交付',
+    hero_kicker:'C++ · 实时仿真 · AI系统',
+    hero_h1:'实时C++工程师 — 仿真与AI系统',
+    hero_sub:'我开发重视性能的 C++ 软件，面向实时仿真、网络系统、工具与跨系统集成。经验涵盖 Unreal Engine、CARLA、Python/C++ 接口、分布式通信与生产优化。',
+    about_role:'资深 C++ 工程师 · 仿真与系统',
+    about_h2:'我构建 <b class="ai">可复用层</b>，把实时仿真与引擎内部能力转化为 <b>稳定、有文档的工具与接口。</b>',
+    about_p:'我的职责覆盖 C++ / 仿真 / 系统技术栈：扩展引擎内部能力并通过 Python/C++ 接口对外暴露，构建跨平台插件与工具，交付大规模实时系统，并将仿真与真实硬件及数据集成。',
+    sdk_stitle:'CARLA 扩展与 Python/C++ 接口',
+    sdk_ssub:'在 Unreal Engine 4 中扩展 CARLA，并为车辆动力学、仿真控制、传感器配置、场景生成与数据采集构建 Python、C++ 与 Blueprint 接口。',
+    sdk_b1:'扩展 CARLA C++ 客户端（LibCarla）',
+    sdk_b2:'通过 Boost.Python 暴露数十个 Python API',
+    sdk_b3:'车辆控制 / 模拟传感器',
+    sdk_b4:'场景生成与数据采集',
+    sdk_b5:'API 文档与示例',
+    sdk_b6:'接口测试与验证',
+    sdk_b7:'Linux / Docker 部署',
+    sdk_diag:'Python → Boost.Python → C++ → RPC → Unreal 调用链',
+    sdk_im1:'<b>CARLA 仿真</b>环境',
+    sdk_im2:'<b>虚拟激光雷达</b>点云',
+    sdk_im3:'<b>仿真系统</b>工具链',
+    tools_stitle:'腾讯跨平台工具与自动化',
+    tools_ssub:'从零设计内部插件与工具，供程序、策划和美术在 Android、iOS、PC 等平台使用。',
+    tools_b1:'从零设计的内部插件',
+    tools_b2:'自动化缩略图生成',
+    tools_b3:'数据生成工具',
+    tools_b4:'Lua 热更新支持',
+    tools_b5:'Android · iOS · PC',
+    tools_b6:'公共 API 与模块边界',
+    tools_b7:'版本兼容与文档',
+    tools_b8:'性能与稳定性分析',
+    tools_f1:'程序 / 策划 / 美术',
+    tools_f2:'内部插件 API',
+    tools_f3:'缩略图 / 数据生成 / 热更新',
+    tools_f4:'Android / iOS / PC',
+    tools_fcap:'内部插件 API 为程序、策划与美术提供跨平台能力',
+    sys_stitle:'生产级实时系统',
+    sys_ssub:'为大规模跨平台在线产品构建并优化生产级实时系统。',
+    sys_lead:'覆盖多人网络同步、专用服务器（Dedicated Server）、RPC、性能与内存优化、多线程、Android/iOS/PC 部署、崩溃分析与回归测试，以及跨团队模块集成。',
+    sys_b1:'实时多人网络与同步',
+    sys_b2:'专用服务器与 RPC / UDP',
+    sys_b3:'性能与内存优化',
+    sys_b4:'多线程',
+    sys_b5:'Android · iOS · PC 部署',
+    sys_b6:'崩溃分析与回归测试',
+    sys_b7:'跨团队模块集成',
+    sys_b8:'跨平台工具链与流水线',
+    sys_ctx_h:'项目背景',
+    sys_ctx_p1:'Fun Party 上线 3 个月用户超 1.29 亿；此为产品级公开数据，我的职责覆盖具体系统与模块。',
+    sys_ctx_p2:'QQHome 将基于虚幻引擎的互动体验整合进 QQ 平台（月活 5 亿+ 生态）。',
+    sys_note_h:'备注',
+    sys_note_p1:'以上为团队共建产品；我负责具体模块而非整体产品。',
+    sys_note_p2:'长期使用 Unreal Engine 与 C++，核心经验涵盖实时系统、多人同步、网络通信、内存与多线程优化、跨平台适配及工具链，渲染、动画、物理、角色 3C、网络协议、UI、材质、DS、多平台适配、热更新、生产流水线、引擎修改、AI 协同开发、多模块集成与调试。',
+    sim_stitle:'实时仿真与系统集成',
+    sim_ssub:'通过联合仿真、实时总线与虚拟传感器，将仿真与真实硬件及数据集成。',
+    sim_b1:'Unreal / AMESim / MATLAB 联合仿真',
+    sim_b2:'UDP / DDS 通信',
+    sim_b3:'基于 Linux 的工具',
+    sim_b4:'虚拟传感器——Camera / LiDAR / IMU',
+    sim_b5:'分布式与多节点仿真',
+    sim_b6:'实虚数据交换与系统验证',
+    sim_im1:'<b>AMESim–Unreal</b>联合仿真模型',
+    sim_im4:'<b>MATLAB–Unreal</b>联合仿真',
+    sim_im5:'<b>多模型</b>协同仿真',
+    sim_im6:'<b>程序化地形</b>World Machine',
+    sim_im7:'<b>场景配置</b>仿真',
+    sim_im8:'<b>场景配置</b>仿真',
+    sim_im9:'<b>分布式仿真</b>多节点',
+    sim_im12:'<b>Linux 检测</b>接口',
+    sim_im13:'<b>大世界关卡</b>Unreal Engine',
+    lead_stitle:'技术领导力与工程交付',
+    lead_ssub:'将一线 C++ 开发与小团队技术领导、工程交付结合。',
+    lead_b1:'架构、任务拆分与工期估算',
+    lead_b2:'代码审查、编码规范、交付跟踪',
+    lead_b6:'API 文档、测试、版本兼容与使用者支持',
+    lead_note_h:'按角色区分',
+    lead_note_p1:'第一家公司——带领三人团队，负责技术交付。',
+    lead_note_p2:'中国科学院——担任仿真主程序，参与技术面试、组建团队、任务分配与培训。',
+    lead_note_p3:'腾讯——担任资深工程师（IC），并进行公司内部技术分享。',
+    foot_tag:'实时 C++ / 仿真与系统工程师',
+    foot_chain:'CARLA → 接口 → 仿真 → 系统 → 部署',
+    foot_disc:'所示精选图集均为 C++ / 仿真 / 系统范围内的真实工作。客户名称、敏感场景与公司知识产权不予披露。',
+      nav_proj:'个人项目',
+    proj_stitle:'个人项目',
+    proj_ssub:'个人在 AI、嵌入式硬件与实时对话方向的探索。',
+    proj_lead:'一台口袋大小的嵌入式设备，运行定制固件和设备端对话 UI。嵌入式 C/C++ 与 AI 对话循环结合，强调低功耗与实时响应。',
+    proj_b1:'定制固件设备上的 AI 对话',
+    proj_b2:'嵌入式硬件 / 固件平台',
+    proj_b3:'实时对话 UI 与交互体验',
+    proj_b4:'裸机 C/C++，低功耗与响应速度',
+    proj_im1:'<b>嵌入式 AI 设备</b>个人兴趣项目',
+}
+};
+
+(function(){
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  function applyLang(lang){
+    document.documentElement.setAttribute('lang', lang);
+    document.querySelectorAll('[data-i18n]').forEach(el=>{
+      const k = el.getAttribute('data-i18n');
+      const val = I18N[lang] && I18N[lang][k];
+      if(val === undefined) return;
+      if(el.namespaceURI === SVG_NS){ el.textContent = val; }
+      else { el.innerHTML = val; }
+    });
+    document.querySelectorAll('.lang-opt').forEach(b=>{
+      const on = b.dataset.lang === lang;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    try{ localStorage.setItem('lang', lang); }catch(e){}
+  }
+  document.querySelectorAll('.lang-opt').forEach(b=>{
+    b.addEventListener('click', ()=> applyLang(b.dataset.lang));
+  });
+  let saved = null;
+  try{ saved = localStorage.getItem('lang'); }catch(e){}
+  if(!saved){ saved = 'en'; }
+  applyLang(saved);
+})();
+
+/* ---- Lightbox: click an image to enlarge ---- */
+(function(){
+  const lb = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbCap = document.getElementById('lbCap');
+  const lbClose = document.getElementById('lbClose');
+  if(!lb) return;
+  function open(src, cap){
+    lbImg.src = src;
+    lbCap.textContent = cap || '';
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function close(){
+    lb.classList.remove('open');
+    lbImg.src = '';
+    lbCap.textContent = '';
+    document.body.style.overflow = '';
+  }
+  document.querySelectorAll('.shot').forEach(shot=>{
+    const z = document.createElement('div');
+    z.className = 'zoom';
+    z.innerHTML = '&#10799;';
+    shot.appendChild(z);
+    const im = shot.querySelector('img');
+    if(!im) return;
+    im.style.cursor = 'zoom-in';
+    im.addEventListener('click', e=>{
+      e.stopPropagation();
+      const cap = shot.querySelector('figcaption') ? shot.querySelector('figcaption').textContent.trim() : '';
+      open(im.currentSrc || im.src, cap);
+    });
+  });
+  lb.addEventListener('click', close);
+  lbClose.addEventListener('click', e=>{ e.stopPropagation(); close(); });
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape' && lb.classList.contains('open')) close(); });
+})();
+
+/* ============ industrial: top progress + section brackets ============ */
+(function(){
+  var bar=document.getElementById('topbar');
+  if(bar){
+    var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function upd(){
+      var d=document.documentElement, max=d.scrollHeight-d.clientHeight;
+      var p=max>0?Math.min(1,Math.max(0,d.scrollTop/max)):0;
+      if(reduce) bar.style.width=(p*100)+'%'; else bar.style.transform='scaleX('+p+')';
+    }
+    window.addEventListener('scroll',upd,{passive:true});
+    window.addEventListener('resize',upd); upd();
+  }
+  document.querySelectorAll('.sys').forEach(function(s){
+    ['tl','tr','bl','br'].forEach(function(c){
+      var sp=document.createElement('span'); sp.className='ind-corner '+c; s.appendChild(sp);
+    });
+  });
+})();
+
+/* ============ BOOT / OPENING ANIMATION ============ */
+(function(){
+  var boot=document.getElementById('boot');
+  if(!boot) return;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var done=false;
+  function finish(){
+    if(done) return; done=true;
+    document.body.style.overflow='';
+    if(boot.parentNode) boot.parentNode.removeChild(boot);
+  }
+  function endBoot(){
+    if(reduce){ finish(); return; }
+    boot.classList.add('gone');
+    boot.addEventListener('transitionend', function(e){ if(e.propertyName==='transform') finish(); });
+    setTimeout(finish, 1100);
+  }
+  var enter=document.getElementById('bootEnter');
+  if(enter) enter.addEventListener('click', endBoot);
+  if(reduce){ finish(); return; }
+  document.body.style.overflow='hidden';
+  setTimeout(endBoot, 1220);
+})();
+</script>
+</body>
+</html>
