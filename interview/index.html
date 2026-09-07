@@ -790,6 +790,7 @@ body {
     </div>
     <div class="modal-body report-content" id="reportContent"></div>
     <div class="modal-footer">
+      <button class="btn" onclick="editFromReport()">编辑信息</button>
       <button class="btn" onclick="closeModal('reportModalOverlay')">关闭</button>
     </div>
   </div>
@@ -1331,6 +1332,7 @@ function viewRecord(id) {
 
 function openReportModal(r) {
   const evalData = r.evaluation;
+  window.__reportRecordId = r.id;
   document.getElementById('reportModalTitle').textContent = escapeHtml(r.companyName) + ' — 评估报告';
   let html = '';
   if (evalData && evalData.scores && evalData.scores.global) {
@@ -1355,8 +1357,21 @@ function openReportModal(r) {
   } else {
     html += '<p style="color:var(--text-tertiary);">暂无评估报告。请在编辑记录中运行 AI 评估。</p>';
   }
+  // 备注 / 面试记录浏览区（低优先级：放在报告之后）
+  if (r.notes) {
+    html += '<div style="margin-top:28px;border-top:1px solid var(--border);padding-top:16px;">'
+      + '<h3 style="margin:0 0 10px;font-size:15px;color:var(--text-secondary);">备注 / 面试记录</h3>'
+      + '<div style="white-space:pre-wrap;font-size:14px;line-height:1.8;color:var(--text);background:var(--surface-2, #1b1b30);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">' + escapeHtml(r.notes) + '</div></div>';
+  }
   document.getElementById('reportContent').innerHTML = html;
   openModal('reportModalOverlay');
+}
+
+// 从报告弹窗进入编辑：先关报告，再开编辑弹窗（保存后自动关闭并回到列表）
+function editFromReport() {
+  const id = window.__reportRecordId;
+  closeModal('reportModalOverlay');
+  if (id) openRecordModal(id);
 }
 
 // ========== SAVE ==========
