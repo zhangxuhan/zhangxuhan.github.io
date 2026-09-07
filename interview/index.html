@@ -1361,7 +1361,7 @@ function openReportModal(r) {
   if (r.notes) {
     html += '<div style="margin-top:28px;border-top:1px solid var(--border);padding-top:16px;">'
       + '<h3 style="margin:0 0 10px;font-size:15px;color:var(--text-secondary);">备注 / 面试记录</h3>'
-      + '<div style="white-space:pre-wrap;font-size:14px;line-height:1.8;color:var(--text);background:var(--surface-2, #1b1b30);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">' + escapeHtml(r.notes) + '</div></div>';
+      + '<div style="white-space:pre-wrap;font-size:14px;line-height:1.8;color:inherit;border:1px solid var(--border);border-radius:8px;padding:12px 14px;">' + escapeHtml(r.notes) + '</div></div>';
   }
   document.getElementById('reportContent').innerHTML = html;
   openModal('reportModalOverlay');
