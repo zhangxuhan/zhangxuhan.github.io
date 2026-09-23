@@ -311,6 +311,37 @@
     .boot-core .bc-ring,.boot-core .bc-ring2,.boot-core .bc-eye{animation:none}
     .boot-log div,.boot-bar i,.boot-enter{animation:none;opacity:1}
   }
+  /* ---- Section 06 AI project cards (merged into Side Projects) ---- */
+  #proj.sys.split{flex-wrap:wrap}
+  #proj .pband{flex:0 0 100%;width:100%;margin-top:34px}
+  .pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px}
+  @media(max-width:860px){.pgrid{grid-template-columns:1fr}}
+  .pduo{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(max-width:520px){.pduo{grid-template-columns:1fr}}
+  .pcard{position:relative;border:1px solid var(--line);border-radius:14px;background:var(--panel);
+    padding:18px 18px 20px;overflow:hidden;
+    transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+  .pcard:hover{transform:translateY(-4px);border-color:var(--cyan);box-shadow:0 14px 34px rgba(0,0,0,.35)}
+  .pfig{margin:0 0 14px;border-radius:10px;overflow:hidden;border:1px solid var(--line2);background:#04070d}
+  .pfig img{display:block;width:100%;height:auto}
+  /* solo (LLM) figure: width of one pursuit column, same 426:240 box
+     => rendered height is identical to each gif, no layout mismatch */
+  .pfig.solo{max-width:calc((100% - 12px) / 2);margin:0 auto 14px}
+  .pfig.solo img{aspect-ratio:426/240;object-fit:cover}
+  @media(max-width:520px){.pfig.solo{max-width:100%}}
+  .pcap{font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;color:var(--faint);
+    padding:8px 10px 0;line-height:1.45}
+  .ptag{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px}
+  .ptag span{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--cyan);border:1px solid rgba(95,214,223,.28);background:rgba(95,214,223,.08);
+    border-radius:999px;padding:4px 10px;white-space:nowrap}
+  .pcard h4{font-size:16.5px;font-weight:500;margin:0;letter-spacing:-.01em;color:var(--ink)}
+  .pcard p{color:var(--sub);font-size:14px;line-height:1.62;margin-top:10px}
+  .pbtn{display:inline-flex;align-items:center;margin-top:15px;font-family:var(--mono);
+    font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--cyan);
+    border:1px solid var(--cyan);border-radius:999px;padding:8px 15px;text-decoration:none;
+    transition:background .2s ease,color .2s ease}
+  .pbtn:hover{background:var(--cyan);color:#04121a}
 </style>
 </head>
 <body>
@@ -568,6 +599,36 @@
   <div class="sec-media">
     <div class="gallery cols-1 reveal">
       <figure class="shot"><img src="media/personal-device.jpg" alt="Personal embedded AI dialogue device" loading="lazy" draggable="false"><div class="ov"></div><figcaption><span class="cap-no">6.1</span> <span data-i18n="proj_im1"><b>Embedded AI Device</b>Personal side project</span></figcaption></figure>
+    </div>
+  </div>
+  <div class="pband">
+    <div class="pgrid">
+      <article class="pcard">
+        <figure class="pfig solo">
+          <img src="../video/llm.png" alt="Local LLM dialogue in Unreal Engine" loading="lazy" draggable="false">
+          <figcaption class="pcap" data-i18n="proj_ai1_cap">Real-time local LLM dialogue running inside UE4</figcaption>
+        </figure>
+        <div class="ptag" data-i18n="proj_ai1_tags"><span>LLM</span><span>Speech Recognition</span><span>Speech Output</span><span>Lip Sync</span></div>
+        <h4 data-i18n="proj_ai1_t">Local LLM Chat</h4>
+        <p data-i18n="proj_ai1_d">A real-time, fully local dialogue system in UE4: a local LLM generates replies, speech recognition turns the user’s voice into prompts, speech synthesis speaks the answer, and character lip-sync is matched to the audio — no cloud needed.</p>
+        <a class="pbtn" href="https://github.com/zhangxuhan/UE4-LocalLLM-Chat" target="_blank" rel="noopener" data-i18n="proj_ai1_link">View on GitHub</a>
+      </article>
+      <article class="pcard">
+        <div class="pduo">
+          <figure class="pfig">
+            <img src="../video/Video_v0.gif" alt="Ball pursuit prototype" loading="lazy" draggable="false">
+            <figcaption class="pcap" data-i18n="proj_ai2_cap1">Ball pursuit prototype</figcaption>
+          </figure>
+          <figure class="pfig">
+            <img src="../video/Video_v3.gif" alt="Character pursuit with jumping and multi-agent" loading="lazy" draggable="false">
+            <figcaption class="pcap" data-i18n="proj_ai2_cap2">Character pursuit: jump dimension + multi-agent</figcaption>
+          </figure>
+        </div>
+        <div class="ptag" data-i18n="proj_ai2_tags"><span>Machine Learning</span><span>Training</span><span>Evaluation</span><span>Reusable</span></div>
+        <h4 data-i18n="proj_ai2_t">Pursuit AI</h4>
+        <p data-i18n="proj_ai2_d">A reusable machine-learning framework for AI pursuit: agents learn chase behavior through a closed training-and-evaluation loop, and the same loop can be reused to train and validate new agents or scenarios.</p>
+        <a class="pbtn" href="https://github.com/zhangxuhan/PursuitAI" target="_blank" rel="noopener" data-i18n="proj_ai2_link">View on GitHub</a>
+      </article>
     </div>
   </div>
 </section>
@@ -924,6 +985,17 @@ const I18N = {
     proj_b3:'Real-time conversational UI & UX',
     proj_b4:'C/C++ on bare metal, low-power & responsive',
     proj_im1:'<b>Embedded AI Device</b>Personal side project',
+    proj_ai1_cap:'Real-time local LLM dialogue running inside UE4',
+    proj_ai1_tags:'<span>LLM</span><span>Speech Recognition</span><span>Speech Output</span><span>Lip Sync</span>',
+    proj_ai1_t:'Local LLM Chat',
+    proj_ai1_d:'A real-time, fully local dialogue system in UE4: a local LLM generates replies, speech recognition turns the user’s voice into prompts, speech synthesis speaks the answer, and character lip-sync is matched to the audio — no cloud needed.',
+    proj_ai1_link:'View on GitHub',
+    proj_ai2_cap1:'Ball pursuit prototype',
+    proj_ai2_cap2:'Character pursuit: jump dimension + multi-agent',
+    proj_ai2_tags:'<span>Machine Learning</span><span>Training</span><span>Evaluation</span><span>Reusable</span>',
+    proj_ai2_t:'Pursuit AI',
+    proj_ai2_d:'A reusable machine-learning framework for AI pursuit: agents learn chase behavior through a closed training-and-evaluation loop, and the same loop can be reused to train and validate new agents or scenarios.',
+    proj_ai2_link:'View on GitHub'
 },
   ja: {
     nav_about:'概要', nav_sdk:'CARLA とシミュレーション・インターフェース', nav_tools:'デベロッパー・ツール', nav_sys:'リアルタイム・システム', nav_sim:'シミュレーション＆統合', nav_lead:'エンジニアリング・デリバリー',
@@ -1016,6 +1088,17 @@ const I18N = {
     proj_b3:'リアルタイム対話 UI / UX',
     proj_b4:'ベアメタル C/C++、低消費電力かつ応答性重視',
     proj_im1:'<b>組込み AI デバイス</b>個人プロジェクト',
+    proj_ai1_cap:'UE4 上で動作するリアルタイム・ローカル LLM 対話',
+    proj_ai1_tags:'<span>LLM</span><span>音声認識</span><span>音声出力</span><span>口の同期</span>',
+    proj_ai1_t:'ローカル LLM 対話',
+    proj_ai1_d:'UE4 上で実現したリアルタイムかつ完全ローカルの対話システム。ローカル LLM が応答を生成し、音声認識がユーザーの発話を入力へ変換、音声合成が返答を読み上げ、キャラクターの口の同期が音声に合わせられる。クラウド不要。',
+    proj_ai1_link:'GitHub で見る',
+    proj_ai2_cap1:'ボール追跡のプロトタイプ',
+    proj_ai2_cap2:'キャラクター追跡：ジャンプ次元 + マルチエージェント',
+    proj_ai2_tags:'<span>機械学習</span><span>訓練</span><span>評価</span><span>再利用</span>',
+    proj_ai2_t:'AI 追跡',
+    proj_ai2_d:'AI 追跡行動向けの再利用可能な機械学習フレームワーク。エージェントは「訓練—評価」の閉ループで追跡を学習し、同じループを新しいエージェントやシナリオの訓練・検証に再利用できる。',
+    proj_ai2_link:'GitHub で見る'
 },
   zh: {
     nav_about:'关于', nav_sdk:'CARLA 与仿真接口', nav_tools:'开发者工具', nav_sys:'实时系统', nav_sim:'仿真与集成', nav_lead:'工程交付',
@@ -1108,6 +1191,17 @@ const I18N = {
     proj_b3:'实时对话 UI 与交互体验',
     proj_b4:'裸机 C/C++，低功耗与响应速度',
     proj_im1:'<b>嵌入式 AI 设备</b>个人兴趣项目',
+    proj_ai1_cap:'UE4 中运行的实时本地大模型对话',
+    proj_ai1_tags:'<span>大模型</span><span>语音识别</span><span>语音输出</span><span>口型同步</span>',
+    proj_ai1_t:'本地大模型对话',
+    proj_ai1_d:'在 UE4 中实现的实时、全本地对话系统：本地大模型生成回复，语音识别把用户的话转为输入，语音合成朗读回答，角色口型随音频同步——全程无需联网。',
+    proj_ai1_link:'在 GitHub 查看',
+    proj_ai2_cap1:'球体追逐原型',
+    proj_ai2_cap2:'角色追寻：跳跃维度 + 多智能体追逐',
+    proj_ai2_tags:'<span>机器学习</span><span>训练</span><span>评估</span><span>可复用</span>',
+    proj_ai2_t:'AI 追逐',
+    proj_ai2_d:'可复用的机器学习框架，用于 AI 追逐行为：智能体通过“训练—评估”闭环学习追逐，同一套闭环可复用于训练与验证新的智能体或场景。',
+    proj_ai2_link:'在 GitHub 查看'
 }
 };
 
