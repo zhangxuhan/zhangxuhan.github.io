@@ -2880,7 +2880,7 @@ window.JobHunt = (() => {
     const u=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1500);
   }
   function ul(v){return v?.length?'<ul class="hunt-list">'+v.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<div class="hunt-note">暂无证据</div>';}
-  function mainTab(name){const hunt=name==='hunt';$('huntHome').classList.toggle('active',hunt);$('huntRecords').hidden=hunt;$('huntNavJobs').classList.toggle('active',hunt);$('huntNavRecords').classList.toggle('active',!hunt);if(hunt)render();}
+  function mainTab(name){const hunt=name==='hunt';try{localStorage.setItem('interview_active_workspace_v1',hunt?'hunt':'records');}catch{};$('huntHome').classList.toggle('active',hunt);$('huntRecords').hidden=hunt;$('huntNavJobs').classList.toggle('active',hunt);$('huntNavRecords').classList.toggle('active',!hunt);if(hunt)render();}
   function profile(j){const m=materialsFor(j);return {englishResume:m.en,japaneseRirekisho:m.jaRireki,japaneseShokumukeirekisho:m.jaShokumu,confirmedFactsAndLimits:state.facts,preferences:state.preferences};}
   function requireCV(){if(!state.en.trim()&&!state.jaRireki.trim()&&!state.jaShokumu.trim())throw Error('先保存英文简历，或已区分的日文履歴書 / 職務経歴書');}
   function settings(){const s=loadSettings();if(!s.apiUrl||!s.apiKey||!s.model)throw Error('请先在顶部「设置」配置 API 地址、Key 和模型');if(!url(s.apiUrl))throw Error('API 地址无效');return s;}
@@ -3235,6 +3235,7 @@ window.JobHunt = (() => {
     }catch(err){showToast('导入失败：'+err.message);}finally{e.target.value='';}
   }
   $('huntNavRecords').onclick=()=>mainTab('records');$('huntNavJobs').onclick=()=>mainTab('hunt');
+  try{mainTab(localStorage.getItem('interview_active_workspace_v1')==='hunt'?'hunt':'records');}catch{mainTab('records');}
   if(typeof indexedDB!=='undefined'){restoreFileHandle();restoreOutputDirectory();}
   return {mainTab,snapshot,restore,validateState,textDiff};
 })();
