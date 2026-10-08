@@ -2975,7 +2975,8 @@ window.JobHunt = (() => {
   function sameJob(a,b){
     const linksA=[a.url,a.source].map(jobURL).filter(Boolean),linksB=[b.url,b.source].map(jobURL).filter(Boolean);
     const named=jobText(a.company)===jobText(b.company)&&jobText(a.title)===jobText(b.title)&&jobText(a.title)!=='待确认岗位';
-    return named||(jobURL(a.url)&&jobURL(a.url)===jobURL(b.url))||(jobText(a.title)===jobText(b.title)&&linksA.some(link=>linksB.includes(link)));
+    const sharedPage=jobText(a.company)===jobText(b.company)&&jobText(a.title)!==jobText(b.title)&&!a.needsIdentity&&!b.needsIdentity&&jobText(a.title)!=='待确认岗位'&&jobText(b.title)!=='待确认岗位';
+    return named||(!sharedPage&&jobURL(a.url)&&jobURL(a.url)===jobURL(b.url))||(jobText(a.title)===jobText(b.title)&&linksA.some(link=>linksB.includes(link)));
   }
   function mergeCandidates(inputs){
     const incoming=inputs.map(normalize),added=[];
