@@ -2966,7 +2966,7 @@ window.JobHunt = (() => {
   function normalize(v){
     if(!v||!String(v.company||v.companyName||'').trim())throw Error('至少需要公司名称');
     const supplied=v.url||v.applicationUrl||'';if(supplied&&!url(supplied))throw Error('链接必须是有效的 http(s) 地址');
-    return {id:uid(),company:String(v.company||v.companyName).trim(),title:String(v.title||v.position||'待确认岗位').trim()||'待确认岗位',url:url(supplied),source:url(v.source)||url(supplied),location:String(v.location||'未知'),salary:String(v.salary||'未知'),employment:String(v.employment||'未知'),language:String(v.language||'未知'),visa:String(v.visa||'未知'),fit:['高','中','低'].includes(v.fit)?v.fit:'未分析',reasons:strs(v.reasons),gaps:strs(v.gaps),unknowns:strs(v.unknowns),jd:String(v.jd||''),chatNotes:String(v.chatNotes||''),searchedAt:String(v.searchedAt||''),sourceNote:String(v.sourceNote||'手动添加，来源与开放状态待确认'),status:'candidate',applicationLanguage:v.applicationLanguage==='en'?'en':v.applicationLanguage==='ja'?'ja':state.defaultLanguage,drafts:{},createdAt:timestamp(),updatedAt:timestamp(),pipelineError:''};
+    return {id:uid(),company:String(v.company||v.companyName).trim(),title:String(v.title||v.position||'待确认岗位').trim()||'待确认岗位',url:url(supplied),source:url(v.source)||url(supplied),location:String(v.location||'未知'),salary:String(v.salary||'未知'),employment:String(v.employment||'未知'),language:String(v.language||'未知'),visa:String(v.visa||'未知'),fit:['高','中','低'].includes(v.fit)?v.fit:'未分析',reasons:strs(v.reasons),gaps:strs(v.gaps),unknowns:strs(v.unknowns),jd:String(v.jd||''),chatNotes:String(v.chatNotes||''),searchedAt:String(v.searchedAt||''),sourceNote:String(v.sourceNote||'手动添加，来源与开放状态待确认'),status:'candidate',applicationLanguage:v.applicationLanguage==='en'?'en':v.applicationLanguage==='ja'?'ja':state.defaultLanguage,drafts:{},createdAt:timestamp(),updatedAt:timestamp(),pipelineError:'',needsIdentity:v.needsIdentity===true};
   }
   function sameJob(a,b){return a.url&&b.url ? a.url===b.url : a.company.toLowerCase()===b.company.toLowerCase()&&a.title.toLowerCase()===b.title.toLowerCase();}
   function mergeCandidates(inputs){
@@ -2998,6 +2998,11 @@ window.JobHunt = (() => {
     busy.add(id);j.status=j.status==='submitted'?'submitted':'chosen';j.pipelineError='';touch(j);save();drawJobs();
     try{
       if(!j.jd.trim())await retrieveJD(j);
+      if(j.needsIdentity){
+        const identity=(await apiJSON('只从给定岗位正文提取实际招聘雇主和岗位名称，不能根据网址猜测。输出 {"identity":{"company":"明确雇主或空字符串","title":"明确岗位名称或空字符串"}}。',{jd:j.jd})).identity;
+        if(!identity?.company?.trim()||!identity?.title?.trim()||!j.jd.includes(identity.company.trim())||!j.jd.includes(identity.title.trim()))throw Error('读到了页面，但未确认具体雇主或岗位名称，请补充后继续');
+        j.company=identity.company.trim();j.title=identity.title.trim();j.needsIdentity=false;touch(j);save();
+      }
       const missing=missingFor(j);if(missing.length)throw Error('还缺 '+missing.map(k=>DOCS[k]).join('、')+'；在材料设置中补充后继续');
       await analysisCore(j);
       for(const k of requiredDocs(j)) {
@@ -3032,7 +3037,8 @@ window.JobHunt = (() => {
     const text=$('huntChatText').value.trim(),auto=$('huntChatAuto').checked;if(!text){showToast('请粘贴公司或岗位信息');return;}
     const btn=$('huntChatAdd');btn.disabled=true;$('huntChatStatus').textContent='正在整理聊天资料…';
     try{let data;
-      try{data=JSON.parse(text);}catch{data=await apiJSON('只提取聊天片段中已经明确给出的公司 / 岗位信息，不搜索，不推测。只有公司名也返回该公司，title 用待确认岗位，url 和 jd 留空。职位介绍可以忠实合并到 jd，不能补写要求。输出 {"jobs":[{"company":"公司名称","title":"岗位名称或待确认岗位","url":"片段中的明确岗位链接或空字符串","jd":"片段中的实际 JD 或空字符串","chatNotes":"相关讨论与不确定项"}]}。',{chatExcerpt:text});}
+      if(/^https?:\/\/\S+$/.test(text)&&url(text))data={jobs:[{company:'雇主待确认（'+new URL(text).hostname+'）',title:'待确认岗位',url:text,needsIdentity:true}]};
+      else try{data=JSON.parse(text);}catch{data=await apiJSON('只提取聊天片段中已经明确给出的公司 / 岗位信息，不搜索，不推测。只有公司名也返回该公司，title 用待确认岗位，url 和 jd 留空。职位介绍可以忠实合并到 jd，不能补写要求。输出 {"jobs":[{"company":"公司名称","title":"岗位名称或待确认岗位","url":"片段中的明确岗位链接或空字符串","jd":"片段中的实际 JD 或空字符串","chatNotes":"相关讨论与不确定项"}]}。',{chatExcerpt:text});}
       const items=Array.isArray(data)?data:data.jobs;if(!Array.isArray(items))throw Error('需要岗位数组或 {"jobs":[...]}');
       const suppliedLinks=sourceLinks(text,'https://example.invalid/');
       const added=mergeCandidates(items.map(j=>({...j,url:j.url&&suppliedLinks.includes(url(j.url))?j.url:'',sourceNote:'从聊天添加，网页来源与开放状态待核验'})));
