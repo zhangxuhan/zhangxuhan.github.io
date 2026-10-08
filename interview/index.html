@@ -2766,6 +2766,7 @@ window.JobHunt = (() => {
   const timestamp = () => new Date().toISOString();
   const newState = () => ({version:2,draftMode:'sections',templates:{},en:'',jaRireki:'',jaShokumu:'',jaLegacy:'',facts:'',preferences:'',query:'',defaultLanguage:'ja',jobs:[],updatedAt:timestamp()});
   let state=newState(), selected=null, selectedDoc='jaRireki', searching=false;
+  let outputDirectory=null;
   let jsonHandle=null, fileQueue=Promise.resolve(), fileStatus='尚未连接 JSON 文件', fileDb=null;
   const busy=new Set();
   try {const saved=JSON.parse(localStorage.getItem(KEY)); if(saved)state=validateState(saved);} catch {}
@@ -2868,6 +2869,11 @@ window.JobHunt = (() => {
     } catch(e){if(e.name!=='AbortError')showToast(e.message);}
   }
   async function restoreFileHandle(){try{const db=await fileDatabase();jsonHandle=await new Promise((resolve,reject)=>{const r=db.transaction('handles').objectStore('handles').get('workspace');r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error);});if(jsonHandle)fileStatus='已记住 JSON 文件：'+jsonHandle.name+'；写入权限可在「连接 JSON 自动保存」恢复';updateFileLabel();}catch{}}
+  function safeFileName(value){let name=String(value||'').normalize('NFKC').replace(/[\\/:*?"<>|\x00-\x1f]/g,'_').replace(/[. ]+$/g,'').trim().slice(0,80);if(!name||/^\.+$/.test(name))name='未命名';if(/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/i.test(name))name='_'+name;return name;}
+  function directoryLabel(){return outputDirectory?'保存目录：'+outputDirectory.name+' / 公司名（下次打开可能需重新授权）':'尚未选择目录；当前使用浏览器普通下载';}
+  async function selectOutputDirectory(){try{if(!window.showDirectoryPicker)throw Error('此浏览器不支持目录写入，请使用 Chrome 或 Edge；仍可普通下载');outputDirectory=await window.showDirectoryPicker({mode:'readwrite',id:'job-application-materials'});try{const db=await fileDatabase();db.transaction('handles','readwrite').objectStore('handles').put(outputDirectory,'outputDirectory');}catch{}if($('huntDirectoryStatus'))$('huntDirectoryStatus').textContent=directoryLabel();showToast('已选择投递材料目录，将按公司名创建子文件夹');}catch(e){if(e.name!=='AbortError')showToast(e.message);}}
+  async function restoreOutputDirectory(){try{const db=await fileDatabase();outputDirectory=await new Promise((resolve,reject)=>{const r=db.transaction('handles').objectStore('handles').get('outputDirectory');r.onsuccess=()=>resolve(r.result||null);r.onerror=()=>reject(r.error);});if($('huntDirectoryStatus'))$('huntDirectoryStatus').textContent=directoryLabel();}catch{}}
+  async function saveCompanyFile(j,name,bytes,type){if(!outputDirectory){download(name,bytes,type);return '浏览器下载目录';}if(await outputDirectory.queryPermission({mode:'readwrite'})!=='granted'&&await outputDirectory.requestPermission({mode:'readwrite'})!=='granted')throw Error('文件夹写入未授权，请重新点击选择投递材料文件夹');const company=safeFileName(j.company),folder=await outputDirectory.getDirectoryHandle(company,{create:true});const unique=safeFileName(j.title)+'-'+new Date().toISOString().replace(/[:.]/g,'-')+'-'+uid().slice(0,6)+'-'+name;const handle=await folder.getFileHandle(unique,{create:true}),stream=await handle.createWritable();await stream.write(bytes);await stream.close();return outputDirectory.name+'/'+company;}
   function download(name,text,type='text/plain;charset=utf-8'){
     const u=URL.createObjectURL(new Blob([text],{type})),a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1500);
   }
@@ -2889,7 +2895,7 @@ window.JobHunt = (() => {
   function render(){
     const hasCV=state.en||state.jaRireki||state.jaShokumu;
     $('huntHome').innerHTML=`
-      <div id="huntGuide" class="hunt-card hunt-guide"></div><div class="hunt-card"><h3>一次配置，重复使用</h3><p class="hunt-note">导入私人材料包后，无需分别上传三份模板。岗位里可选游戏、仿真或AI＋UGC底稿；审核只针对本岗位。</p><div class="hunt-actions"><button id="huntImportMaterials" class="btn btn-primary">导入简历材料包</button><input id="huntMaterialsFile" type="file" accept=".json" hidden><button id="huntBatchReview" class="btn">集中审核待确认材料</button></div></div><details class="hunt-card hunt-detail hunt-fields"><summary>定制方式与 DOCX 模板说明</summary><label>默认生成范围</label><select id="huntDraftMode"><option value="sections" ${state.draftMode!=='full'?'selected':''}>局部定制：只改动机、PR及相关段落</option><option value="full" ${state.draftMode==='full'?'selected':''}>整份正文重写（不能直接套入局部DOCX模板）</option></select><p class="hunt-note">在原 Word 文件的可修改区域写入标记，再上传 DOCX。其他表格、照片和事实栏保留。模板原有动机/PR请另外保留在正文框中作为事实依据。生成后逐段采用、保留原文或自行修改。</p>${Object.entries(FIELDS).map(([k,fields])=>`<p class="hunt-note">${DOCS[k]}：${fields.map(f=>'{{'+f+'}}').join('、')}<br>已存模板：${esc(state.templates?.[k]?.name||'未上传')}</p>`).join('')}<p class="hunt-note">只生成模板中实际存在的标记；没有标记也可生成分段文本复制到 Word。上传含标记模板时，已保存的原始正文会保留供定制使用。</p></details><div class="hunt-card"><h2>我的申请材料</h2>
+      <div id="huntGuide" class="hunt-card hunt-guide"></div><div class="hunt-card"><h3>一次配置，重复使用</h3><div class="hunt-actions"><button id="huntSelectDirectory" class="btn">选择投递材料文件夹</button></div><p id="huntDirectoryStatus" class="hunt-note">${esc(directoryLabel())}</p><p class="hunt-note">导入私人材料包后，无需分别上传三份模板。岗位里可选游戏、仿真或AI＋UGC底稿；审核只针对本岗位。</p><div class="hunt-actions"><button id="huntImportMaterials" class="btn btn-primary">导入简历材料包</button><input id="huntMaterialsFile" type="file" accept=".json" hidden><button id="huntBatchReview" class="btn">集中审核待确认材料</button></div></div><details class="hunt-card hunt-detail hunt-fields"><summary>定制方式与 DOCX 模板说明</summary><label>默认生成范围</label><select id="huntDraftMode"><option value="sections" ${state.draftMode!=='full'?'selected':''}>局部定制：只改动机、PR及相关段落</option><option value="full" ${state.draftMode==='full'?'selected':''}>整份正文重写（不能直接套入局部DOCX模板）</option></select><p class="hunt-note">在原 Word 文件的可修改区域写入标记，再上传 DOCX。其他表格、照片和事实栏保留。模板原有动机/PR请另外保留在正文框中作为事实依据。生成后逐段采用、保留原文或自行修改。</p>${Object.entries(FIELDS).map(([k,fields])=>`<p class="hunt-note">${DOCS[k]}：${fields.map(f=>'{{'+f+'}}').join('、')}<br>已存模板：${esc(state.templates?.[k]?.name||'未上传')}</p>`).join('')}<p class="hunt-note">只生成模板中实际存在的标记；没有标记也可生成分段文本复制到 Word。上传含标记模板时，已保存的原始正文会保留供定制使用。</p></details><div class="hunt-card"><h2>我的申请材料</h2>
         <div class="hunt-note">保存三个独立的材料：英文简历、日文履歴書、日文職務経歴書。决定申请后，可自动分析并生成材料；你审核后，再准备填表。</div>
         <div class="hunt-step"><span>① 添加岗位</span><span>② 自动分析和定制</span><span>③ 分别审核简历</span><span>④ 准备投递</span></div>
         <details id="huntProfilePanel" class="hunt-detail" ${hasCV?'':'open'}><summary>材料与条件（配置一次，后续复用）</summary><div class="hunt-grid hunt-fields">
@@ -2906,6 +2912,7 @@ window.JobHunt = (() => {
       <div class="hunt-card hunt-fields"><div class="hunt-toolbar"><input id="huntFilterText" placeholder="筛选公司 / 职位"><select id="huntFilterStatus"><option value="all">全部状态</option>${Object.entries(STATUS).map(([k,label])=>`<option value="${k}">${label}</option>`).join('')}</select></div></div><div id="huntJobs"></div>
       <details class="hunt-card hunt-detail hunt-fields"><summary>手动添加岗位</summary><div class="hunt-grid"><div><label for="huntCompany">公司名称</label><input id="huntCompany"></div><div><label for="huntPosition">职位名称（可稍后补充）</label><input id="huntPosition"></div></div><label for="huntURL">投递链接（可稍后补充）</label><input id="huntURL" type="url"><label for="huntJD">职位正文（可稍后补充）</label><textarea id="huntJD" rows="6"></textarea><label class="hunt-check"><input id="huntManualAuto" type="checkbox" checked>添加后自动分析并定制（资料不足时先保存）</label><div class="hunt-actions"><button id="huntAdd" class="btn btn-primary">保存并准备申请</button></div></details>
       <div class="hunt-form-alert">当前网站可自动生成材料和准备投递记录。跨网站填表需要浏览器助手 / 扩展；没有连接时会明确停在「等待浏览器」，不会标成已投递。</div>`;
+    $('huntSelectDirectory').onclick=selectOutputDirectory;
     $('huntImportMaterials').onclick=()=>$('huntMaterialsFile').click();$('huntMaterialsFile').onchange=importMaterials;
     $('huntBatchReview').onclick=()=>{const j=state.jobs.find(j=>!['skipped','submitted'].includes(j.status)&&requiredDocs(j).some(k=>j.drafts[k]?.text&&!j.drafts[k].approved));if(j)openReview(j.id,requiredDocs(j).find(k=>j.drafts[k]?.text&&!j.drafts[k].approved));else showToast('没有待审核材料');};
     $('huntSaveProfile').onclick=saveProfile;
@@ -3136,7 +3143,7 @@ window.JobHunt = (() => {
       for(const name of ['pizzip','docxtemplater'])if(!(name==='pizzip'?window.PizZip:window.docxtemplater))await new Promise((resolve,reject)=>{const e=document.createElement('script');e.src='./vendor/'+name+'.js';e.onload=resolve;e.onerror=()=>reject(Error('DOCX 组件加载失败'));document.head.appendChild(e);});
       const values={};for(const f of t.fields){const v=d.sections.find(x=>x.key===f);if(!v||v.decision==='pending')throw Error('模板字段 '+f+' 尚未确认');values[f]=v.decision==='keep'?v.original:v.text;if(!values[f]?.trim())throw Error(f+' 没有原文可保留，请采用或填写正文');}
       const binary=Uint8Array.from(atob(t.base64),c=>c.charCodeAt(0));const doc=new window.docxtemplater(new window.PizZip(binary),{delimiters:{start:'{{',end:'}}'},linebreaks:true,paragraphLoop:true,nullGetter:()=>{throw Error('模板存在未填写字段');}});doc.render(values);
-      download((j.company+'-'+DOCS[k]).replace(/[\\/:*?"<>|]/g,'_')+'.docx',doc.getZip().generate({type:'uint8array'}),'application/vnd.openxmlformats-officedocument.wordprocessingml.document');if(selected===j.id&&selectedDoc===k&&$('huntReviewOverlay').classList.contains('active'))openReview(j.id,k);showToast('DOCX 已导出，请检查分页和文字是否溢出');
+      const savedAt=await saveCompanyFile(j,safeFileName(DOCS[k])+'.docx',doc.getZip().generate({type:'uint8array'}),'application/vnd.openxmlformats-officedocument.wordprocessingml.document');if(selected===j.id&&selectedDoc===k&&$('huntReviewOverlay').classList.contains('active'))openReview(j.id,k);showToast('DOCX 已保存到 '+savedAt+'；请检查分页和文字是否溢出');
     }catch(e){showToast('DOCX 导出暂停：'+e.message);}
   }
   function openReview(id,doc){
@@ -3222,7 +3229,7 @@ window.JobHunt = (() => {
     }catch(err){showToast('导入失败：'+err.message);}finally{e.target.value='';}
   }
   $('huntNavRecords').onclick=()=>mainTab('records');$('huntNavJobs').onclick=()=>mainTab('hunt');
-  if(typeof indexedDB!=='undefined')restoreFileHandle();
+  if(typeof indexedDB!=='undefined'){restoreFileHandle();restoreOutputDirectory();}
   return {mainTab,snapshot,restore,validateState,textDiff};
 })();
 
