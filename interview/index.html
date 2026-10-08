@@ -2825,10 +2825,12 @@ window.JobHunt = (() => {
       }
       j.jd=String(j.jd||'');j.sourceNote=String(j.sourceNote||'来源和开放状态待确认');
     }
+    consolidateJobs(v);
     return v;
   }
   function restore(v){state=validateState(v);selected=null;save();render();}
   function save() {
+    consolidateJobs(state);
     state.updatedAt=timestamp();let ok=true;
     try{localStorage.setItem(KEY,JSON.stringify(state));}catch{ok=false;showToast('浏览器保存失败，请保存 JSON 备份');}
     if(jsonHandle)queueFileSave(snapshot());
@@ -2990,10 +2992,21 @@ window.JobHunt = (() => {
   }
   function jobText(value){return String(value||'').normalize('NFKC').toLowerCase().replace(/\s+/g,' ').trim();}
   function jobURL(value){try{const u=new URL(value);u.hash='';for(const k of [...u.searchParams.keys()])if(/^utm_/i.test(k)||['ref','source','sid','oga','page','trackingId'].includes(k))u.searchParams.delete(k);u.searchParams.sort();return u.origin+u.pathname.replace(/\/$/,'')+u.search;}catch{return '';}}
+  function companyKey(value){return jobText(value).replace(/株式会社|有限会社|\b(?:inc|ltd|co)\b\.?/g,'').replace(/[\s.,・]/g,'');}
+  function roleKey(j){const title=jobText(j.title);if(companyKey(j.company)==='artplay'&&/^(?:c\+\+\s*programmer|ゲームプログラマー|ゲームプログラマ)(?:\s*[（(].*[）)])?$/.test(title))return 'artplay-game-programmer';return title;}
+  function consolidateJobs(v){
+    const priority={submitted:5,skipped:4,approved:3,chosen:2,candidate:1},result=[];
+    for(const j of v.jobs){const i=result.findIndex(x=>sameJob(x,j));if(i<0){result.push(j);continue;}const old=result[i],keep=(priority[j.status]||0)>(priority[old.status]||0)?j:old,other=keep===j?old:j;
+      keep.mergedDuplicates=[...(keep.mergedDuplicates||[]),JSON.parse(JSON.stringify(other))];
+      for(const key of ['url','source','jd','chatNotes','recordId'])if(!keep[key]&&other[key])keep[key]=other[key];
+      for(const key of Object.keys(DOCS))if(!keep.drafts?.[key]&&other.drafts?.[key]){keep.drafts=keep.drafts||{};keep.drafts[key]=other.drafts[key];}
+      result[i]=keep;
+    }v.jobs=result;
+  }
   function sameJob(a,b){
     const linksA=[a.url,a.source].map(jobURL).filter(Boolean),linksB=[b.url,b.source].map(jobURL).filter(Boolean);
-    const named=jobText(a.company)===jobText(b.company)&&jobText(a.title)===jobText(b.title)&&jobText(a.title)!=='待确认岗位';
-    const sharedPage=jobText(a.company)===jobText(b.company)&&jobText(a.title)!==jobText(b.title)&&!a.needsIdentity&&!b.needsIdentity&&jobText(a.title)!=='待确认岗位'&&jobText(b.title)!=='待确认岗位';
+    const named=companyKey(a.company)===companyKey(b.company)&&roleKey(a)===roleKey(b)&&jobText(a.title)!=='待确认岗位';
+    const sharedPage=companyKey(a.company)===companyKey(b.company)&&jobText(a.title)!==jobText(b.title)&&!a.needsIdentity&&!b.needsIdentity&&jobText(a.title)!=='待确认岗位'&&jobText(b.title)!=='待确认岗位';
     return named||(!sharedPage&&jobURL(a.url)&&jobURL(a.url)===jobURL(b.url))||(jobText(a.title)===jobText(b.title)&&linksA.some(link=>linksB.includes(link)));
   }
   function mergeCandidates(inputs){
