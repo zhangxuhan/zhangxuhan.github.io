@@ -2755,13 +2755,14 @@ window.JobHunt = (() => {
   'use strict';
   const KEY = 'interview_job_hunt_v1', SEARCH_KEY = 'interview_search_key_v1';
   const DOCS = {en:'英文简历',jaRireki:'日文 · 履歴書',jaShokumu:'日文 · 職務経歴書'};
+  const FIELDS={en:['Summary','Skills','Experience'],jaRireki:['志望動機','自己PR'],jaShokumu:['職務要約','自己PR','活かせる経験']};
   const STATUS = {candidate:'待判断',chosen:'准备申请',approved:'简历已审核',skipped:'已跳过',submitted:'已提交（本人记录）'};
   const $ = id => document.getElementById(id);
   const esc = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const strs = v => Array.isArray(v) ? v.map(String) : [];
   const uid = () => crypto.randomUUID();
   const timestamp = () => new Date().toISOString();
-  const newState = () => ({version:2,en:'',jaRireki:'',jaShokumu:'',jaLegacy:'',facts:'',preferences:'',query:'',defaultLanguage:'ja',jobs:[],updatedAt:timestamp()});
+  const newState = () => ({version:2,draftMode:'sections',templates:{},en:'',jaRireki:'',jaShokumu:'',jaLegacy:'',facts:'',preferences:'',query:'',defaultLanguage:'ja',jobs:[],updatedAt:timestamp()});
   let state=newState(), selected=null, selectedDoc='jaRireki', searching=false;
   let jsonHandle=null, fileQueue=Promise.resolve(), fileStatus='尚未连接 JSON 文件', fileDb=null;
   const busy=new Set();
@@ -2793,6 +2794,7 @@ window.JobHunt = (() => {
       delete v.ja;
     }
     for(const k of ['en','jaRireki','jaShokumu','facts','preferences','query'])if(typeof v[k]!=='string')throw Error('简历资料格式错误');
+    v.templates=v.templates&&typeof v.templates==='object'&&!Array.isArray(v.templates)?v.templates:{};v.draftMode=v.draftMode==='full'?'full':'sections';
     v.jaLegacy=typeof v.jaLegacy==='string'?v.jaLegacy:'';
     v.defaultLanguage=v.defaultLanguage==='en'?'en':'ja';
     const ids=new Set();
@@ -2808,6 +2810,7 @@ window.JobHunt = (() => {
         const d=j.drafts[k];
         if(!DOCS[k]||!d||typeof d.text!=='string'||typeof d.baseline!=='string'||!Array.isArray(d.changes)||!Array.isArray(d.questions))throw Error('简历草稿格式错误');
         if(typeof d.sourceSignature!=='string')d.sourceSignature='';
+        if(d.sections){if(!Array.isArray(d.sections)||d.sections.some(v=>!v||typeof v.key!=='string'||!FIELDS[k].includes(v.key)||typeof v.original!=='string'||typeof v.text!=='string'||!Array.isArray(v.questions)||!['pending','keep','adopt'].includes(v.decision)))throw Error('分段草稿格式错误');if(d.sections.some(v=>v.decision==='pending'))d.approved=false;}
         d.approved=d.approved===true;
       }
       if(j.status==='approved') {
@@ -2883,11 +2886,11 @@ window.JobHunt = (() => {
   function render(){
     const hasCV=state.en||state.jaRireki||state.jaShokumu;
     $('huntHome').innerHTML=`
-      <div id="huntGuide" class="hunt-card hunt-guide"></div><div class="hunt-card"><h2>我的申请材料</h2>
+      <div id="huntGuide" class="hunt-card hunt-guide"></div><details class="hunt-card hunt-detail hunt-fields"><summary>定制方式与 DOCX 模板说明</summary><label>默认生成范围</label><select id="huntDraftMode"><option value="sections" ${state.draftMode!=='full'?'selected':''}>局部定制：只改动机、PR及相关段落</option><option value="full" ${state.draftMode==='full'?'selected':''}>整份正文重写（不能直接套入局部DOCX模板）</option></select><p class="hunt-note">在原 Word 文件的可修改区域写入标记，再上传 DOCX。其他表格、照片和事实栏保留。模板原有动机/PR请另外保留在正文框中作为事实依据。生成后逐段采用、保留原文或自行修改。</p>${Object.entries(FIELDS).map(([k,fields])=>`<p class="hunt-note">${DOCS[k]}：${fields.map(f=>'{{'+f+'}}').join('、')}<br>已存模板：${esc(state.templates?.[k]?.name||'未上传')}</p>`).join('')}<p class="hunt-note">只生成模板中实际存在的标记；没有标记也可生成分段文本复制到 Word。上传含标记模板时，已保存的原始正文会保留供定制使用。</p></details><div class="hunt-card"><h2>我的申请材料</h2>
         <div class="hunt-note">保存三个独立的材料：英文简历、日文履歴書、日文職務経歴書。决定申请后，可自动分析并生成材料；你审核后，再准备填表。</div>
         <div class="hunt-step"><span>① 添加岗位</span><span>② 自动分析和定制</span><span>③ 分别审核简历</span><span>④ 准备投递</span></div>
         <details id="huntProfilePanel" class="hunt-detail" ${hasCV?'':'open'}><summary>材料与条件（配置一次，后续复用）</summary><div class="hunt-grid hunt-fields">
-          ${Object.entries(DOCS).map(([k,label])=>`<div><label for="huntCV-${k}">${label}</label><textarea id="huntCV-${k}" rows="9" placeholder="粘贴这份材料的完整原始正文">${esc(state[k])}</textarea><input id="huntUpload-${k}" type="file" accept=".txt,.md,.docx"><div class="hint-text">TXT / Markdown / DOCX 读取正文；原件排版另行保留。</div><button class="btn btn-icon" data-oldcv="${k}" style="margin-top:7px">从「我的CV」复制到此材料</button></div>`).join('')}
+          ${Object.entries(DOCS).map(([k,label])=>`<div><label for="huntCV-${k}">${label}</label><textarea id="huntCV-${k}" rows="9" placeholder="粘贴这份材料的完整原始正文">${esc(state[k])}</textarea><input id="huntUpload-${k}" type="file" accept=".txt,.md,.docx"><div class="hint-text">TXT / Markdown / DOCX 读取正文；DOCX 原件保存在浏览器及备份 JSON。导出需模板含下方标记。</div><button class="btn btn-icon" data-oldcv="${k}" style="margin-top:7px">从「我的CV」复制到此材料</button></div>`).join('')}
         </div>
         ${state.jaLegacy?`<details class="hunt-detail" style="margin-top:16px"><summary>旧版日文正文（保留，尚未区分）</summary><pre class="hunt-pre">${esc(state.jaLegacy)}</pre><div class="hint-text">请将对应内容分别放入履歴書和職務経歴書；旧正文不会自动归类，也不会作为已区分模板使用。</div></details>`:''}
         <div class="hunt-fields"><label for="huntPreferences">筛选条件</label><textarea id="huntPreferences" rows="3" placeholder="职位方向、地点、薪资、工作语言、签证支持与排除项">${esc(state.preferences)}</textarea><label for="huntFacts">事实边界 / 已确认字段答案</label><textarea id="huntFacts" rows="3" placeholder="例如：个人项目不能写成商业经历。工作权限、入职日期等按本人确认内容填写。">${esc(state.facts)}</textarea>
@@ -2903,6 +2906,7 @@ window.JobHunt = (() => {
     $('huntSaveProfile').onclick=saveProfile;
     $('huntSaveSearch').onclick=()=>{const k=$('huntSearchKey').value.trim();if(!k){showToast('保持原搜索配置');return;}try{localStorage.setItem(SEARCH_KEY,k);$('huntSearchKey').value='';showToast('搜索 Key 已保存');}catch{showToast('Key 保存失败');}};
     $('huntConnectFile').onclick=connectJSON;
+    $('huntDraftMode').onchange=e=>{state.draftMode=e.target.value;save();};
     $('huntExport').onclick=()=>download('job-hunt-workspace.json',JSON.stringify(snapshot(),null,2),'application/json');
     $('huntOpen').onclick=()=>$('huntOpenFile').click();$('huntOpenFile').onchange=openWorkspace;
     $('huntImport').onclick=()=>$('huntImportFile').click();$('huntImportFile').onchange=importJobsFile;
@@ -2960,9 +2964,9 @@ window.JobHunt = (() => {
     const f=e.target.files[0];if(!f)return;
     try{if(f.size>5*1024*1024)throw Error('请使用 5 MB 以下文件');let text;
       if(/\.(txt|md)$/i.test(f.name))text=await f.text();
-      else if(/\.docx$/i.test(f.name)){if(!window.mammoth)await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='./vendor/mammoth.js';s.onload=resolve;s.onerror=()=>reject(Error('读取组件加载失败，请粘贴正文'));document.head.appendChild(s);});text=(await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()})).value;}
+      else if(/\.docx$/i.test(f.name)){if(!window.mammoth)await new Promise((resolve,reject)=>{const s=document.createElement('script');s.src='./vendor/mammoth.js';s.onload=resolve;s.onerror=()=>reject(Error('读取组件加载失败，请粘贴正文'));document.head.appendChild(s);});const bytes=await f.arrayBuffer();text=(await mammoth.extractRawText({arrayBuffer:bytes})).value;const base64=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=()=>reject(Error('保存模板失败'));r.readAsDataURL(new Blob([bytes]));});state.templates=state.templates||{};state.templates[k]={name:f.name,base64,fields:[...new Set([...text.matchAll(/\{\{([^{}]+)\}\}/g)].map(m=>m[1].trim()))]};}
       else throw Error('支持 TXT / Markdown / DOCX；PDF 请复制正文');
-      $('huntCV-'+k).value=text;saveProfile(true);showToast('已读取并保存 '+DOCS[k]+'，请核对正文');
+      if(!state.templates?.[k]?.fields?.length||!state[k].trim())$('huntCV-'+k).value=text;saveProfile(true);showToast('已读取并保存 '+DOCS[k]+'，请核对正文');
     }catch(err){showToast(err.message);}finally{e.target.value='';}
   }
   function normalize(v){
@@ -2996,6 +3000,16 @@ window.JobHunt = (() => {
   async function draftCore(j,k){
     const baseline=state[k],sig=signature();if(!baseline.trim())throw Error('尚未保存 '+DOCS[k]+' 模板正文');
     const purpose=k==='jaRireki'?'这份材料是日本履歴書：保留本人基本资料、学歴・職歴等事实栏，仅按模板现有栏位定制志望動機、自己PR等内容。不把完整项目经历塞入履歴書，不自行改变出生日期、学历、资格、在留或入职时间。':k==='jaShokumu'?'这份材料是日本職務経歴書：定制職務要約、各段职务内容、技术与项目经验、自己PR；保持各雇主、任职日期、真实职责。不重复履歴書的基本信息。':'这份材料是英文简历，按原始章节定制与岗位相关的重点和措辞。';
+    if(state.draftMode!=='full'){
+      const template=state.templates?.[k],fields=template?.fields?.length?template.fields:FIELDS[k];
+      if(fields.some(f=>!FIELDS[k].includes(f)))throw Error('DOCX 包含不支持的标记；只使用模板说明中的字段');
+      const out=await apiJSON('只定制指定字段，不重写整份简历。'+purpose+'中文解释，正文使用对应材料语言。语气自然、具体，避免空泛赞美；动机讲公司与岗位，PR讲有证据的能力，避免重复。不编造事实、数字、职级、主机发行、管理经验或工作权限。输出 {"sections":[{"key":"指定字段","original":"原始正文中该段的逐字文本；没有对应段落则空","text":"建议完整段落","reason":"修改依据","questions":[]}]}。original必须逐字来自baseline，不能概括，不得替换姓名日期雇主等事实段。每个指定字段返回一次。',{documentType:k,fields,baseline,allMaterials:profile(),job:{company:j.company,title:j.title,jd:j.jd,gaps:j.gaps}});
+      if(signature()!==sig)throw Error('生成期间原始资料已改变，请重试');
+      if(!Array.isArray(out.sections)||out.sections.length!==fields.length)throw Error('分段结果不完整，未保存');
+      const seen=new Set();const sections=out.sections.map(v=>{if(!fields.includes(v.key)||seen.has(v.key)||typeof v.text!=='string'||!v.text.trim()||typeof v.original!=='string'||(v.original&&!baseline.includes(v.original))||!Array.isArray(v.questions))throw Error('分段原文或字段无效，未保存');seen.add(v.key);return {...v,decision:'pending',questions:strs(v.questions)};});
+      j.drafts[k]={text:sections.map(v=>v.key+'\n'+v.text).join('\n\n'),baseline,sections,changes:sections.map(v=>v.reason||''),questions:sections.flatMap(v=>v.questions),sourceSignature:sig,approved:false,generatedAt:timestamp(),approvedAt:null};
+      if(j.status!=='submitted')j.status='chosen';touch(j);save();return;
+    }
     const d=await apiJSON('为指定岗位定制完整材料正文。'+purpose+'所有材料共同约束候选人的事实；保持指定模板的章节，不编造数字、职级、上线经历、技能或工作权限。个人 Unity 项目不得写成商业发布；API 集成不得写成模型训练；PC 仿真不得写成生产 ADAS/HIL。输出 {"text":"完整材料正文","changes":["修改理由和原始资料依据"],"questions":["需要本人确认的事实，没有则空数组"]}。未确认事实不写入正文。',{documentType:k,baseline,allMaterials:profile(),job:{company:j.company,title:j.title,jd:j.jd,gaps:j.gaps}});
     if(typeof d.text!=='string'||!d.text.trim()||!Array.isArray(d.changes)||!Array.isArray(d.questions))throw Error('材料输出格式不完整，未保存');
     if(signature()!==sig)throw Error('生成期间原始资料发生变化，未保存本次草稿，请重试');
@@ -3104,6 +3118,15 @@ window.JobHunt = (() => {
     $('huntEditAuto').onclick=async()=>{try{commit();await prepare(id);}catch(e){showToast(e.message);}};
     openModal('huntReviewOverlay');
   }
+  function sectionText(d){return d.sections.map(v=>v.key+'\n'+(v.decision==='keep'?v.original:v.text)).join('\n\n');}
+  async function exportDOCX(j,k){
+    try{const d=j.drafts[k],t=state.templates?.[k];if(!d?.approved||d.sourceSignature!==signature())throw Error('先审核这份材料');if(!d.sections)throw Error('整份正文不能套入局部模板，请用分段模式重新生成');if(!t?.base64||!t.fields?.length)throw Error('请先上传包含字段标记的 DOCX 模板');
+      for(const name of ['pizzip','docxtemplater'])if(!(name==='pizzip'?window.PizZip:window.docxtemplater))await new Promise((resolve,reject)=>{const e=document.createElement('script');e.src='./vendor/'+name+'.js';e.onload=resolve;e.onerror=()=>reject(Error('DOCX 组件加载失败'));document.head.appendChild(e);});
+      const values={};for(const f of t.fields){const v=d.sections.find(x=>x.key===f);if(!v||v.decision==='pending')throw Error('模板字段 '+f+' 尚未确认');values[f]=v.decision==='keep'?v.original:v.text;if(!values[f]?.trim())throw Error(f+' 没有原文可保留，请采用或填写正文');}
+      const binary=Uint8Array.from(atob(t.base64),c=>c.charCodeAt(0));const doc=new window.docxtemplater(new window.PizZip(binary),{delimiters:{start:'{{',end:'}}'},linebreaks:true,paragraphLoop:true,nullGetter:()=>{throw Error('模板存在未填写字段');}});doc.render(values);
+      download((j.company+'-'+DOCS[k]).replace(/[\\/:*?"<>|]/g,'_')+'.docx',doc.getZip().generate({type:'uint8array'}),'application/vnd.openxmlformats-officedocument.wordprocessingml.document');showToast('DOCX 已导出，请检查分页和文字是否溢出');
+    }catch(e){showToast('DOCX 导出暂停：'+e.message);}
+  }
   function openReview(id,doc){
     selected=id;const j=state.jobs.find(x=>x.id===id);if(!j)return;
     const keys=requiredDocs(j);if(doc&&keys.includes(doc))selectedDoc=doc;else if(!keys.includes(selectedDoc))selectedDoc=keys[0];
@@ -3112,9 +3135,19 @@ window.JobHunt = (() => {
     document.querySelectorAll('[data-doc]').forEach(b=>b.onclick=()=>openReview(id,b.dataset.doc));
     $('huntApplicationLanguage').onchange=e=>{j.applicationLanguage=e.target.value==='en'?'en':'ja';refreshStatus(j);touch(j);save();openReview(id);drawJobs();};
     $('huntPrepareAll').onclick=async()=>{await prepare(id);if($('huntReviewOverlay').classList.contains('active'))openReview(id,k);};
+    if(d?.sections){
+      const panel=document.createElement('div');panel.className='hunt-fields';panel.id='huntSections';
+      panel.innerHTML='<h3>逐段审核</h3>'+d.sections.map((v,i)=>`<div class="hunt-card"><h3>${esc(v.key)} · ${v.decision==='pending'?'待确认':v.decision==='keep'?'保留原文':'采用建议'}</h3><div class="hunt-grid"><div><label>原文</label><pre class="hunt-pre">${esc(v.original||'未找到原文；保留时请先填写')}</pre></div><div><label>建议正文（可修改）</label><textarea rows="5" data-section="${i}">${esc(v.text)}</textarea></div></div><p class="hunt-note">${esc(v.reason)}${v.questions.length?'\n待确认：'+v.questions.map(esc).join('；'):''}</p><button class="btn" data-copysection="${i}">复制这段</button> <button class="btn" data-adopt="${i}">采用这段</button> <button class="btn" data-keep="${i}" ${v.original?'':'disabled'}>保留原文</button></div>`).join('');
+      $('huntDraft').closest('.hunt-grid').before(panel);$('huntDraft').readOnly=true;$('huntDraft').closest('.hunt-grid').hidden=true;
+      const changed=()=>{d.text=sectionText(d);d.approved=false;d.approvedAt=null;refreshStatus(j);touch(j);save();for(const id of ['huntDownloadDOCX','huntFill','huntFillPrompt','huntSubmitted'])if($(id))$(id).disabled=true;drawJobs();};
+      panel.querySelectorAll('[data-section]').forEach(e=>{e.disabled=isBusy;e.oninput=()=>{d.sections[Number(e.dataset.section)].text=e.value;d.sections[Number(e.dataset.section)].decision='pending';changed();$('huntApprove').disabled=true;$('huntApprovedCheck').checked=false;};});
+      panel.querySelectorAll('[data-copysection]').forEach(e=>e.onclick=async()=>{try{const v=d.sections[Number(e.dataset.copysection)];await navigator.clipboard.writeText(v.decision==='keep'?v.original:v.text);showToast('已复制这一段');}catch{showToast('复制失败，请在文本框中选中文字复制');}});
+      panel.querySelectorAll('[data-adopt],[data-keep]').forEach(e=>{if(isBusy)e.disabled=true;e.onclick=()=>{const keep=e.dataset.keep!==undefined;const v=d.sections[Number(keep?e.dataset.keep:e.dataset.adopt)];v.decision=keep?'keep':'adopt';changed();openReview(id,k);};});
+    }
+    const docxButton=document.createElement('button');docxButton.id='huntDownloadDOCX';docxButton.className='btn btn-primary';docxButton.textContent='下载定制 DOCX';docxButton.disabled=isBusy||!d?.approved||!d.sections;docxButton.onclick=()=>exportDOCX(j,k);$('huntDownloadDraft').after(docxButton);
     $('huntDraft').oninput=e=>{j.drafts[k]={text:'',baseline:state[k],changes:[],questions:[],sourceSignature:signature(),...j.drafts[k],text:e.target.value,approved:false,approvedAt:null};refreshStatus(j);touch(j);save();$('huntApprovedCheck').checked=false;$('huntApprove').disabled=true;$('huntFill').disabled=true;$('huntFillPrompt').disabled=true;$('huntSubmitted').disabled=true;drawJobs();};
-    $('huntApprovedCheck').onchange=e=>$('huntApprove').disabled=!e.target.checked||!j.drafts[k]?.text?.trim();
-    $('huntApprove').onclick=()=>{const current=j.drafts[k];if(!$('huntApprovedCheck').checked||!current?.text.trim())return;if(current.sourceSignature!==signature()){showToast('原始资料已改变，请重新生成或按新资料核对');return;}current.approved=true;current.approvedAt=timestamp();refreshStatus(j);touch(j);save();const next=keys.find(key=>j.drafts[key]?.text&&!j.drafts[key].approved);openReview(id,next||k);updateGuide();drawJobs();showToast(ready(j)?'所需材料全部审核通过':'这份已通过，已打开下一份待审核材料');};
+    $('huntApprovedCheck').onchange=e=>$('huntApprove').disabled=!e.target.checked||!j.drafts[k]?.text?.trim()||(d?.sections?.some(v=>v.decision==='pending'||!(v.decision==='keep'?v.original:v.text).trim())??false);
+    $('huntApprove').onclick=()=>{const current=j.drafts[k];if(!$('huntApprovedCheck').checked||!current?.text.trim()||current.sections?.some(v=>v.decision==='pending'||!(v.decision==='keep'?v.original:v.text).trim()))return;if(current.sourceSignature!==signature()){showToast('原始资料已改变，请重新生成或按新资料核对');return;}current.approved=true;current.approvedAt=timestamp();refreshStatus(j);touch(j);save();const next=keys.find(key=>j.drafts[key]?.text&&!j.drafts[key].approved);openReview(id,next||k);updateGuide();drawJobs();showToast(ready(j)?'所需材料全部审核通过':'这份已通过，已打开下一份待审核材料');};
     $('huntGenerateOne').onclick=()=>generateOne(j,k);
     $('huntDownloadDraft').onclick=()=>{if(!j.drafts[k]?.text){showToast('尚无正文');return;}download(DOCS[k]+'.txt',j.drafts[k].text);};
     $('huntFill').onclick=()=>exportPackage(j,false);$('huntFillPrompt').onclick=()=>exportPackage(j,true);
